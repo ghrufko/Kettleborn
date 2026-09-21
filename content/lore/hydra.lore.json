@@ -1,0 +1,19 @@
+{
+  "monsterId": "hydra",
+  "origin": "The Hydra never stops. Cut off one head, another rises. Break one attack, the next has already begun.",
+  "story": "Hunters who hesitate are slowly overwhelmed. Hunters who embrace the flow become impossible to stop.",
+  "quotes": [
+    "Keep moving. Stillness feeds the beast."
+  ],
+  "unlockText": "Something with too many heads has been counting the seconds between your rounds.",
+  "victoryText": "Every head falls at once, or none do. Today, all of them fall.",
+  "demands": [
+    "Continuous movement",
+    "Cardiovascular endurance",
+    "Shoulder stamina",
+    "Lower-body resilience",
+    "Efficient pacing"
+  ],
+  "rule": "Never fight one exercise \u2014 fight the entire round. The Hydra wins when you focus on only one head.",
+  "hunterAdvice": "Keep moving. Stillness feeds the beast."
+}

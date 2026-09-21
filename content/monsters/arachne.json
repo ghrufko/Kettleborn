@@ -1,0 +1,55 @@
+{
+  "id": "arachne",
+  "name": "Arachne",
+  "title": "The Weaver of Motion",
+  "description": "Before she became a monster, Arachne was the greatest weaver the world had known. Now she spins not silk, but movement.",
+  "rarity": "boss",
+  "personality": "agile",
+  "accentColor": "#5ea699",
+  "battle": {
+    "hp": 765,
+    "phases": [
+      70,
+      45,
+      20
+    ],
+    "damageMultiplier": 1.0,
+    "performanceBonuses": {
+      "perfectExecutionDamage": 8,
+      "relentlessAssaultDamage": 35,
+      "relentlessAssaultStreak": 3,
+      "personalRecordDamage": 70,
+      "fastFinishDamage": 50
+    }
+  },
+  "hunts": [
+    {
+      "id": "arachne-first-encounter",
+      "monsterId": "arachne",
+      "order": 1,
+      "name": "First Encounter",
+      "locked": false,
+      "workoutId": "web-of-motion",
+      "restSecondsOverride": 120
+    },
+    {
+      "id": "arachne-second-encounter",
+      "monsterId": "arachne",
+      "order": 2,
+      "name": "Second Encounter",
+      "locked": false,
+      "workoutId": "web-of-motion",
+      "restSecondsOverride": 105
+    },
+    {
+      "id": "arachne-final-hunt",
+      "monsterId": "arachne",
+      "order": 3,
+      "name": "Final Hunt",
+      "locked": false,
+      "workoutId": "web-of-motion",
+      "restSecondsOverride": 90
+    }
+  ],
+  "portraitAsset": "arachne"
+}

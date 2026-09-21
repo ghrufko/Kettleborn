@@ -1,0 +1,108 @@
+[
+  {
+    "id": "gs-10",
+    "name": "GS 10'",
+    "rounds": [
+      {
+        "id": "gs-10-round-1",
+        "name": "Continuous Set",
+        "intervals": [
+          { "id": "gs-10-work", "label": "Work", "type": "timed", "durationSeconds": 600, "startSound": "start" }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "emom",
+    "name": "EMOM",
+    "rounds": [
+      { "id": "emom-r1", "name": "Minute 1", "intervals": [{ "id": "emom-r1-w", "label": "Work", "type": "timed", "durationSeconds": 60, "startSound": "start" }] },
+      { "id": "emom-r2", "name": "Minute 2", "intervals": [{ "id": "emom-r2-w", "label": "Work", "type": "timed", "durationSeconds": 60, "startSound": "nextRound" }] },
+      { "id": "emom-r3", "name": "Minute 3", "intervals": [{ "id": "emom-r3-w", "label": "Work", "type": "timed", "durationSeconds": 60, "startSound": "nextRound" }] },
+      { "id": "emom-r4", "name": "Minute 4", "intervals": [{ "id": "emom-r4-w", "label": "Work", "type": "timed", "durationSeconds": 60, "startSound": "nextRound" }] },
+      { "id": "emom-r5", "name": "Minute 5", "intervals": [{ "id": "emom-r5-w", "label": "Work", "type": "timed", "durationSeconds": 60, "startSound": "nextRound" }] },
+      { "id": "emom-r6", "name": "Minute 6", "intervals": [{ "id": "emom-r6-w", "label": "Work", "type": "timed", "durationSeconds": 60, "startSound": "nextRound" }] },
+      { "id": "emom-r7", "name": "Minute 7", "intervals": [{ "id": "emom-r7-w", "label": "Work", "type": "timed", "durationSeconds": 60, "startSound": "nextRound" }] },
+      { "id": "emom-r8", "name": "Minute 8", "intervals": [{ "id": "emom-r8-w", "label": "Work", "type": "timed", "durationSeconds": 60, "startSound": "nextRound" }] },
+      { "id": "emom-r9", "name": "Minute 9", "intervals": [{ "id": "emom-r9-w", "label": "Work", "type": "timed", "durationSeconds": 60, "startSound": "nextRound" }] },
+      { "id": "emom-r10", "name": "Minute 10", "intervals": [{ "id": "emom-r10-w", "label": "Work", "type": "timed", "durationSeconds": 60, "startSound": "nextRound" }] }
+    ]
+  },
+  {
+    "id": "long-cycle",
+    "name": "Long Cycle",
+    "rounds": [
+      {
+        "id": "lc-round-1",
+        "name": "Round 1",
+        "intervals": [
+          { "id": "lc-1-w", "label": "Work", "type": "timed", "durationSeconds": 180, "startSound": "start" },
+          { "id": "lc-1-r", "label": "Rest", "type": "timed", "durationSeconds": 90, "startSound": "rest" }
+        ]
+      },
+      {
+        "id": "lc-round-2",
+        "name": "Round 2",
+        "intervals": [
+          { "id": "lc-2-w", "label": "Work", "type": "timed", "durationSeconds": 180, "startSound": "nextRound" },
+          { "id": "lc-2-r", "label": "Rest", "type": "timed", "durationSeconds": 110, "startSound": "rest" }
+        ]
+      },
+      {
+        "id": "lc-round-3",
+        "name": "Round 3",
+        "intervals": [
+          { "id": "lc-3-w", "label": "Work", "type": "timed", "durationSeconds": 180, "startSound": "nextRound" },
+          { "id": "lc-3-r", "label": "Rest", "type": "timed", "durationSeconds": 60, "startSound": "rest" }
+        ]
+      },
+      {
+        "id": "lc-round-4",
+        "name": "Round 4",
+        "intervals": [
+          { "id": "lc-4-w", "label": "Work", "type": "timed", "durationSeconds": 150, "startSound": "nextRound" },
+          { "id": "lc-4-r", "label": "Rest", "type": "timed", "durationSeconds": 135, "startSound": "rest" }
+        ]
+      },
+      {
+        "id": "lc-round-5",
+        "name": "Round 5",
+        "intervals": [
+          { "id": "lc-5-w", "label": "Work Until Complete", "type": "open", "startSound": "nextRound" }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "inferno-timer",
+    "name": "Inferno",
+    "rounds": [
+      { "id": "inf-r1", "name": "Set 1", "intervals": [{ "id": "inf-1-e", "label": "Exercise", "type": "reps", "startSound": "start" }, { "id": "inf-1-r", "label": "Rest", "type": "timed", "durationSeconds": 90, "startSound": "rest" }] },
+      { "id": "inf-r2", "name": "Set 2", "intervals": [{ "id": "inf-2-e", "label": "Exercise", "type": "reps", "startSound": "nextRound" }, { "id": "inf-2-r", "label": "Rest", "type": "timed", "durationSeconds": 90, "startSound": "rest" }] },
+      { "id": "inf-r3", "name": "Set 3", "intervals": [{ "id": "inf-3-e", "label": "Exercise", "type": "reps", "startSound": "nextRound" }, { "id": "inf-3-r", "label": "Rest", "type": "timed", "durationSeconds": 90, "startSound": "rest" }] },
+      { "id": "inf-r4", "name": "Set 4", "intervals": [{ "id": "inf-4-e", "label": "Exercise", "type": "reps", "startSound": "nextRound" }, { "id": "inf-4-r", "label": "Rest", "type": "timed", "durationSeconds": 90, "startSound": "rest" }] },
+      { "id": "inf-r5", "name": "Set 5", "intervals": [{ "id": "inf-5-e", "label": "Exercise", "type": "reps", "startSound": "nextRound" }] }
+    ]
+  },
+  {
+    "id": "juggernaut-timer",
+    "name": "Juggernaut",
+    "rounds": [
+      {
+        "id": "jug-round-1",
+        "name": "Round 1",
+        "intervals": [
+          { "id": "jug-1-w", "label": "Work", "type": "random", "minSeconds": 45, "maxSeconds": 75, "startSound": "start" },
+          { "id": "jug-1-r", "label": "Rest", "type": "timed", "durationSeconds": 80, "startSound": "rest" }
+        ]
+      },
+      {
+        "id": "jug-round-2",
+        "name": "Finisher",
+        "intervals": [
+          { "id": "jug-2-w", "label": "Finisher", "type": "open", "requiresManualStart": true, "startSound": "nextRound" }
+        ]
+      }
+    ]
+  }
+]

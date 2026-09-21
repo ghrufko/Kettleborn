@@ -1,0 +1,51 @@
+{
+  "id": "rite",
+  "name": "The Rite",
+  "title": "The First Descent",
+  "description": "The Rite does not care how strong the Hunter already is. It only cares whether the same four movements can be performed the same way, every time, until repetition stops feeling like practice and starts feeling like devotion. The chain comes first, whole — jerk into snatch into clean into swing, three times over. Then it is taken apart, each piece performed alone, examined without the rhythm that made it easy. Then the chain is given back, and the Hunter must prove the whole was never separate from its parts. Nothing down here waits to be beaten. It waits to be finished — and by the third repetition, it is no longer clear which one of you is performing the ritual.",
+  "rarity": "boss",
+  "personality": "steady",
+  "accentColor": "#6b1f2a",
+  "battle": {
+    "hp": 2260,
+    "phases": [
+      65,
+      30
+    ],
+    "damageMultiplier": 1.0,
+    "performanceBonuses": {
+      "perfectExecutionDamage": 8,
+      "relentlessAssaultDamage": 35,
+      "relentlessAssaultStreak": 3,
+      "personalRecordDamage": 70,
+      "fastFinishDamage": 50
+    }
+  },
+  "hunts": [
+    {
+      "id": "rite-first-encounter",
+      "monsterId": "rite",
+      "order": 1,
+      "name": "First Encounter",
+      "locked": false,
+      "workoutId": "the-rite"
+    },
+    {
+      "id": "rite-second-encounter",
+      "monsterId": "rite",
+      "order": 2,
+      "name": "Second Encounter",
+      "locked": false,
+      "workoutId": "the-rite"
+    },
+    {
+      "id": "rite-final-hunt",
+      "monsterId": "rite",
+      "order": 3,
+      "name": "Final Hunt",
+      "locked": false,
+      "workoutId": "the-rite"
+    }
+  ],
+  "portraitAsset": "rite"
+}

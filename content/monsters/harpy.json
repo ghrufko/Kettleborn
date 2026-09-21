@@ -1,0 +1,54 @@
+{
+  "id": "harpy",
+  "name": "Harpy",
+  "title": "The Falling Talon",
+  "description": "The Harpy does not linger. She strikes fast, low, and gone before the weight settles — swing, snatch, thruster, again — and is already three rounds ahead of anyone still finding their breath.",
+  "rarity": "boss",
+  "personality": "agile",
+  "accentColor": "#a83e3e",
+  "battle": {
+    "hp": 495,
+    "phases": [
+      70,
+      45,
+      20
+    ],
+    "damageMultiplier": 1.0,
+    "performanceBonuses": {
+      "perfectExecutionDamage": 8,
+      "relentlessAssaultDamage": 35,
+      "relentlessAssaultStreak": 3,
+      "personalRecordDamage": 70,
+      "fastFinishDamage": 50
+    }
+  },
+  "hunts": [
+    {
+      "id": "harpy-first-encounter",
+      "monsterId": "harpy",
+      "order": 1,
+      "name": "First Encounter",
+      "locked": false,
+      "workoutId": "hell-dive",
+      "restSecondsOverride": 60
+    },
+    {
+      "id": "harpy-second-encounter",
+      "monsterId": "harpy",
+      "order": 2,
+      "name": "Second Encounter",
+      "locked": false,
+      "workoutId": "hell-dive",
+      "restSecondsOverride": 50
+    },
+    {
+      "id": "harpy-final-hunt",
+      "monsterId": "harpy",
+      "order": 3,
+      "name": "Final Hunt",
+      "locked": false,
+      "workoutId": "hell-dive",
+      "restSecondsOverride": 40
+    }
+  ]
+}

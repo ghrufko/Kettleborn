@@ -1,0 +1,50 @@
+{
+  "id": "crooked",
+  "name": "The Crooked",
+  "title": "The Twisted",
+  "description": "Nothing about The Crooked sits level. One side pulls the floor while the other holds the balance point; a two-footed hinge resets the line just long enough to trust it. Then a single arm cleans, presses, and drives the bell overhead alone. Suitcase Deadlift, Single-Leg Romanian Deadlift, Romanian Deadlift, Single-Arm Clean, Single-Arm Press, Single-Arm Thruster — three reps each, the same six-step twist every round. It doesn't test whether you're strong. It tests whether your strong side has been quietly covering for the other one.",
+  "rarity": "boss",
+  "personality": "steady",
+  "accentColor": "#5c4a3d",
+  "battle": {
+    "hp": 1,
+    "phases": [
+      65,
+      30
+    ],
+    "damageMultiplier": 1.0,
+    "performanceBonuses": {
+      "perfectExecutionDamage": 8,
+      "relentlessAssaultDamage": 35,
+      "relentlessAssaultStreak": 3,
+      "personalRecordDamage": 70,
+      "fastFinishDamage": 50
+    }
+  },
+  "hunts": [
+    {
+      "id": "crooked-first-encounter",
+      "monsterId": "crooked",
+      "order": 1,
+      "name": "First Encounter",
+      "locked": false,
+      "workoutId": "the-twisted"
+    },
+    {
+      "id": "crooked-second-encounter",
+      "monsterId": "crooked",
+      "order": 2,
+      "name": "Second Encounter",
+      "locked": false,
+      "workoutId": "the-twisted"
+    },
+    {
+      "id": "crooked-final-hunt",
+      "monsterId": "crooked",
+      "order": 3,
+      "name": "Final Hunt",
+      "locked": false,
+      "workoutId": "the-twisted"
+    }
+  ]
+}

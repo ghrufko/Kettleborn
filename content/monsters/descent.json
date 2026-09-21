@@ -1,0 +1,50 @@
+{
+  "id": "descent",
+  "name": "The Descent",
+  "title": "The Last Rung",
+  "description": "Every rung on the way down costs something different than the one before it. Long Cycle takes one more rep each time; Renegade gives one back. The ratio never lies to you — you can see exactly how much weight the ladder is handing over, rung by rung, and there is no rung where it becomes easy. It only becomes honest about what it always was.",
+  "rarity": "boss",
+  "personality": "steady",
+  "accentColor": "#4a3f5c",
+  "battle": {
+    "hp": 2140,
+    "phases": [
+      65,
+      30
+    ],
+    "damageMultiplier": 1.0,
+    "performanceBonuses": {
+      "perfectExecutionDamage": 8,
+      "relentlessAssaultDamage": 35,
+      "relentlessAssaultStreak": 3,
+      "personalRecordDamage": 70,
+      "fastFinishDamage": 50
+    }
+  },
+  "hunts": [
+    {
+      "id": "descent-first-encounter",
+      "monsterId": "descent",
+      "order": 1,
+      "name": "First Encounter",
+      "locked": false,
+      "workoutId": "the-descent"
+    },
+    {
+      "id": "descent-second-encounter",
+      "monsterId": "descent",
+      "order": 2,
+      "name": "Second Encounter",
+      "locked": false,
+      "workoutId": "the-descent"
+    },
+    {
+      "id": "descent-final-hunt",
+      "monsterId": "descent",
+      "order": 3,
+      "name": "Final Hunt",
+      "locked": false,
+      "workoutId": "the-descent"
+    }
+  ]
+}

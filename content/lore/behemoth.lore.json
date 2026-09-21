@@ -1,0 +1,19 @@
+{
+  "monsterId": "behemoth",
+  "origin": "Long before kingdoms rose and fell, the Behemoth stood unmoved.",
+  "story": "It does not overpower its enemies with speed \u2014 it crushes them with relentless precision. Only those who master every form of strength earn the right to stand before the Colossus.",
+  "quotes": [
+    "Strength is earned, layer by layer. The mountain does not bow to force."
+  ],
+  "unlockText": "Something ancient and unmoved is still standing exactly where it has always stood.",
+  "victoryText": "The Colossus does not fall so much as concede. Three phases, three kinds of strength, all yours now.",
+  "demands": [
+    "Technical consistency",
+    "Total-body control",
+    "Shoulder endurance",
+    "Precision under fatigue",
+    "Mental discipline"
+  ],
+  "rule": "Complete every phase without sacrificing technique. The Behemoth respects control, not speed.",
+  "hunterAdvice": "Strength is earned, layer by layer. The mountain does not bow to force."
+}

@@ -1,0 +1,53 @@
+{
+  "id": "moloch",
+  "name": "The Risen",
+  "title": "What Would Not Stay Down",
+  "description": "Deadlift, pull, clean into push, thruster, snatch — the iron rises from the earth into open hands, twice through, and then it is made to answer for every rep at once. The Risen does not care that your hands are the ones doing the lifting. It has been raised off this floor more times than either of you can count, and it always goes back down expecting to come back up.",
+  "rarity": "boss",
+  "personality": "brutal",
+  "accentColor": "#3a2e2e",
+  "battle": {
+    "hp": 477,
+    "phases": [
+      65,
+      30
+    ],
+    "damageMultiplier": 1.0,
+    "performanceBonuses": {
+      "perfectExecutionDamage": 8,
+      "relentlessAssaultDamage": 35,
+      "relentlessAssaultStreak": 3,
+      "personalRecordDamage": 70,
+      "fastFinishDamage": 50
+    }
+  },
+  "hunts": [
+    {
+      "id": "moloch-first-encounter",
+      "monsterId": "moloch",
+      "order": 1,
+      "name": "First Encounter",
+      "locked": false,
+      "workoutId": "iron-descent",
+      "restSecondsOverride": 90
+    },
+    {
+      "id": "moloch-second-encounter",
+      "monsterId": "moloch",
+      "order": 2,
+      "name": "Second Encounter",
+      "locked": false,
+      "workoutId": "iron-descent",
+      "restSecondsOverride": 75
+    },
+    {
+      "id": "moloch-final-hunt",
+      "monsterId": "moloch",
+      "order": 3,
+      "name": "Final Hunt",
+      "locked": false,
+      "workoutId": "iron-descent",
+      "restSecondsOverride": 60
+    }
+  ]
+}

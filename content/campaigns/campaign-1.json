@@ -1,0 +1,26 @@
+{
+    "id": "main-campaign",
+    "name": "The Wilds",
+    "order": 1,
+    "monsterIds": [
+        "minotaur",
+        "leviathan",
+        "behemoth",
+        "hydra",
+        "arachne",
+        "mammoth",
+        "basilisk"
+    ],
+    "finalBossId": "weaver",
+    "unlockRequiresCampaignId": null,
+    "tagline": "Seven trials. One Weaver behind all of them.",
+    "introText": "Seven monsters guard the Wilds — strength, endurance, resilience, adaptation, precision, raw weight, and repetition under fatigue. None of them wait for you to be ready. Beyond all seven, something older is watching.",
+    "completionText": "The Wilds are over. Minotaur, Leviathan, Behemoth, Hydra, Arachne, Mammoth, and Basilisk have all fallen — and the Weaver has fallen with them. Whatever you were when you started, you are not that anymore.",
+    "heroImageAsset": "territory-wilds",
+    "territoryLore": {
+        "theTerritory": "The Wilds don't remember the men who came before you. Every trail here belongs to something with teeth.",
+        "whatDwellsHere": "Old muscle, older instinct. Creatures shaped by hunger and repetition — no strategy, no mercy, just weight and motion, over and over, until something breaks.",
+        "huntersPurpose": "You come here to prove your body still answers when it's told to keep going. There is no shortcut through the Wilds. Only through.",
+        "transition": "Choose your contract. The ground doesn't care which one you pick."
+    }
+}

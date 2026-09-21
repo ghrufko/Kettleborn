@@ -1,0 +1,18 @@
+{
+  "monsterId": "leviathan",
+  "origin": "Far below the surface, where neither light nor hope can reach, the Leviathan waits.",
+  "story": "It does not chase its prey. It lets the weight of the deep crush them first. Those who panic are swallowed. Those who remain steady rise again.",
+  "quotes": [
+    "Do not break. The abyss rewards only those who keep moving."
+  ],
+  "unlockText": "The weight of the deep is patient. It has been waiting for you specifically.",
+  "victoryText": "You surfaced. The Leviathan sinks back into water that no longer remembers your name.",
+  "demands": [
+    "Full-body tension",
+    "Shoulder endurance",
+    "Grip strength",
+    "Composure under heavy load"
+  ],
+  "rule": "Never put the kettlebells down during the Front Rack Carry. Carry the weight, or let it carry you.",
+  "hunterAdvice": "Do not break. The abyss rewards only those who keep moving."
+}

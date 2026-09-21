@@ -1,0 +1,1802 @@
+[
+  {
+    "id": "snatch-press",
+    "name": "Snatch / Press",
+    "description": "A one-arm kettlebell snatch immediately followed by a strict overhead press, performed as a single combination rep before switching arms.",
+    "musclesTrained": [
+      "Shoulders",
+      "Hips",
+      "Core",
+      "Grip"
+    ],
+    "benefits": [
+      "Builds explosive hip drive",
+      "Develops overhead stability under fatigue",
+      "Trains grip endurance"
+    ],
+    "commonMistakes": [
+      "Muscling the snatch with the arm instead of driving with the hips",
+      "Pressing with an arched lower back instead of a braced core",
+      "Letting the bell crash into the rack position"
+    ],
+    "category": "Combo",
+    "recommendedWeightRangeKg": [
+      12,
+      16
+    ]
+  },
+  {
+    "id": "clean-squat",
+    "name": "Clean / Squat",
+    "description": "A kettlebell clean into the rack position, followed by a front squat with the bell held at the shoulder.",
+    "musclesTrained": [
+      "Quadriceps",
+      "Glutes",
+      "Core",
+      "Forearms"
+    ],
+    "benefits": [
+      "Combines a hip-hinge pull with a squat pattern",
+      "Reinforces a stable front-rack position",
+      "Builds full-body coordination under load"
+    ],
+    "commonMistakes": [
+      "Banging the wrist on the clean instead of a smooth rack",
+      "Letting the knees cave inward on the squat",
+      "Losing the upright torso as fatigue sets in"
+    ],
+    "category": "Combo",
+    "recommendedWeightRangeKg": [
+      14,
+      18
+    ]
+  },
+  {
+    "id": "swing",
+    "name": "Swing",
+    "description": "A two-handed hip-hinge movement that projects the kettlebell forward using explosive hip extension, not the arms.",
+    "musclesTrained": [
+      "Glutes",
+      "Hamstrings",
+      "Core",
+      "Lats"
+    ],
+    "benefits": [
+      "Foundational hip-hinge and posterior chain builder",
+      "High-output conditioning with low joint impact",
+      "Teaches explosive hip extension used across every other kettlebell lift"
+    ],
+    "commonMistakes": [
+      "Squatting the swing instead of hinging at the hips",
+      "Lifting the bell with the arms and shoulders",
+      "Overextending the lower back at the top instead of standing tall"
+    ],
+    "category": "Ballistic",
+    "recommendedWeightRangeKg": [
+      16,
+      24
+    ]
+  },
+  {
+    "id": "deadlift-side",
+    "name": "Deadlift Side",
+    "description": "A single-kettlebell deadlift performed with the bell positioned outside the foot rather than centered, adding an anti-rotation demand.",
+    "musclesTrained": [
+      "Hamstrings",
+      "Glutes",
+      "Obliques",
+      "Grip"
+    ],
+    "benefits": [
+      "Builds hip-hinge strength unilaterally",
+      "Trains anti-rotation core stability",
+      "Carries over to real-world asymmetric lifting"
+    ],
+    "commonMistakes": [
+      "Rounding the spine to reach the bell",
+      "Letting the hips rotate toward the kettlebell",
+      "Rushing the lockout instead of standing fully tall"
+    ],
+    "category": "Grind",
+    "recommendedWeightRangeKg": [
+      16,
+      24
+    ]
+  },
+  {
+    "id": "farmer-carry",
+    "name": "Farmer Carry",
+    "description": "Walking a fixed distance while carrying one or two kettlebells at the sides with a tall, braced posture.",
+    "musclesTrained": [
+      "Forearms",
+      "Traps",
+      "Core",
+      "Legs"
+    ],
+    "benefits": [
+      "Builds raw grip endurance",
+      "Reinforces postural strength under load",
+      "Simple, brutally effective conditioning tool"
+    ],
+    "commonMistakes": [
+      "Letting the shoulders round forward",
+      "Taking short, hurried steps instead of a controlled pace",
+      "Leaning to one side with an uneven load"
+    ],
+    "category": "Carry",
+    "recommendedWeightRangeKg": [
+      20,
+      32
+    ]
+  },
+  {
+    "id": "alternating-snatch",
+    "name": "Alternating Snatch",
+    "description": "The one-arm kettlebell snatch performed for reps, alternating arms at a set interval rather than staying on one side.",
+    "musclesTrained": [
+      "Shoulders",
+      "Hips",
+      "Grip",
+      "Core"
+    ],
+    "benefits": [
+      "Full-body power development",
+      "Trains fast, repeated hip extension",
+      "Builds grip and shoulder stamina evenly on both sides"
+    ],
+    "commonMistakes": [
+      "Muscling the bell up instead of driving from the hips",
+      "Catching the bell hard on the wrist instead of 'punching through'",
+      "Losing tension in the midsection between reps"
+    ],
+    "category": "Ballistic",
+    "recommendedWeightRangeKg": [
+      12,
+      20
+    ]
+  },
+  {
+    "id": "renegade-row",
+    "name": "Renegade Row",
+    "description": "A plank position with hands on two kettlebells, rowing one bell to the ribs at a time while resisting rotation.",
+    "musclesTrained": [
+      "Lats",
+      "Core",
+      "Shoulders",
+      "Obliques"
+    ],
+    "benefits": [
+      "Builds anti-rotation core strength",
+      "Combines a pulling movement with a stability challenge",
+      "Improves shoulder stability under load"
+    ],
+    "commonMistakes": [
+      "Letting the hips rotate toward the rowing arm",
+      "Sagging through the lower back",
+      "Rowing with momentum instead of a controlled pull"
+    ],
+    "category": "Grind",
+    "recommendedWeightRangeKg": [
+      10,
+      16
+    ]
+  },
+  {
+    "id": "goblet-squat",
+    "name": "Goblet Squat",
+    "description": "A squat performed holding a single kettlebell at chest height with both hands, elbows tracking inside the knees.",
+    "musclesTrained": [
+      "Quadriceps",
+      "Glutes",
+      "Core",
+      "Upper Back"
+    ],
+    "benefits": [
+      "Reinforces an upright squat position",
+      "Beginner-friendly entry point to loaded squatting",
+      "Builds trunk stability against a front-loaded weight"
+    ],
+    "commonMistakes": [
+      "Letting the heels lift off the ground",
+      "Rounding the upper back at the bottom",
+      "Not reaching full depth"
+    ],
+    "category": "Grind",
+    "recommendedWeightRangeKg": [
+      12,
+      24
+    ]
+  },
+  {
+    "id": "high-pull",
+    "name": "High Pull",
+    "description": "A two-handed or single-arm explosive pull that drives the kettlebell from hip height up toward chin height, elbow leading.",
+    "musclesTrained": [
+      "Traps",
+      "Shoulders",
+      "Hips",
+      "Upper Back"
+    ],
+    "benefits": [
+      "Bridges hip-hinge power into an upper-body pull",
+      "Builds explosive triple extension",
+      "Develops upper-back and shoulder strength"
+    ],
+    "commonMistakes": [
+      "Pulling with the arm before the hips finish extending",
+      "Shrugging instead of driving the elbow high",
+      "Using too much weight and losing the pulling path"
+    ],
+    "category": "Ballistic",
+    "recommendedWeightRangeKg": [
+      12,
+      20
+    ]
+  },
+  {
+    "id": "clean-press",
+    "name": "Clean & Press",
+    "description": "A kettlebell clean into the rack position immediately followed by a strict or push press overhead.",
+    "musclesTrained": [
+      "Shoulders",
+      "Hips",
+      "Core",
+      "Triceps"
+    ],
+    "benefits": [
+      "Classic full-body strength builder",
+      "Trains the transition from a hip-driven pull to an overhead push",
+      "Builds real-world pressing strength under fatigue"
+    ],
+    "commonMistakes": [
+      "Pressing with an arched back instead of a braced core",
+      "Skipping a clean rack and muscling straight to the shoulder",
+      "Losing wrist alignment overhead"
+    ],
+    "category": "Combo",
+    "recommendedWeightRangeKg": [
+      14,
+      20
+    ]
+  },
+  {
+    "id": "front-squat",
+    "name": "Front Squat",
+    "description": "A squat performed with one or two kettlebells held in the rack position at the shoulders.",
+    "musclesTrained": [
+      "Quadriceps",
+      "Glutes",
+      "Core",
+      "Upper Back"
+    ],
+    "benefits": [
+      "Builds squat strength with a demanding upright torso requirement",
+      "Reinforces the rack position used in cleans and presses",
+      "Strong core and postural carryover"
+    ],
+    "commonMistakes": [
+      "Letting the elbows drop, collapsing the rack",
+      "Leaning forward to compensate for a loose core",
+      "Cutting the squat short of full depth"
+    ],
+    "category": "Grind",
+    "recommendedWeightRangeKg": [
+      14,
+      24
+    ]
+  },
+  {
+    "id": "double-clean",
+    "name": "Double Clean",
+    "description": "A simultaneous two-kettlebell clean, bringing both bells from the floor or a hang position into a double rack.",
+    "musclesTrained": [
+      "Hips",
+      "Traps",
+      "Forearms",
+      "Core"
+    ],
+    "benefits": [
+      "Builds symmetrical full-body power",
+      "Heavier total load than single-bell work",
+      "Strong grip and rack-position demand"
+    ],
+    "commonMistakes": [
+      "Letting one side lag behind the other",
+      "Banging both wrists on the rack instead of a smooth catch",
+      "Rounding the back on the pull from the floor"
+    ],
+    "category": "Combo",
+    "recommendedWeightRangeKg": [
+      12,
+      16
+    ]
+  },
+  {
+    "id": "double-press",
+    "name": "Double Press",
+    "description": "A strict or push press of two kettlebells simultaneously from the rack position to full lockout overhead.",
+    "musclesTrained": [
+      "Shoulders",
+      "Triceps",
+      "Core",
+      "Upper Back"
+    ],
+    "benefits": [
+      "Heavy bilateral pressing strength",
+      "Demands serious core bracing to keep the ribs down",
+      "Builds shoulder stability at heavier total loads"
+    ],
+    "commonMistakes": [
+      "Flaring the ribs and arching the lower back",
+      "Pressing unevenly, favoring the stronger side",
+      "Losing braced tension between reps"
+    ],
+    "category": "Grind",
+    "recommendedWeightRangeKg": [
+      10,
+      14
+    ]
+  },
+  {
+    "id": "double-front-squat",
+    "name": "Double Front Squat",
+    "description": "A front squat performed holding two kettlebells in the rack position, one at each shoulder.",
+    "musclesTrained": [
+      "Quadriceps",
+      "Glutes",
+      "Core",
+      "Upper Back"
+    ],
+    "benefits": [
+      "Heaviest common double-kettlebell squat variation",
+      "Severe core and upper-back bracing demand",
+      "Builds serious total-body squat capacity"
+    ],
+    "commonMistakes": [
+      "Letting the elbows drift down and forward",
+      "Losing depth as fatigue accumulates",
+      "Leaning forward instead of sitting straight down"
+    ],
+    "category": "Grind",
+    "recommendedWeightRangeKg": [
+      12,
+      18
+    ]
+  },
+  {
+    "id": "double-snatch",
+    "name": "Double Snatch",
+    "category": "Ballistic",
+    "description": "Two kettlebells driven from the hang to lockout overhead in one explosive pull — the same snatch as a single bell, doubled, demanding twice the hip power and twice the grip endurance.",
+    "musclesTrained": [
+      "Hips",
+      "Shoulders",
+      "Grip",
+      "Posterior Chain"
+    ],
+    "benefits": [
+      "Builds explosive hip drive under bilateral load",
+      "Trains grip endurance far beyond single-bell work",
+      "Conditions the whole body under real fatigue"
+    ],
+    "commonMistakes": [
+      "Muscling the bells up with the arms instead of the hips",
+      "Letting the bells crash at the bottom of the backswing",
+      "Losing lockout timing between the two arms"
+    ],
+    "recommendedWeightRangeKg": [
+      12,
+      20
+    ]
+  },
+  {
+    "id": "double-thruster",
+    "name": "Double Thruster",
+    "category": "Combo",
+    "description": "A double-bell front squat that rolls directly into a double overhead press — a single continuous movement that punishes any pause between the two halves.",
+    "musclesTrained": [
+      "Quads",
+      "Shoulders",
+      "Core",
+      "Glutes"
+    ],
+    "benefits": [
+      "Combines a squat and a press into one continuous effort",
+      "Builds leg drive that carries directly into the press",
+      "Elevates heart rate quickly — a full-body conditioning tool"
+    ],
+    "commonMistakes": [
+      "Pausing at the top of the squat before pressing",
+      "Losing rack position on the way down",
+      "Pressing with the arms alone instead of riding the leg drive"
+    ],
+    "recommendedWeightRangeKg": [
+      10,
+      16
+    ]
+  },
+  {
+    "id": "thruster",
+    "name": "Thruster",
+    "category": "Combo",
+    "description": "The single-bell version of the front squat into overhead press — same continuous demand, with an added anti-rotation challenge from carrying the load on one side.",
+    "musclesTrained": [
+      "Quads",
+      "Shoulders",
+      "Core",
+      "Obliques"
+    ],
+    "benefits": [
+      "Builds single-side leg drive and pressing power together",
+      "Trains anti-rotation core strength from the offset load",
+      "Cheap on equipment, expensive on the lungs"
+    ],
+    "commonMistakes": [
+      "Letting the offset load pull the torso sideways",
+      "Stalling between the squat and the press",
+      "Rushing the rack position and losing wrist alignment"
+    ],
+    "recommendedWeightRangeKg": [
+      14,
+      24
+    ]
+  },
+  {
+    "id": "bent-over-row",
+    "name": "Bent-over Row",
+    "category": "Grind",
+    "description": "A hinged-position row, pulling the bell(s) from a straight-arm hang to the ribs — a grind movement that demands a locked, neutral spine under load.",
+    "musclesTrained": [
+      "Back",
+      "Lats",
+      "Rear Delts",
+      "Core"
+    ],
+    "benefits": [
+      "Builds pulling strength to balance the pressing/snatching volume elsewhere",
+      "Trains hip-hinge positional strength under time",
+      "Strengthens the posterior chain that carries and presses depend on"
+    ],
+    "commonMistakes": [
+      "Rounding the lower back to finish the pull",
+      "Using momentum instead of a controlled pull",
+      "Standing up out of the hinge between reps"
+    ],
+    "recommendedWeightRangeKg": [
+      16,
+      28
+    ]
+  },
+  {
+    "id": "front-rack-carry",
+    "name": "Front Rack Carry",
+    "category": "Carry",
+    "description": "Two kettlebells held in the front rack position while walking a set distance — a loaded carry that punishes any break in bracing before it punishes the legs.",
+    "musclesTrained": [
+      "Core",
+      "Shoulders",
+      "Upper Back",
+      "Grip"
+    ],
+    "benefits": [
+      "Builds total-body bracing strength under sustained load",
+      "Trains the rack position to hold under fatigue, not just for a single rep",
+      "Carries over directly into every double-bell lift that starts from the rack"
+    ],
+    "commonMistakes": [
+      "Letting the elbows drop and the load shift onto the wrists",
+      "Shortening the stride to rush the distance",
+      "Breathing shallow instead of bracing through the whole carry"
+    ],
+    "recommendedWeightRangeKg": [
+      16,
+      28
+    ]
+  },
+  {
+    "id": "tactical-double-snatch",
+    "name": "Tactical Double Snatch",
+    "category": "Ballistic",
+    "description": "A double snatch performed with continuous tension — no dead stop at the bottom, no relaxed lockout at the top — kept technically clean under a descending rep scheme.",
+    "musclesTrained": [
+      "Hips",
+      "Shoulders",
+      "Grip",
+      "Core"
+    ],
+    "benefits": [
+      "Builds explosive power that stays clean as reps accumulate",
+      "Reinforces hip-drive technique under fatigue rather than under fresh conditions",
+      "Demands full-body tension from first rep to last"
+    ],
+    "commonMistakes": [
+      "Letting form drift as the round wears on",
+      "Resting at the top instead of maintaining tension",
+      "Rushing the descending scheme instead of holding pace"
+    ],
+    "recommendedWeightRangeKg": [
+      12,
+      18
+    ]
+  },
+  {
+    "id": "tactical-double-front-squat",
+    "name": "Tactical Double Front Squat",
+    "category": "Grind",
+    "description": "A double-bell front squat held with strict control through a descending rep scheme — technical precision, not speed, is the whole point.",
+    "musclesTrained": [
+      "Quads",
+      "Glutes",
+      "Core",
+      "Upper Back"
+    ],
+    "benefits": [
+      "Builds squat strength that holds up under real fatigue",
+      "Reinforces bracing and rack position technique deep into a round",
+      "Trains total-body control rather than raw output"
+    ],
+    "commonMistakes": [
+      "Letting the chest fall forward as fatigue builds",
+      "Losing rack position and shifting weight onto the wrists",
+      "Rushing depth to save time instead of holding form"
+    ],
+    "recommendedWeightRangeKg": [
+      12,
+      20
+    ]
+  },
+  {
+    "id": "tactical-double-press",
+    "name": "Tactical Double Press",
+    "category": "Grind",
+    "description": "A strict double overhead press with no leg drive, no momentum — every rep locked out under full control, even as the round wears on.",
+    "musclesTrained": [
+      "Shoulders",
+      "Triceps",
+      "Core",
+      "Upper Back"
+    ],
+    "benefits": [
+      "Builds raw overhead pressing strength without compensation",
+      "Reinforces core bracing needed to press without arching the back",
+      "Exposes and corrects left/right imbalance"
+    ],
+    "commonMistakes": [
+      "Arching the lower back to help the bells overhead",
+      "Pressing unevenly between the two arms",
+      "Letting the elbows flare instead of pressing in a straight line"
+    ],
+    "recommendedWeightRangeKg": [
+      10,
+      16
+    ]
+  },
+  {
+    "id": "tactical-double-clean",
+    "name": "Tactical Double Clean",
+    "category": "Combo",
+    "description": "A controlled double clean into the rack — no bouncing the bells off the chest, no muscling them up sloppy — every rep resetting technique before the next.",
+    "musclesTrained": [
+      "Hips",
+      "Back",
+      "Forearms",
+      "Shoulders"
+    ],
+    "benefits": [
+      "Reinforces clean technique under a demanding rep scheme",
+      "Builds the hip-to-rack timing every other double-bell lift depends on",
+      "Protects the wrists and forearms by forcing a soft catch every rep"
+    ],
+    "commonMistakes": [
+      "Letting the bells crash into the forearms on the catch",
+      "Muscling the clean up with the arms instead of the hips",
+      "Rushing the rack position to save time"
+    ],
+    "recommendedWeightRangeKg": [
+      12,
+      18
+    ]
+  },
+  {
+    "id": "snatch",
+    "name": "Snatch",
+    "category": "Ballistic",
+    "description": "A single kettlebell driven from the hang to an overhead lockout in one pull — the foundational ballistic movement every double-bell variation builds on.",
+    "musclesTrained": [
+      "Hips",
+      "Shoulders",
+      "Grip",
+      "Posterior Chain"
+    ],
+    "benefits": [
+      "Builds the hip-snap technique every heavier snatch variation depends on",
+      "Trains one-sided power and grip endurance",
+      "Lower-barrier entry point to the whole snatch family"
+    ],
+    "commonMistakes": [
+      "Pulling with the arm instead of driving with the hips",
+      "Letting the bell crash on the backswing",
+      "Punching through the top instead of finishing a soft lockout"
+    ],
+    "recommendedWeightRangeKg": [
+      12,
+      20
+    ]
+  },
+  {
+    "id": "press",
+    "name": "Press",
+    "category": "Grind",
+    "description": "A single kettlebell strict-pressed from the rack to lockout — a pure test of one-sided pressing strength with the core resisting the sideways pull of the load.",
+    "musclesTrained": [
+      "Shoulders",
+      "Triceps",
+      "Core",
+      "Obliques"
+    ],
+    "benefits": [
+      "Builds strict overhead pressing strength one side at a time",
+      "Exposes left/right strength imbalance early",
+      "Trains anti-lateral-flexion core strength from the offset load"
+    ],
+    "commonMistakes": [
+      "Leaning away from the load instead of bracing against it",
+      "Using leg drive on a movement meant to be strict",
+      "Pressing behind the frontal plane instead of straight up"
+    ],
+    "recommendedWeightRangeKg": [
+      10,
+      18
+    ]
+  },
+  {
+    "id": "clean",
+    "name": "Clean",
+    "category": "Combo",
+    "description": "A single kettlebell pulled from the hang into the rack position — the entry movement for every single-bell pressing and squatting variation.",
+    "musclesTrained": [
+      "Hips",
+      "Back",
+      "Forearms",
+      "Shoulders"
+    ],
+    "benefits": [
+      "Builds the hip-to-rack timing that presses and squats depend on",
+      "Trains a soft, controlled catch that protects the wrist",
+      "Foundational movement for every heavier clean variation"
+    ],
+    "commonMistakes": [
+      "Letting the bell bang into the forearm on the catch",
+      "Curling the bell up with the arm instead of snapping the hips",
+      "Catching with a bent wrist instead of a stacked one"
+    ],
+    "recommendedWeightRangeKg": [
+      12,
+      20
+    ]
+  },
+  {
+    "id": "double-half-snatch",
+    "name": "Double Half Snatch",
+    "category": "Ballistic",
+    "description": "A double-bell snatch stopped at the rack instead of finishing overhead — the explosive pull of a snatch without the final lockout, repeated under fatigue.",
+    "musclesTrained": [
+      "Hips",
+      "Shoulders",
+      "Grip",
+      "Core"
+    ],
+    "benefits": [
+      "Builds hip power without adding overhead-lockout fatigue to already-tired shoulders",
+      "Bridges cleanly between clean and snatch technique",
+      "Lets a long round keep moving without a full overhead reset every rep"
+    ],
+    "commonMistakes": [
+      "Letting the pull die early and muscling the rest with the arms",
+      "Catching too high or too low in the rack",
+      "Losing bracing between reps"
+    ],
+    "recommendedWeightRangeKg": [
+      12,
+      18
+    ]
+  },
+  {
+    "id": "reverse-lunge",
+    "name": "Reverse Lunge",
+    "category": "Grind",
+    "description": "A single-leg step-back lunge, performed under a double-bell load — a lower-body movement that demands balance as much as strength when everything else in the round is upper-body and hips.",
+    "musclesTrained": [
+      "Quads",
+      "Glutes",
+      "Hamstrings",
+      "Core"
+    ],
+    "benefits": [
+      "Adds real single-leg strength work into an otherwise hip-dominant complex",
+      "Builds balance and control under load, not just raw output",
+      "Gives the grip and shoulders a brief recovery window mid-round without stopping the clock"
+    ],
+    "commonMistakes": [
+      "Letting the front knee cave inward on the way up",
+      "Taking too short a step and losing balance",
+      "Rushing the rep count instead of controlling the descent"
+    ],
+    "recommendedWeightRangeKg": [
+      12,
+      20
+    ]
+  },
+  {
+    "id": "double-push-press",
+    "name": "Double Push Press",
+    "category": "Combo",
+    "description": "A double-bell press assisted by a short dip and drive from the legs — more weight overhead, faster, by borrowing power from the legs instead of the shoulders alone.",
+    "musclesTrained": [
+      "Shoulders",
+      "Quads",
+      "Glutes",
+      "Core"
+    ],
+    "benefits": [
+      "Moves more overhead load than a strict press by sharing the work with the legs",
+      "Builds the timing between leg drive and the overhead lockout",
+      "Keeps shoulders fresher deep into a long round than a strict press would"
+    ],
+    "commonMistakes": [
+      "Dipping too deep and turning it into a jerk",
+      "Mistiming the leg drive so the arms do all the work anyway",
+      "Losing the overhead lockout position on the catch"
+    ],
+    "recommendedWeightRangeKg": [
+      10,
+      16
+    ]
+  },
+  {
+    "id": "double-swing",
+    "name": "Double Swing",
+    "category": "Ballistic",
+    "description": "Two kettlebells swung from between the legs to chest height using the hips — the same hinge-and-snap as a single swing, doubled, with twice the grip demand.",
+    "musclesTrained": [
+      "Glutes",
+      "Hamstrings",
+      "Core",
+      "Grip"
+    ],
+    "benefits": [
+      "Trains the hip hinge that every ballistic movement in this campaign depends on",
+      "Builds grip and forearm endurance under sustained ballistic load",
+      "High output, low technical barrier — sustains pace deep into a round"
+    ],
+    "commonMistakes": [
+      "Squatting the swing instead of hinging at the hips",
+      "Muscling the bells up with the shoulders",
+      "Letting the bells drop below the knees on the backswing"
+    ],
+    "recommendedWeightRangeKg": [
+      14,
+      22
+    ]
+  },
+  {
+    "id": "double-high-pull",
+    "name": "Double High Pull",
+    "category": "Ballistic",
+    "description": "Two kettlebells pulled explosively from the hang to chest height, elbows leading — a ballistic pull that stops short of the overhead lockout, keeping the pace high.",
+    "musclesTrained": [
+      "Hips",
+      "Upper Back",
+      "Shoulders",
+      "Grip"
+    ],
+    "benefits": [
+      "Builds the same hip-snap power as a snatch with less overhead fatigue",
+      "Trains upper-back and shoulder pulling strength alongside the hips",
+      "Keeps a round's pace high without the technical reset a full snatch needs"
+    ],
+    "commonMistakes": [
+      "Pulling with the arms before the hips finish driving",
+      "Letting the elbows drop below the wrists on the pull",
+      "Losing rhythm and turning the pull into a shrug"
+    ],
+    "recommendedWeightRangeKg": [
+      12,
+      20
+    ]
+  },
+  {
+    "id": "snatch-thruster",
+    "name": "Snatch / Thruster",
+    "category": "Combo",
+    "description": "A one-arm kettlebell snatch immediately followed by a thruster on the same side, performed as a single combination rep before switching arms.",
+    "musclesTrained": [
+      "Shoulders",
+      "Hips",
+      "Quads",
+      "Core",
+      "Grip"
+    ],
+    "benefits": [
+      "Chains a ballistic hip-drive movement into a grinding squat-press",
+      "Builds work capacity under a heavier single-bell load",
+      "Trains the transition from explosive to controlled effort mid-set"
+    ],
+    "commonMistakes": [
+      "Resetting the rack position between the snatch and the thruster instead of flowing into it",
+      "Letting the squat depth collapse once the shoulders start to fatigue",
+      "Losing the overhead lockout on the thruster's press"
+    ],
+    "recommendedWeightRangeKg": [
+      12,
+      18
+    ]
+  },
+  {
+    "id": "alternating-swing",
+    "name": "Alternating Swing",
+    "category": "Ballistic",
+    "description": "A single-kettlebell two-hand-style swing performed one arm at a time, passing or switching the bell between hands at the top of each rep instead of staying on one side.",
+    "musclesTrained": [
+      "Hips",
+      "Hamstrings",
+      "Grip",
+      "Core"
+    ],
+    "benefits": [
+      "Trains hip-hinge power evenly on both sides in one continuous set",
+      "Builds grip and forearm endurance through the hand-to-hand transition",
+      "Keeps the pace of a two-handed swing without loading one side twice as long"
+    ],
+    "commonMistakes": [
+      "Muscling the switch with the shoulder instead of letting the hip snap drive it",
+      "Rounding the lower back to chase the switch timing",
+      "Losing the hinge pattern and squatting the swing"
+    ],
+    "recommendedWeightRangeKg": [
+      12,
+      20
+    ]
+  },
+  {
+    "id": "switching-swing",
+    "name": "Switching Swing",
+    "category": "Ballistic",
+    "description": "A single-kettlebell swing performed for a full set on one arm, then handed cleanly to the other arm for an equal set — one deliberate switch mid-exercise, not a swap every rep.",
+    "musclesTrained": [
+      "Hips",
+      "Hamstrings",
+      "Grip",
+      "Core"
+    ],
+    "benefits": [
+      "Trains hip-hinge power to full fatigue on one side before repeating it on the other",
+      "Builds grip and forearm endurance across a sustained one-arm set",
+      "Reinforces a clean, controlled hand-to-hand transfer instead of a rushed swap"
+    ],
+    "commonMistakes": [
+      "Switching hands early, before the full count on the working side is done",
+      "Rounding the lower back to muscle out the last reps of a side",
+      "Losing the hinge pattern and squatting the swing"
+    ],
+    "recommendedWeightRangeKg": [
+      12,
+      20
+    ]
+  },
+  {
+    "id": "floor-press",
+    "name": "Floor Press",
+    "category": "Grind",
+    "description": "A kettlebell press performed lying on the back, elbows touching the floor at the bottom of each rep instead of a standing rack position — a shorter, more controlled range of motion.",
+    "musclesTrained": [
+      "Chest",
+      "Triceps",
+      "Shoulders",
+      "Core"
+    ],
+    "benefits": [
+      "Presses heavy with less shoulder strain than a standing press",
+      "Removes the legs entirely, isolating pressing strength",
+      "Teaches a stable, controlled lockout without needing to brace against a fall"
+    ],
+    "commonMistakes": [
+      "Bouncing the elbows off the floor instead of pausing",
+      "Flaring the elbows too wide and stressing the shoulder joint",
+      "Losing the wrist stack and pressing off-line"
+    ],
+    "recommendedWeightRangeKg": [
+      12,
+      24
+    ]
+  },
+  {
+    "id": "plank-kb-pull-through",
+    "name": "Plank + KB Pull Through",
+    "category": "Grind",
+    "description": "A kettlebell dragged from one side to the other underneath a held plank position, one pull-through per rep, while the hips and shoulders resist rotation.",
+    "musclesTrained": [
+      "Core",
+      "Obliques",
+      "Shoulders",
+      "Grip"
+    ],
+    "benefits": [
+      "Builds anti-rotation core strength under time pressure",
+      "Trains shoulder stability under a shifting, off-center load",
+      "Keeps grip and core engaged simultaneously through a full round"
+    ],
+    "commonMistakes": [
+      "Letting the hips rotate or sag toward the pulling arm",
+      "Rushing the pull and losing plank alignment",
+      "Holding the breath instead of breathing through the hold"
+    ],
+    "recommendedWeightRangeKg": [
+      8,
+      16
+    ]
+  },
+  {
+    "id": "snatch-clean-jerk",
+    "name": "Snatch / Clean / Jerk",
+    "category": "Combo",
+    "description": "A three-part kettlebell complex — one snatch, one clean, one jerk — performed as a single unbroken sequence before resetting for the next rep.",
+    "musclesTrained": [
+      "Shoulders",
+      "Hips",
+      "Legs",
+      "Core",
+      "Grip"
+    ],
+    "benefits": [
+      "Chains three distinct hip-drive patterns into one continuous test",
+      "Builds overhead stability under accumulating fatigue",
+      "Trains the technical reset between three different rack positions"
+    ],
+    "commonMistakes": [
+      "Rushing the transition between lifts and losing the rack position",
+      "Substituting a push press for the jerk's dip-drive-catch",
+      "Letting grip fatigue break form before the legs or shoulders do"
+    ],
+    "recommendedWeightRangeKg": [
+      12,
+      20
+    ]
+  },
+  {
+    "id": "row-clean-thruster",
+    "name": "Row / Clean / Thruster",
+    "category": "Combo",
+    "description": "A three-part kettlebell complex — one bent-over row, one clean, one thruster — performed as a single unbroken sequence before resetting for the next rep.",
+    "musclesTrained": [
+      "Back",
+      "Hips",
+      "Quads",
+      "Shoulders",
+      "Grip"
+    ],
+    "benefits": [
+      "Chains a pulling movement directly into a full-body pressing movement",
+      "Builds work capacity across the whole posterior and anterior chain in one sequence",
+      "Trains transitioning from a hinged pull straight into a loaded squat"
+    ],
+    "commonMistakes": [
+      "Rounding the back on the row to rush into the clean",
+      "Losing squat depth on the thruster once the row has pre-fatigued the grip",
+      "Resetting the kettlebell to the floor between parts instead of flowing through"
+    ],
+    "recommendedWeightRangeKg": [
+      14,
+      20
+    ]
+  },
+  {
+    "id": "snatch-floor",
+    "name": "Snatch from the Floor",
+    "category": "Ballistic",
+    "description": "A one-arm kettlebell snatch starting from a dead stop on the floor instead of a hang or backswing, forcing a fresh hip-hinge setup on every single rep.",
+    "musclesTrained": [
+      "Hips",
+      "Hamstrings",
+      "Shoulders",
+      "Grip"
+    ],
+    "benefits": [
+      "Removes momentum from the backswing, isolating raw hip-drive power",
+      "Builds a stronger, more repeatable setup position under fatigue",
+      "Trains grip strength from a true dead-stop rather than a moving bell"
+    ],
+    "commonMistakes": [
+      "Yanking the bell up with the arm instead of resetting the hip hinge",
+      "Rushing the floor pickup and rounding the lower back",
+      "Losing tension between reps instead of treating each one as its own lift"
+    ],
+    "recommendedWeightRangeKg": [
+      12,
+      24
+    ]
+  },
+  {
+    "id": "clean-floor",
+    "name": "Clean from the Floor",
+    "category": "Combo",
+    "description": "A one-arm kettlebell clean starting from a dead stop on the floor, resetting the hip hinge completely between reps instead of cycling the bell in a continuous swing.",
+    "musclesTrained": [
+      "Hips",
+      "Back",
+      "Forearms",
+      "Grip"
+    ],
+    "benefits": [
+      "Builds a clean, repeatable hip-hinge setup under fatigue",
+      "Trains the bell into the rack position without relying on backswing momentum",
+      "Develops forearm and grip control from a true dead-stop pickup"
+    ],
+    "commonMistakes": [
+      "Muscling the bell into the rack instead of driving from the hips",
+      "Letting the bell crash into the forearm on the catch",
+      "Rounding the back on the floor pickup instead of hinging"
+    ],
+    "recommendedWeightRangeKg": [
+      12,
+      24
+    ]
+  },
+  {
+    "id": "clean-floor-thruster",
+    "name": "Clean from the Floor / Thruster",
+    "category": "Combo",
+    "description": "A one-arm kettlebell clean starting from a dead stop on the floor, immediately followed by a thruster on the same side before resetting for the next rep.",
+    "musclesTrained": [
+      "Hips",
+      "Quads",
+      "Shoulders",
+      "Core",
+      "Grip"
+    ],
+    "benefits": [
+      "Chains a dead-stop pulling movement directly into a full-body squat-press",
+      "Builds work capacity from the floor up through a full overhead lockout",
+      "Trains the technical reset between a floor pickup and a loaded squat"
+    ],
+    "commonMistakes": [
+      "Rushing the floor pickup to get to the thruster faster",
+      "Letting squat depth collapse once the shoulder starts to fatigue",
+      "Losing the overhead lockout on the thruster's press"
+    ],
+    "recommendedWeightRangeKg": [
+      12,
+      20
+    ]
+  },
+  {
+    "id": "alternating-double-clean",
+    "name": "Alternating Double Clean",
+    "category": "Combo",
+    "description": "Two kettlebells cleaned to the rack with an alternating tempo — one bell arrives a half-beat ahead of the other — instead of both bells cleaned in a single synchronized motion.",
+    "musclesTrained": [
+      "Hips",
+      "Back",
+      "Forearms",
+      "Grip",
+      "Core"
+    ],
+    "benefits": [
+      "Trains each side to stabilize independently while the other is still moving",
+      "Builds core anti-rotation strength from the offset timing",
+      "Keeps the rack transition honest on both sides instead of letting one side lag"
+    ],
+    "commonMistakes": [
+      "Letting the offset tempo turn into two separate uneven singles",
+      "Losing rack tension on the leading arm while catching the trailing one",
+      "Rounding the back to rush the timing"
+    ],
+    "recommendedWeightRangeKg": [
+      12,
+      20
+    ]
+  },
+  {
+    "id": "alternating-press",
+    "name": "Alternating Press",
+    "category": "Grind",
+    "description": "Two kettlebells pressed overhead one at a time in a left-right-left-right sequence, the resting bell held in the rack while the other presses.",
+    "musclesTrained": [
+      "Shoulders",
+      "Triceps",
+      "Core"
+    ],
+    "benefits": [
+      "Builds overhead pressing strength while the core resists the shifting load",
+      "Trains one side to stay braced and stable while the other works",
+      "Keeps the shoulders under near-continuous tension across the full set"
+    ],
+    "commonMistakes": [
+      "Letting the resting bell drift out of the rack position",
+      "Arching the lower back to finish the press instead of bracing the core",
+      "Rushing the side-to-side rhythm and losing lockout on each rep"
+    ],
+    "recommendedWeightRangeKg": [
+      10,
+      20
+    ]
+  },
+  {
+    "id": "gorilla-row",
+    "name": "Gorilla Row",
+    "category": "Grind",
+    "description": "Two kettlebells set on the floor in a wide hinge stance, rowed one arm at a time in a left-right-left-right sequence while the other hand stays braced on its own bell.",
+    "musclesTrained": [
+      "Upper Back",
+      "Lats",
+      "Core",
+      "Grip"
+    ],
+    "benefits": [
+      "Builds unilateral pulling strength from a stable, grounded stance",
+      "Trains the core and hips to hold a hinge under an offset, shifting load",
+      "Keeps grip and back tension high across both sides in one continuous set"
+    ],
+    "commonMistakes": [
+      "Rotating the torso to muscle the row up instead of pulling with the back",
+      "Letting the hips rise and turn the hinge into a squat",
+      "Losing bracing tension in the resting arm between reps"
+    ],
+    "recommendedWeightRangeKg": [
+      12,
+      20
+    ]
+  },
+  {
+    "id": "jerk",
+    "name": "Jerk",
+    "category": "Combo",
+    "description": "A kettlebell driven overhead from the rack with a dip-drive-catch, the feet re-setting under the bell at the top instead of a single continuous press.",
+    "musclesTrained": [
+      "Shoulders",
+      "Legs",
+      "Core"
+    ],
+    "benefits": [
+      "Moves heavier loads overhead than a strict press by using the legs to drive",
+      "Trains fast, stable footwork under a loaded overhead catch",
+      "Builds overhead lockout strength with less pure shoulder fatigue than pressing"
+    ],
+    "commonMistakes": [
+      "Turning the dip-drive into a push press with no foot re-set",
+      "Catching with a soft, unlocked elbow instead of a stacked lockout",
+      "Re-setting the feet too wide or too late under the bell"
+    ],
+    "recommendedWeightRangeKg": [
+      14,
+      24
+    ]
+  },
+  {
+    "id": "tactical-snatch",
+    "name": "Tactical Snatch",
+    "category": "Ballistic",
+    "description": "A one-arm kettlebell snatch performed at a slower, deliberate tactical tempo — a controlled pause at the top and bottom — rather than the continuous cycling of a standard snatch.",
+    "musclesTrained": [
+      "Shoulders",
+      "Hips",
+      "Grip",
+      "Core"
+    ],
+    "benefits": [
+      "Removes momentum from the lockout, testing raw shoulder stability",
+      "Builds control at both ends of the rep instead of relying on cycling rhythm",
+      "Trains grip and shoulder endurance under sustained time-under-tension"
+    ],
+    "commonMistakes": [
+      "Rushing through the pause and turning it back into a standard snatch",
+      "Losing tension in the plank-like brace during the top-position hold",
+      "Letting the bell crash instead of lowering it under control"
+    ],
+    "recommendedWeightRangeKg": [
+      12,
+      20
+    ]
+  },
+  {
+    "id": "floor-deadlift",
+    "name": "Floor Deadlift",
+    "category": "Grind",
+    "description": "A kettlebell deadlifted from a dead stop on the floor to standing, hips driving the bell up rather than the arms, resetting fully between reps.",
+    "musclesTrained": [
+      "Hips",
+      "Hamstrings",
+      "Back",
+      "Grip"
+    ],
+    "benefits": [
+      "Builds raw hip-hinge strength from a true dead-stop position",
+      "Reinforces a braced, neutral spine under load before any other lift begins",
+      "Trains grip and posterior-chain strength together on every rep"
+    ],
+    "commonMistakes": [
+      "Rounding the lower back to reach the floor instead of hinging at the hips",
+      "Yanking the bell up instead of driving through the heels",
+      "Losing the reset and turning it into a continuous swing"
+    ],
+    "recommendedWeightRangeKg": [
+      14,
+      28
+    ]
+  },
+  {
+    "id": "floor-push",
+    "name": "Floor Push",
+    "category": "Grind",
+    "description": "A kettlebell cleaned from the floor and pressed overhead in one standing sequence, the bell never resting in the rack before the press begins.",
+    "musclesTrained": [
+      "Shoulders",
+      "Triceps",
+      "Core",
+      "Grip"
+    ],
+    "benefits": [
+      "Chains a floor pickup directly into an overhead lockout without a rack pause",
+      "Builds shoulder stability under a load that just arrived, not one that's settled",
+      "Trains full-body tension from the floor to full extension in one continuous effort"
+    ],
+    "commonMistakes": [
+      "Pausing in the rack instead of driving straight through to the press",
+      "Arching the lower back to finish the lockout",
+      "Losing tension in the picked-up hand while the other stays braced"
+    ],
+    "recommendedWeightRangeKg": [
+      12,
+      24
+    ]
+  },
+  {
+    "id": "floor-clean-push",
+    "name": "Floor Clean / Push",
+    "category": "Combo",
+    "description": "A kettlebell cleaned from a dead stop on the floor, immediately followed by an overhead push before resetting for the next rep.",
+    "musclesTrained": [
+      "Hips",
+      "Shoulders",
+      "Back",
+      "Core",
+      "Grip"
+    ],
+    "benefits": [
+      "Combines a dead-stop pulling movement with an overhead pressing movement in one rep",
+      "Builds work capacity from the floor to full lockout without rack rest between reps",
+      "Trains the technical reset between a floor pickup and an overhead finish"
+    ],
+    "commonMistakes": [
+      "Rushing the floor pickup to get to the push faster",
+      "Letting the rack position collapse before driving overhead",
+      "Losing the overhead lockout at the top of the push"
+    ],
+    "recommendedWeightRangeKg": [
+      12,
+      22
+    ]
+  },
+  {
+    "id": "double-jerk",
+    "name": "Double Jerk",
+    "category": "Combo",
+    "description": "Two kettlebells driven overhead together from the rack with a dip-drive-catch, the feet re-setting under both bells at the top instead of a single continuous press.",
+    "musclesTrained": [
+      "Shoulders",
+      "Legs",
+      "Core"
+    ],
+    "benefits": [
+      "Moves heavier total load overhead than a double press by using the legs to drive",
+      "Trains fast, stable footwork under a loaded two-bell overhead catch",
+      "Builds overhead lockout strength on both sides at once with less pure shoulder fatigue"
+    ],
+    "commonMistakes": [
+      "Turning the dip-drive into a double push press with no foot re-set",
+      "Catching with one side locked out before the other",
+      "Re-setting the feet unevenly under an uneven pair of bells"
+    ],
+    "recommendedWeightRangeKg": [
+      12,
+      24
+    ]
+  },
+  {
+    "id": "overhead-lunge",
+    "name": "Overhead Lunge",
+    "category": "Grind",
+    "description": "A reverse or walking lunge performed while holding a kettlebell locked out overhead, the shoulder and core working to keep the bell stacked while the legs step through the lunge.",
+    "musclesTrained": [
+      "Shoulders",
+      "Core",
+      "Quads",
+      "Glutes"
+    ],
+    "benefits": [
+      "Trains overhead shoulder stability under a shifting, moving base",
+      "Builds single-leg strength while the core resists lateral lean from the raised load",
+      "Carries over to any movement that needs a stable overhead position under fatigue"
+    ],
+    "commonMistakes": [
+      "Letting the raised arm drift forward or out of the ear-line during the step",
+      "Rushing the lunge and losing lockout at the top of the movement",
+      "Leaning the torso toward the working leg instead of staying stacked"
+    ],
+    "recommendedWeightRangeKg": [
+      8,
+      16
+    ]
+  },
+  {
+    "id": "windmill",
+    "name": "Windmill",
+    "category": "Grind",
+    "description": "A kettlebell held locked out overhead while the hips hinge sideways, the free hand reaching toward the floor along the front leg before returning to standing.",
+    "musclesTrained": [
+      "Obliques",
+      "Shoulders",
+      "Hamstrings",
+      "Core"
+    ],
+    "benefits": [
+      "Builds shoulder stability under a static overhead load through a full hip hinge",
+      "Trains lateral core strength and hip mobility together in one controlled movement",
+      "Reinforces the overhead lockout that other overhead lifts depend on"
+    ],
+    "commonMistakes": [
+      "Bending the overhead arm instead of keeping it locked throughout",
+      "Rounding the lower back to reach further down instead of hinging at the hip",
+      "Rushing the return to standing and losing the overhead line"
+    ],
+    "recommendedWeightRangeKg": [
+      8,
+      16
+    ]
+  },
+  {
+    "id": "floor-thruster",
+    "name": "Floor Thruster",
+    "category": "Combo",
+    "description": "A kettlebell cleaned from a dead stop on the floor directly into a thruster — squat and overhead drive in one motion — before resetting for the next rep.",
+    "musclesTrained": [
+      "Hips",
+      "Quads",
+      "Shoulders",
+      "Core",
+      "Grip"
+    ],
+    "benefits": [
+      "Combines a dead-stop floor pickup with a full squat-to-overhead drive in one rep",
+      "Builds total-body power output from the ground up with no rack pause",
+      "Trains leg drive to carry a load all the way to lockout under fatigue"
+    ],
+    "commonMistakes": [
+      "Rushing the floor pickup and losing the hip hinge before the squat",
+      "Cutting the squat depth short to get to the press faster",
+      "Losing the overhead lockout at the top of the drive"
+    ],
+    "recommendedWeightRangeKg": [
+      12,
+      20
+    ]
+  },
+  {
+    "id": "burpee-kettlebell",
+    "name": "Burpee → Kettlebell",
+    "category": "Combo",
+    "description": "A standard burpee finishing by driving up to grip and clean two kettlebells to the rack, chaining a bodyweight movement directly into the loaded work that follows.",
+    "musclesTrained": [
+      "Full Body",
+      "Shoulders",
+      "Core",
+      "Cardiovascular"
+    ],
+    "benefits": [
+      "Builds work capacity by pairing bodyweight and loaded movement without a pause",
+      "Trains the transition from the floor to a loaded rack position under fatigue",
+      "Raises heart rate fast, testing pacing early in a round"
+    ],
+    "commonMistakes": [
+      "Standing up out of the burpee before reaching for the bells",
+      "Rushing the clean into the rack and losing wrist position",
+      "Letting the chest collapse on the way down"
+    ],
+    "recommendedWeightRangeKg": [
+      12,
+      16
+    ]
+  },
+  {
+    "id": "long-hike-snatch",
+    "name": "Long-Hike Snatch",
+    "category": "Ballistic",
+    "description": "A double kettlebell snatch that starts from an exaggerated hike pass well behind the hips before driving both bells overhead in one motion.",
+    "musclesTrained": [
+      "Hamstrings",
+      "Glutes",
+      "Shoulders",
+      "Grip"
+    ],
+    "benefits": [
+      "Extends the pulling range for more hip drive per rep",
+      "Trains timing between the hike and the upward pull",
+      "Builds grip and shoulder stability at lockout"
+    ],
+    "commonMistakes": [
+      "Cutting the hike short and losing the extra range",
+      "Muscling the bells up with the arms instead of the hips",
+      "Catching overhead with the wrists rolled back"
+    ],
+    "recommendedWeightRangeKg": [
+      12,
+      20
+    ]
+  },
+  {
+    "id": "long-hike-clean",
+    "name": "Long-Hike Clean",
+    "category": "Combo",
+    "description": "A double kettlebell clean that starts from the same exaggerated hike pass as the Long-Hike Snatch, driving both bells to the rack instead of overhead.",
+    "musclesTrained": [
+      "Hamstrings",
+      "Glutes",
+      "Forearms",
+      "Core"
+    ],
+    "benefits": [
+      "Extends the pulling range for more hip drive per rep",
+      "Builds a soft, controlled catch in the rack from a longer backswing",
+      "Reinforces the same hike timing as its Snatch counterpart"
+    ],
+    "commonMistakes": [
+      "Cutting the hike short and losing the extra range",
+      "Catching the rack hard on the wrists and forearms",
+      "Letting the bells drift away from the body on the way up"
+    ],
+    "recommendedWeightRangeKg": [
+      12,
+      16
+    ]
+  },
+  {
+    "id": "burpee",
+    "name": "Burpee",
+    "category": "Combo",
+    "description": "A bodyweight burpee performed directly beside two racked kettlebells, finishing in a standing position ready to pick them straight back up for the next movement.",
+    "musclesTrained": [
+      "Full Body",
+      "Core",
+      "Cardiovascular"
+    ],
+    "benefits": [
+      "Raises heart rate without adding external load, so the following lift is met by cardio fatigue rather than muscular fatigue alone",
+      "Reinforces getting up off the floor efficiently between loaded work",
+      "Builds the conditioning base the rest of a complex is tested against"
+    ],
+    "commonMistakes": [
+      "Letting the hips sag on the way down",
+      "Popping up too fast and arriving unbalanced for the next pickup",
+      "Skipping the full chest-to-floor range under fatigue"
+    ],
+    "recommendedWeightRangeKg": [
+      12,
+      16
+    ]
+  },
+  {
+    "id": "clean-jerk",
+    "name": "Clean → Jerk",
+    "category": "Combo",
+    "description": "Two kettlebells cleaned to the rack and driven overhead in a single jerk, performed as one continuous couplet before resetting for the next rep.",
+    "musclesTrained": [
+      "Legs",
+      "Shoulders",
+      "Core",
+      "Grip"
+    ],
+    "benefits": [
+      "Combines a hip-driven pull with an overhead drive in one couplet",
+      "Trains the rack-to-overhead transition under accumulating fatigue",
+      "Repeats as the workout's recurring technical checkpoint, testing composure as much as output"
+    ],
+    "commonMistakes": [
+      "Muscling the clean instead of using hip drive, arriving out of position for the jerk",
+      "Losing the dip-drive timing on the jerk as fatigue builds",
+      "Catching overhead with the bells drifting forward of the ears"
+    ],
+    "recommendedWeightRangeKg": [
+      12,
+      20
+    ]
+  },
+  {
+    "id": "deadlift",
+    "name": "Deadlift",
+    "category": "Grind",
+    "description": "A standard two-kettlebell deadlift — hinge to grip, drive through the floor to lockout, control back down. The baseline hinge pattern, distinct from the Floor Deadlift's dead-stop reset and Deadlift Side's offset stance.",
+    "musclesTrained": [
+      "Hamstrings",
+      "Glutes",
+      "Lower Back",
+      "Grip"
+    ],
+    "benefits": [
+      "Reinforces the hip hinge that every ballistic movement in a complex depends on",
+      "Builds posterior chain strength and grip endurance without a technical bottleneck",
+      "Gives the nervous system a controlled reset between more explosive movements"
+    ],
+    "commonMistakes": [
+      "Rounding the lower back to make up for a hip hinge that broke down early",
+      "Letting the bells drift forward away from the shins",
+      "Rushing the lockout instead of finishing tall"
+    ],
+    "recommendedWeightRangeKg": [
+      16,
+      28
+    ]
+  },
+  {
+    "id": "deep-snatch",
+    "name": "Deep Snatch",
+    "category": "Ballistic",
+    "description": "A one-arm kettlebell snatch performed from a lower, deeper hike position than a standard Snatch, extending the pull before the bell is driven overhead.",
+    "musclesTrained": [
+      "Hamstrings",
+      "Glutes",
+      "Shoulders",
+      "Grip"
+    ],
+    "benefits": [
+      "Extends the pulling range for more hip drive per rep",
+      "Demands tighter timing between the deeper hike and the upward pull",
+      "Builds grip and shoulder stability at lockout under a longer lever"
+    ],
+    "commonMistakes": [
+      "Cutting the hike short and losing the extra range it's meant to add",
+      "Muscling the bell up with the arm instead of the hips",
+      "Catching overhead with the wrist rolled back instead of stacked"
+    ],
+    "recommendedWeightRangeKg": [
+      12,
+      20
+    ]
+  },
+  {
+    "id": "floor-pull",
+    "name": "Floor Pull",
+    "category": "Grind",
+    "description": "A single kettlebell pulled explosively off the floor to about hip height with a bent-arm row, then returned to a dead stop for the next rep.",
+    "musclesTrained": [
+      "Back",
+      "Lats",
+      "Grip",
+      "Hips"
+    ],
+    "benefits": [
+      "Builds pulling strength from a true dead stop",
+      "Trains the floor as a reset point instead of relying on bell momentum",
+      "Reinforces a flat back under a loaded hinge"
+    ],
+    "commonMistakes": [
+      "Rounding the back to muscle the bell up",
+      "Using the hips to heave the bell instead of pulling with the back",
+      "Letting the bell drift away from the shins on the way up"
+    ],
+    "recommendedWeightRangeKg": [
+      12,
+      24
+    ]
+  },
+  {
+    "id": "single-side-deadlift",
+    "name": "Suitcase Deadlift",
+    "category": "Grind",
+    "description": "A conventional-stance deadlift performed with one kettlebell on one side of the body, resisting the lateral pull with the core for the full set before switching sides.",
+    "musclesTrained": [
+      "Hips",
+      "Hamstrings",
+      "Core",
+      "Obliques",
+      "Grip"
+    ],
+    "benefits": [
+      "Trains anti-lateral-flexion core strength under a loaded hinge",
+      "Builds single-side pulling strength without a symmetrical counterbalance",
+      "Exposes and corrects hip-level asymmetries a double-bell deadlift can hide"
+    ],
+    "commonMistakes": [
+      "Leaning toward the loaded side to compensate",
+      "Letting the shoulders rotate open toward the bell",
+      "Rushing the lockout instead of finishing the hip extension"
+    ],
+    "recommendedWeightRangeKg": [
+      12,
+      24
+    ]
+  },
+  {
+    "id": "single-leg-romanian-deadlift",
+    "name": "Single-Leg Romanian Deadlift",
+    "category": "Grind",
+    "description": "A one-legged hip hinge holding a kettlebell in the opposite hand, lowering the bell toward the floor while the free leg extends back for balance.",
+    "musclesTrained": [
+      "Hamstrings",
+      "Glutes",
+      "Core",
+      "Ankles"
+    ],
+    "benefits": [
+      "Builds single-leg balance and hip control under load",
+      "Isolates hamstring and glute strength on one side at a time",
+      "Exposes stability weaknesses a two-footed hinge won't reveal"
+    ],
+    "commonMistakes": [
+      "Rotating the hips open instead of keeping them square to the floor",
+      "Bending the standing knee instead of hinging at the hip",
+      "Rushing the balance point instead of controlling the descent"
+    ],
+    "recommendedWeightRangeKg": [
+      10,
+      20
+    ]
+  },
+  {
+    "id": "romanian-deadlift",
+    "name": "Romanian Deadlift",
+    "category": "Grind",
+    "description": "A stiff-legged hip hinge lowering the kettlebell along the shins to a hamstring stretch before driving the hips back through to standing.",
+    "musclesTrained": [
+      "Hamstrings",
+      "Glutes",
+      "Lower Back",
+      "Grip"
+    ],
+    "benefits": [
+      "Builds posterior-chain strength through a long range of motion",
+      "Reinforces hip-hinge mechanics under continuous tension",
+      "Develops hamstring control at end range, not just lockout strength"
+    ],
+    "commonMistakes": [
+      "Squatting the movement instead of hinging at the hips",
+      "Losing the flat back as the bell passes the knees",
+      "Stopping the descent short of an actual hamstring stretch"
+    ],
+    "recommendedWeightRangeKg": [
+      12,
+      24
+    ]
+  },
+  {
+    "id": "single-arm-clean",
+    "name": "Single-Arm Clean",
+    "category": "Ballistic",
+    "description": "A single kettlebell pulled from the hinge and guided into the rack position in one motion, absorbing the bell into the forearm rather than catching it.",
+    "musclesTrained": [
+      "Hips",
+      "Forearm",
+      "Shoulders",
+      "Core"
+    ],
+    "benefits": [
+      "Builds the hip-to-rack timing every single-arm complex depends on",
+      "Trains the forearm to absorb impact instead of the wrist",
+      "Develops explosive hip extension on one side at a time"
+    ],
+    "commonMistakes": [
+      "Muscling the bell up with the arm instead of the hips",
+      "Letting the bell bang into the wrist instead of the forearm",
+      "Losing tension in the rack position after the catch"
+    ],
+    "recommendedWeightRangeKg": [
+      12,
+      24
+    ]
+  },
+  {
+    "id": "single-arm-press",
+    "name": "Single-Arm Press",
+    "category": "Grind",
+    "description": "A strict overhead press of one kettlebell from the rack, driving straight up without leg drive or momentum.",
+    "musclesTrained": [
+      "Shoulders",
+      "Triceps",
+      "Core",
+      "Obliques"
+    ],
+    "benefits": [
+      "Builds strict pressing strength on each side independently",
+      "Trains anti-lateral-flexion core strength under an offset overhead load",
+      "Exposes shoulder or core weaknesses a two-bell press can hide"
+    ],
+    "commonMistakes": [
+      "Leaning away from the loaded side instead of staying stacked",
+      "Flaring the elbow instead of pressing along a straight bar path",
+      "Using a leg dip to sneak in momentum"
+    ],
+    "recommendedWeightRangeKg": [
+      10,
+      20
+    ]
+  },
+  {
+    "id": "single-arm-thruster",
+    "name": "Single-Arm Thruster",
+    "category": "Combo",
+    "description": "A front squat with one kettlebell in the rack, standing explosively out of the bottom to drive the bell overhead in one continuous motion.",
+    "musclesTrained": [
+      "Legs",
+      "Shoulders",
+      "Core",
+      "Glutes"
+    ],
+    "benefits": [
+      "Combines a loaded single-arm squat with an overhead press under fatigue",
+      "Builds leg drive that transfers directly into the overhead lockout",
+      "Trains core stability against the offset load of a single bell"
+    ],
+    "commonMistakes": [
+      "Pausing at the top of the squat instead of driving straight through",
+      "Finishing the press with the arm alone instead of leg drive",
+      "Letting the torso lean away from the loaded side"
+    ],
+    "recommendedWeightRangeKg": [
+      10,
+      20
+    ]
+  },
+  {
+    "id": "double-row",
+    "name": "Double Row",
+    "category": "Grind",
+    "description": "A hinged-position row with two kettlebells, pulling both bells from a straight-arm hang to the ribs together — a bilateral grind that loads the whole back at once instead of alternating sides.",
+    "musclesTrained": [
+      "Back",
+      "Lats",
+      "Rear Delts",
+      "Core",
+      "Grip"
+    ],
+    "benefits": [
+      "Builds bilateral pulling strength to balance the pressing/snatching volume elsewhere",
+      "Trains hip-hinge positional strength under a symmetrical two-bell load",
+      "Strengthens the posterior chain that carries and presses depend on"
+    ],
+    "commonMistakes": [
+      "Rounding the lower back to finish the pull",
+      "Using momentum instead of a controlled pull",
+      "Standing up out of the hinge between reps"
+    ],
+    "recommendedWeightRangeKg": [
+      14,
+      24
+    ]
+  },
+  {
+    "id": "long-cycle",
+    "name": "Long Cycle",
+    "category": "Combo",
+    "description": "Two kettlebells cleaned once, then driven overhead in a jerk for every rep of the set without re-cleaning between reps — the rack is held, not reset.",
+    "musclesTrained": [
+      "Legs",
+      "Shoulders",
+      "Hips",
+      "Core",
+      "Grip"
+    ],
+    "benefits": [
+      "Builds overhead pressing endurance under a rack that never gets to reset",
+      "Trains hip-drive efficiency across repeated jerks",
+      "Develops grip and shoulder-girdle endurance holding two bells in the rack"
+    ],
+    "commonMistakes": [
+      "Re-dipping too deep and turning the jerk into a fresh push press each rep",
+      "Losing rack position between reps and bleeding energy resetting it",
+      "Rushing the dip-drive timing as fatigue accumulates"
+    ],
+    "recommendedWeightRangeKg": [
+      14,
+      24
+    ]
+  }
+]

@@ -1,0 +1,53 @@
+{
+  "id": "ares",
+  "name": "The Breaking",
+  "title": "The Shrinking Window",
+  "description": "Swing, jerk, pull, recover — thirty seconds for all of it, every time, fifteen times through. The Breaking doesn't get faster and it doesn't hit harder. It just keeps the window exactly thirty seconds wide and waits to see which round is the one where you can't fit inside it anymore.",
+  "rarity": "boss",
+  "personality": "brutal",
+  "accentColor": "#5a6a7a",
+  "battle": {
+    "hp": 1535,
+    "phases": [
+      70,
+      40
+    ],
+    "damageMultiplier": 1.0,
+    "performanceBonuses": {
+      "perfectExecutionDamage": 10,
+      "relentlessAssaultDamage": 40,
+      "relentlessAssaultStreak": 3,
+      "personalRecordDamage": 75,
+      "fastFinishDamage": 55
+    }
+  },
+  "hunts": [
+    {
+      "id": "ares-first-encounter",
+      "monsterId": "ares",
+      "order": 1,
+      "name": "First Encounter",
+      "locked": false,
+      "workoutId": "war-engine",
+      "restSecondsOverride": 30
+    },
+    {
+      "id": "ares-second-encounter",
+      "monsterId": "ares",
+      "order": 2,
+      "name": "Second Encounter",
+      "locked": false,
+      "workoutId": "war-engine",
+      "restSecondsOverride": 30
+    },
+    {
+      "id": "ares-final-hunt",
+      "monsterId": "ares",
+      "order": 3,
+      "name": "Final Hunt",
+      "locked": false,
+      "workoutId": "war-engine",
+      "restSecondsOverride": 30
+    }
+  ]
+}

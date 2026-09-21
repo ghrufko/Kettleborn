@@ -1,0 +1,55 @@
+{
+  "id": "chimera",
+  "name": "The Dualist",
+  "title": "The Twin-Bound",
+  "description": "In the Ruins, strength that favors one side is strength divided — and division is defeat. The Dualist is discipline torn evenly down the middle and made to answer as a single will: what the left hand fails, the right cannot redeem. It does not care which arm is stronger. It cares only that both obey the same command. The Hunter who enters believing they fight with one body leaves only if both halves agreed to it.",
+  "rarity": "boss",
+  "personality": "regenerating",
+  "accentColor": "#7a5a99",
+  "battle": {
+    "hp": 721,
+    "phases": [
+      70,
+      45,
+      20
+    ],
+    "damageMultiplier": 1.0,
+    "performanceBonuses": {
+      "perfectExecutionDamage": 10,
+      "relentlessAssaultDamage": 40,
+      "relentlessAssaultStreak": 3,
+      "personalRecordDamage": 75,
+      "fastFinishDamage": 55
+    }
+  },
+  "hunts": [
+    {
+      "id": "chimera-first-encounter",
+      "monsterId": "chimera",
+      "order": 1,
+      "name": "First Encounter",
+      "locked": false,
+      "workoutId": "endless-grind",
+      "restSecondsOverride": 105
+    },
+    {
+      "id": "chimera-second-encounter",
+      "monsterId": "chimera",
+      "order": 2,
+      "name": "Second Encounter",
+      "locked": false,
+      "workoutId": "endless-grind",
+      "restSecondsOverride": 90
+    },
+    {
+      "id": "chimera-final-hunt",
+      "monsterId": "chimera",
+      "order": 3,
+      "name": "Final Hunt",
+      "locked": false,
+      "workoutId": "endless-grind",
+      "restSecondsOverride": 75
+    }
+  ],
+  "portraitAsset": "dualist"
+}

@@ -1,0 +1,54 @@
+{
+  "id": "aether",
+  "name": "The Wraith",
+  "title": "The Half-Light",
+  "description": "The Wraith is never fully there. Snatch, overhead lunge, jerk, windmill, swing — one hand completes the whole shape, and before you've even confirmed what you saw, it's already in the other hand, doing it again. Blink during the transition and you'll swear it never left. It didn't tire. It moved.",
+  "rarity": "boss",
+  "personality": "agile",
+  "accentColor": "#9a7ab0",
+  "battle": {
+    "hp": 328,
+    "phases": [
+      65,
+      30
+    ],
+    "damageMultiplier": 1.0,
+    "performanceBonuses": {
+      "perfectExecutionDamage": 8,
+      "relentlessAssaultDamage": 35,
+      "relentlessAssaultStreak": 3,
+      "personalRecordDamage": 70,
+      "fastFinishDamage": 50
+    }
+  },
+  "hunts": [
+    {
+      "id": "aether-first-encounter",
+      "monsterId": "aether",
+      "order": 1,
+      "name": "First Encounter",
+      "locked": false,
+      "workoutId": "endless-spiral",
+      "restSecondsOverride": 105
+    },
+    {
+      "id": "aether-second-encounter",
+      "monsterId": "aether",
+      "order": 2,
+      "name": "Second Encounter",
+      "locked": false,
+      "workoutId": "endless-spiral",
+      "restSecondsOverride": 90
+    },
+    {
+      "id": "aether-final-hunt",
+      "monsterId": "aether",
+      "order": 3,
+      "name": "Final Hunt",
+      "locked": false,
+      "workoutId": "endless-spiral",
+      "restSecondsOverride": 75
+    }
+  ],
+  "portraitAsset": "wraith"
+}

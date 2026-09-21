@@ -1,0 +1,51 @@
+{
+  "id": "judge",
+  "name": "The Judge",
+  "title": "The Warden",
+  "description": "The Judge doesn't announce a verdict — it reads one out, movement by movement, and expects you to already know the sentence. Double Snatch, Handover Lunge, Clean, Squat, Jerk, Swing: the same order, five rounds, no explanation given for why this sequence and not another. It was decided before you arrived. The Judge isn't interested in whether you agree with the ruling. Only in whether you can carry it.",
+  "rarity": "boss",
+  "personality": "steady",
+  "accentColor": "#5a5248",
+  "battle": {
+    "hp": 1,
+    "phases": [
+      65,
+      30
+    ],
+    "damageMultiplier": 1.0,
+    "performanceBonuses": {
+      "perfectExecutionDamage": 8,
+      "relentlessAssaultDamage": 35,
+      "relentlessAssaultStreak": 3,
+      "personalRecordDamage": 70,
+      "fastFinishDamage": 50
+    }
+  },
+  "hunts": [
+    {
+      "id": "judge-first-encounter",
+      "monsterId": "judge",
+      "order": 1,
+      "name": "First Encounter",
+      "locked": false,
+      "workoutId": null
+    },
+    {
+      "id": "judge-second-encounter",
+      "monsterId": "judge",
+      "order": 2,
+      "name": "Second Encounter",
+      "locked": false,
+      "workoutId": null
+    },
+    {
+      "id": "judge-final-hunt",
+      "monsterId": "judge",
+      "order": 3,
+      "name": "Final Hunt",
+      "locked": false,
+      "workoutId": null
+    }
+  ],
+  "portraitAsset": "judge"
+}

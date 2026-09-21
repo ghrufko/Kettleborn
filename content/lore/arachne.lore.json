@@ -1,0 +1,18 @@
+{
+  "monsterId": "arachne",
+  "origin": "Before she became a monster, Arachne was the greatest weaver the world had known. Now she spins not silk, but movement.",
+  "story": "Every mistake becomes another thread. Every hesitation tightens the web. Fight her with brute strength, and you will be trapped. Fight with rhythm, and you may walk free.",
+  "quotes": [
+    "Never lose rhythm. The web remembers every mistake."
+  ],
+  "unlockText": "Somewhere close, a web is already being spun with your name in the pattern.",
+  "victoryText": "The thread breaks clean. Arachne's rhythm was yours to keep, in the end.",
+  "demands": [
+    "Fluid movement",
+    "Timing",
+    "Precision under fatigue",
+    "Coordination"
+  ],
+  "rule": "Never lose your rhythm. The workout is one continuous thread \u2014 break it, and the web closes.",
+  "hunterAdvice": "Never lose rhythm. The web remembers every mistake."
+}

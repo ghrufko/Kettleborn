@@ -1,0 +1,55 @@
+{
+  "id": "leviathan",
+  "name": "Leviathan",
+  "title": "The Abyss Walker",
+  "description": "Far below the surface, where neither light nor hope can reach, the Leviathan waits. It does not chase its prey. It lets the weight of the deep crush them first. Those who panic are swallowed. Those who remain steady rise again.",
+  "rarity": "boss",
+  "personality": "steady",
+  "accentColor": "#3f7fa6",
+  "battle": {
+    "hp": 1150,
+    "phases": [
+      70,
+      45,
+      20
+    ],
+    "damageMultiplier": 1.0,
+    "performanceBonuses": {
+      "perfectExecutionDamage": 8,
+      "relentlessAssaultDamage": 35,
+      "relentlessAssaultStreak": 3,
+      "personalRecordDamage": 70,
+      "fastFinishDamage": 50
+    }
+  },
+  "hunts": [
+    {
+      "id": "leviathan-first-encounter",
+      "monsterId": "leviathan",
+      "order": 1,
+      "name": "First Encounter",
+      "locked": false,
+      "workoutId": "abyss-carry",
+      "restSecondsOverride": 180
+    },
+    {
+      "id": "leviathan-second-encounter",
+      "monsterId": "leviathan",
+      "order": 2,
+      "name": "Second Encounter",
+      "locked": false,
+      "workoutId": "abyss-carry",
+      "restSecondsOverride": 150
+    },
+    {
+      "id": "leviathan-final-hunt",
+      "monsterId": "leviathan",
+      "order": 3,
+      "name": "Final Hunt",
+      "locked": false,
+      "workoutId": "abyss-carry",
+      "restSecondsOverride": 120
+    }
+  ],
+  "portraitAsset": "leviathan"
+}

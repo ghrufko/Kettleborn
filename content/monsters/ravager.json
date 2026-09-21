@@ -1,0 +1,50 @@
+{
+  "id": "ravager",
+  "name": "The Ravager",
+  "title": "What's Left After",
+  "description": "The Ravager doesn't build toward anything. Burpee, then clean and jerk twice; deadlift, then clean and jerk twice again; a deep snatch, then clean and jerk twice more — floor to overhead, floor to overhead, floor to overhead, no round to catch your breath between them, because there are no rounds. There is only the sequence, once, start to finish. It doesn't wear you down gradually. It just takes what it takes, in one pass, and doesn't apologize for how much that turned out to be.",
+  "rarity": "boss",
+  "personality": "brutal",
+  "accentColor": "#3d2426",
+  "battle": {
+    "hp": 1,
+    "phases": [
+      65,
+      30
+    ],
+    "damageMultiplier": 1.0,
+    "performanceBonuses": {
+      "perfectExecutionDamage": 8,
+      "relentlessAssaultDamage": 35,
+      "relentlessAssaultStreak": 3,
+      "personalRecordDamage": 70,
+      "fastFinishDamage": 50
+    }
+  },
+  "hunts": [
+    {
+      "id": "ravager-first-encounter",
+      "monsterId": "ravager",
+      "order": 1,
+      "name": "First Encounter",
+      "locked": false,
+      "workoutId": null
+    },
+    {
+      "id": "ravager-second-encounter",
+      "monsterId": "ravager",
+      "order": 2,
+      "name": "Second Encounter",
+      "locked": false,
+      "workoutId": null
+    },
+    {
+      "id": "ravager-final-hunt",
+      "monsterId": "ravager",
+      "order": 3,
+      "name": "Final Hunt",
+      "locked": false,
+      "workoutId": null
+    }
+  ]
+}

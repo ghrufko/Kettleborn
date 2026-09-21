@@ -1,0 +1,17 @@
+{
+  "monsterId": "weaver",
+  "origin": "Before every hunt there was destiny. Before every monster, there was the Weaver.",
+  "story": "It forged every trial. It watched every victory. It waited for every failure. The Minotaur tested strength. The Leviathan tested endurance. Behemoth tested resilience. Arachne tested precision. Hydra tested adaptation. But the Weaver demands everything. Only hunters who master every trial may challenge it.",
+  "quotes": [
+    "This is not a sixth monster. This is everything you have already survived, asked of you once more, all at once."
+  ],
+  "unlockText": "Every trial you have survived was only ever a rehearsal. The Weaver has been watching since the first one.",
+  "victoryText": "Campaign I is complete. Whatever destiny the Weaver was guarding, it belongs to you now.",
+  "demands": [
+    "Everything you have learned",
+    "Composure across a long battle",
+    "No abandoned rounds"
+  ],
+  "rule": "One complete round from every monster you have already conquered, in order, with rest between each. There is no second attempt within the hunt \u2014 only forward.",
+  "hunterAdvice": "This is not a sixth monster. This is everything you have already survived, asked of you once more, all at once."
+}

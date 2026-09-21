@@ -1,0 +1,47 @@
+{
+  "id": "mammoth",
+  "name": "Mammoth",
+  "title": "The Weight That Doesn't Move",
+  "description": "The Mammoth doesn't dodge, doesn't tire, and doesn't hurry. It sets a three-minute clock and waits for you to keep pace with it, round after round, until one of you stops.",
+  "rarity": "boss",
+  "personality": "brutal",
+  "battle": {
+    "hp": 3273,
+    "phases": [70, 40],
+    "damageMultiplier": 1.0,
+    "performanceBonuses": {
+      "perfectExecutionDamage": 8,
+      "relentlessAssaultDamage": 35,
+      "relentlessAssaultStreak": 3,
+      "personalRecordDamage": 70,
+      "fastFinishDamage": 50
+    }
+  },
+  "hunts": [
+    {
+      "id": "mammoth-first-encounter",
+      "monsterId": "mammoth",
+      "order": 1,
+      "name": "First Encounter",
+      "locked": false,
+      "workoutId": "mammoth-emom"
+    },
+    {
+      "id": "mammoth-second-encounter",
+      "monsterId": "mammoth",
+      "order": 2,
+      "name": "Second Encounter",
+      "locked": false,
+      "workoutId": "mammoth-emom"
+    },
+    {
+      "id": "mammoth-final-hunt",
+      "monsterId": "mammoth",
+      "order": 3,
+      "name": "Final Hunt",
+      "locked": false,
+      "workoutId": "mammoth-emom"
+    }
+  ],
+  "portraitAsset": "mammoth"
+}

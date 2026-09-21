@@ -1,0 +1,55 @@
+{
+  "id": "ifrit",
+  "name": "The Colossus",
+  "title": "The Standing Ruin",
+  "description": "The Colossus has stood in the Ruins since before there were Hunters to test it — stone and old iron that outlasted whatever built it. It does not dodge and it does not tire the way flesh tires. Lift it overhead, drop beneath it and rise again, swing what it will not yield — and when it is finally hoisted, it must be carried, a hundred feet at a stretch, because the Colossus was never meant to be beaten quickly. It was built to be endured. And once the Hunter's arms have nothing left to give, it asks for thirty more, without pause, to see what's still standing underneath the fatigue.",
+  "rarity": "boss",
+  "personality": "brutal",
+  "accentColor": "#d9522b",
+  "battle": {
+    "hp": 713,
+    "phases": [
+      75,
+      50,
+      25
+    ],
+    "damageMultiplier": 1.0,
+    "performanceBonuses": {
+      "perfectExecutionDamage": 8,
+      "relentlessAssaultDamage": 35,
+      "relentlessAssaultStreak": 3,
+      "personalRecordDamage": 70,
+      "fastFinishDamage": 50
+    }
+  },
+  "hunts": [
+    {
+      "id": "ifrit-first-encounter",
+      "monsterId": "ifrit",
+      "order": 1,
+      "name": "First Encounter",
+      "locked": false,
+      "workoutId": "ember-trial",
+      "restSecondsOverride": 90
+    },
+    {
+      "id": "ifrit-second-encounter",
+      "monsterId": "ifrit",
+      "order": 2,
+      "name": "Second Encounter",
+      "locked": false,
+      "workoutId": "ember-trial",
+      "restSecondsOverride": 75
+    },
+    {
+      "id": "ifrit-final-hunt",
+      "monsterId": "ifrit",
+      "order": 3,
+      "name": "Final Hunt",
+      "locked": false,
+      "workoutId": "ember-trial",
+      "restSecondsOverride": 60
+    }
+  ],
+  "portraitAsset": "colossus"
+}

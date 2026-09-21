@@ -1,0 +1,53 @@
+{
+  "id": "janus",
+  "name": "Janus",
+  "title": "The Two-Faced Trial",
+  "description": "Janus shows one face, then the other, and neither is easier than the last. Clear the left, and the right has been watching the whole time.",
+  "rarity": "boss",
+  "personality": "steady",
+  "accentColor": "#8a9a4a",
+  "battle": {
+    "hp": 594,
+    "phases": [
+      70,
+      40
+    ],
+    "damageMultiplier": 1.0,
+    "performanceBonuses": {
+      "perfectExecutionDamage": 8,
+      "relentlessAssaultDamage": 35,
+      "relentlessAssaultStreak": 3,
+      "personalRecordDamage": 70,
+      "fastFinishDamage": 50
+    }
+  },
+  "hunts": [
+    {
+      "id": "janus-first-encounter",
+      "monsterId": "janus",
+      "order": 1,
+      "name": "First Encounter",
+      "locked": false,
+      "workoutId": "mirror-trial",
+      "restSecondsOverride": 30
+    },
+    {
+      "id": "janus-second-encounter",
+      "monsterId": "janus",
+      "order": 2,
+      "name": "Second Encounter",
+      "locked": false,
+      "workoutId": "mirror-trial",
+      "restSecondsOverride": 25
+    },
+    {
+      "id": "janus-final-hunt",
+      "monsterId": "janus",
+      "order": 3,
+      "name": "Final Hunt",
+      "locked": false,
+      "workoutId": "mirror-trial",
+      "restSecondsOverride": 20
+    }
+  ]
+}

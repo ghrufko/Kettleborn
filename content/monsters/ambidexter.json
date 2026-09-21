@@ -1,0 +1,52 @@
+{
+  "id": "ambidexter",
+  "name": "The Two-Faced",
+  "title": "The Twin Engine",
+  "description": "The Two-Faced has no dominant side and no favorite pattern. It moves from one arm to the other to both together without ever slowing down to let you guess which is coming — mastery, to it, just means never being caught unprepared.",
+  "rarity": "boss",
+  "personality": "steady",
+  "accentColor": "#4a7a7a",
+  "battle": {
+    "hp": 1986,
+    "phases": [
+      70,
+      45,
+      20
+    ],
+    "damageMultiplier": 1.0,
+    "performanceBonuses": {
+      "perfectExecutionDamage": 10,
+      "relentlessAssaultDamage": 40,
+      "relentlessAssaultStreak": 3,
+      "personalRecordDamage": 75,
+      "fastFinishDamage": 55
+    }
+  },
+  "hunts": [
+    {
+      "id": "ambidexter-first-encounter",
+      "monsterId": "ambidexter",
+      "order": 1,
+      "name": "First Encounter",
+      "locked": false,
+      "workoutId": "twin-engine"
+    },
+    {
+      "id": "ambidexter-second-encounter",
+      "monsterId": "ambidexter",
+      "order": 2,
+      "name": "Second Encounter",
+      "locked": false,
+      "workoutId": "twin-engine"
+    },
+    {
+      "id": "ambidexter-final-hunt",
+      "monsterId": "ambidexter",
+      "order": 3,
+      "name": "Final Hunt",
+      "locked": false,
+      "workoutId": "twin-engine"
+    }
+  ],
+  "portraitAsset": "two-faced"
+}

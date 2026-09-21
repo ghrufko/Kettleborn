@@ -1,0 +1,5174 @@
+{
+  "the-twisted": {
+    "id": "the-twisted",
+    "name": "The Twisted",
+    "description": "Suitcase Deadlift, Single-Leg Romanian Deadlift, Romanian Deadlift, Single-Arm Clean, Single-Arm Press, Single-Arm Thruster — three reps each, the same six-step twist every round. Five rounds, ninety seconds between each.",
+    "difficulty": 1,
+    "estimatedMinutesRange": [
+      1,
+      60
+    ],
+    "gearWeightKg": 20,
+    "gearCount": 1,
+    "rounds": 5,
+    "restSeconds": 90,
+    "roundBonusDamage": 0,
+    "targetTimeSeconds": 0,
+    "focus": [
+      "Posterior Chain",
+      "Unilateral Stability",
+      "Hinge-to-Press Transfer"
+    ],
+    "exercises": [
+      {
+        "id": "crooked-suitcase-deadlift",
+        "name": "Suitcase Deadlift",
+        "damageCoefficient": 0,
+        "damageType": "flat",
+        "targetReps": 3
+      },
+      {
+        "id": "crooked-single-leg-rdl",
+        "name": "Single-Leg Romanian Deadlift",
+        "damageCoefficient": 0,
+        "damageType": "flat",
+        "targetReps": 3
+      },
+      {
+        "id": "crooked-rdl",
+        "name": "Romanian Deadlift",
+        "damageCoefficient": 0,
+        "damageType": "flat",
+        "targetReps": 3
+      },
+      {
+        "id": "crooked-single-arm-clean",
+        "name": "Single-Arm Clean",
+        "damageCoefficient": 0,
+        "damageType": "flat",
+        "targetReps": 3
+      },
+      {
+        "id": "crooked-single-arm-press",
+        "name": "Single-Arm Press",
+        "damageCoefficient": 0,
+        "damageType": "flat",
+        "targetReps": 3
+      },
+      {
+        "id": "crooked-single-arm-thruster",
+        "name": "Single-Arm Thruster",
+        "damageCoefficient": 0,
+        "damageType": "flat",
+        "targetReps": 3
+      }
+    ],
+    "finisher": {
+      "name": "The Twisted Line",
+      "scheme": "5 Rounds"
+    }
+  },
+  "the-descent": {
+    "id": "the-descent",
+    "name": "The Descent",
+    "description": "Long Cycle climbs one rep at a time while Renegade gives one back, rung after rung, until the tenth rung hands the whole weight to Long Cycle alone. Nothing repeats. Nothing eases.",
+    "difficulty": 5,
+    "estimatedMinutesRange": [
+      17,
+      21
+    ],
+    "gearWeightKg": 20,
+    "gearCount": 2,
+    "rounds": 10,
+    "restSeconds": 3,
+    "roundBonusDamage": 60,
+    "targetTimeSeconds": 1143,
+    "stepLabel": "Rung",
+    "focus": [
+      "Ladder Pacing",
+      "Overhead Endurance",
+      "Core Under Fatigue"
+    ],
+    "exercises": [
+      {
+        "id": "descent-r1-long-cycle",
+        "name": "Long Cycle",
+        "damageCoefficient": 16,
+        "damageType": "per_rep",
+        "targetReps": 1
+      },
+      {
+        "id": "descent-r1-renegade",
+        "name": "Renegade Row",
+        "displayName": "Renegade",
+        "damageCoefficient": 12,
+        "damageType": "per_rep",
+        "targetReps": 10
+      }
+    ],
+    "sections": [
+      {
+        "label": "Rung 1",
+        "exercises": [
+          {
+            "id": "descent-r1-long-cycle",
+            "name": "Long Cycle",
+            "damageCoefficient": 16,
+            "damageType": "per_rep",
+            "targetReps": 1
+          },
+          {
+            "id": "descent-r1-renegade",
+            "name": "Renegade Row",
+            "displayName": "Renegade",
+            "damageCoefficient": 12,
+            "damageType": "per_rep",
+            "targetReps": 10
+          }
+        ]
+      },
+      {
+        "label": "Rung 2",
+        "exercises": [
+          {
+            "id": "descent-r2-long-cycle",
+            "name": "Long Cycle",
+            "damageCoefficient": 16,
+            "damageType": "per_rep",
+            "targetReps": 2
+          },
+          {
+            "id": "descent-r2-renegade",
+            "name": "Renegade Row",
+            "displayName": "Renegade",
+            "damageCoefficient": 12,
+            "damageType": "per_rep",
+            "targetReps": 9
+          }
+        ]
+      },
+      {
+        "label": "Rung 3",
+        "exercises": [
+          {
+            "id": "descent-r3-long-cycle",
+            "name": "Long Cycle",
+            "damageCoefficient": 16,
+            "damageType": "per_rep",
+            "targetReps": 3
+          },
+          {
+            "id": "descent-r3-renegade",
+            "name": "Renegade Row",
+            "displayName": "Renegade",
+            "damageCoefficient": 12,
+            "damageType": "per_rep",
+            "targetReps": 8
+          }
+        ]
+      },
+      {
+        "label": "Rung 4",
+        "exercises": [
+          {
+            "id": "descent-r4-long-cycle",
+            "name": "Long Cycle",
+            "damageCoefficient": 16,
+            "damageType": "per_rep",
+            "targetReps": 4
+          },
+          {
+            "id": "descent-r4-renegade",
+            "name": "Renegade Row",
+            "displayName": "Renegade",
+            "damageCoefficient": 12,
+            "damageType": "per_rep",
+            "targetReps": 7
+          }
+        ]
+      },
+      {
+        "label": "Rung 5",
+        "exercises": [
+          {
+            "id": "descent-r5-long-cycle",
+            "name": "Long Cycle",
+            "damageCoefficient": 16,
+            "damageType": "per_rep",
+            "targetReps": 5
+          },
+          {
+            "id": "descent-r5-renegade",
+            "name": "Renegade Row",
+            "displayName": "Renegade",
+            "damageCoefficient": 12,
+            "damageType": "per_rep",
+            "targetReps": 6
+          }
+        ]
+      },
+      {
+        "label": "Rung 6",
+        "exercises": [
+          {
+            "id": "descent-r6-long-cycle",
+            "name": "Long Cycle",
+            "damageCoefficient": 16,
+            "damageType": "per_rep",
+            "targetReps": 6
+          },
+          {
+            "id": "descent-r6-renegade",
+            "name": "Renegade Row",
+            "displayName": "Renegade",
+            "damageCoefficient": 12,
+            "damageType": "per_rep",
+            "targetReps": 5
+          }
+        ]
+      },
+      {
+        "label": "Rung 7",
+        "exercises": [
+          {
+            "id": "descent-r7-long-cycle",
+            "name": "Long Cycle",
+            "damageCoefficient": 16,
+            "damageType": "per_rep",
+            "targetReps": 7
+          },
+          {
+            "id": "descent-r7-renegade",
+            "name": "Renegade Row",
+            "displayName": "Renegade",
+            "damageCoefficient": 12,
+            "damageType": "per_rep",
+            "targetReps": 4
+          }
+        ]
+      },
+      {
+        "label": "Rung 8",
+        "exercises": [
+          {
+            "id": "descent-r8-long-cycle",
+            "name": "Long Cycle",
+            "damageCoefficient": 16,
+            "damageType": "per_rep",
+            "targetReps": 8
+          },
+          {
+            "id": "descent-r8-renegade",
+            "name": "Renegade Row",
+            "displayName": "Renegade",
+            "damageCoefficient": 12,
+            "damageType": "per_rep",
+            "targetReps": 3
+          }
+        ]
+      },
+      {
+        "label": "Rung 9",
+        "exercises": [
+          {
+            "id": "descent-r9-long-cycle",
+            "name": "Long Cycle",
+            "damageCoefficient": 16,
+            "damageType": "per_rep",
+            "targetReps": 9
+          },
+          {
+            "id": "descent-r9-renegade",
+            "name": "Renegade Row",
+            "displayName": "Renegade",
+            "damageCoefficient": 12,
+            "damageType": "per_rep",
+            "targetReps": 2
+          }
+        ]
+      },
+      {
+        "label": "Rung 10",
+        "exercises": [
+          {
+            "id": "descent-r10-long-cycle",
+            "name": "Long Cycle",
+            "damageCoefficient": 16,
+            "damageType": "per_rep",
+            "targetReps": 10
+          },
+          {
+            "id": "descent-r10-renegade",
+            "name": "Renegade Row",
+            "displayName": "Renegade",
+            "damageCoefficient": 12,
+            "damageType": "per_rep",
+            "targetReps": 1
+          }
+        ]
+      }
+    ],
+    "finisher": {
+      "name": "The Last Rung",
+      "scheme": "10 Rungs"
+    }
+  },
+  "the-rite": {
+    "id": "the-rite",
+    "name": "The Rite",
+    "description": "The chain first, whole — jerk into snatch into clean into swing, three times over. Then it is taken apart, each piece performed alone, three reps at a time. Then it is given back. Five rounds, three minutes between each, to decide whether repetition is practice or something else.",
+    "difficulty": 5,
+    "estimatedMinutesRange": [
+      22,
+      27
+    ],
+    "gearWeightKg": 20,
+    "gearCount": 2,
+    "rounds": 5,
+    "restSeconds": 180,
+    "roundBonusDamage": 60,
+    "targetTimeSeconds": 1470,
+    "focus": [
+      "Chain Fluency",
+      "Movement Memory",
+      "Sustained Focus"
+    ],
+    "exercises": [
+      {
+        "id": "rite-r1-chain-a-p1-jerk",
+        "name": "Double Jerk",
+        "displayName": "Double Jerk (Chain 1/3)",
+        "damageCoefficient": 16,
+        "damageType": "flat",
+        "targetReps": 1
+      },
+      {
+        "id": "rite-r1-chain-a-p1-snatch",
+        "name": "Double Snatch",
+        "displayName": "Double Snatch (Chain 1/3)",
+        "damageCoefficient": 16,
+        "damageType": "flat",
+        "targetReps": 1
+      },
+      {
+        "id": "rite-r1-chain-a-p1-clean",
+        "name": "Double Clean",
+        "displayName": "Double Clean (Chain 1/3)",
+        "damageCoefficient": 14,
+        "damageType": "flat",
+        "targetReps": 1
+      },
+      {
+        "id": "rite-r1-chain-a-p1-swing",
+        "name": "Double Swing",
+        "displayName": "Double Swing (Chain 1/3)",
+        "damageCoefficient": 10,
+        "damageType": "flat",
+        "targetReps": 1
+      },
+      {
+        "id": "rite-r1-chain-a-p2-jerk",
+        "name": "Double Jerk",
+        "displayName": "Double Jerk (Chain 2/3)",
+        "damageCoefficient": 16,
+        "damageType": "flat",
+        "targetReps": 1
+      },
+      {
+        "id": "rite-r1-chain-a-p2-snatch",
+        "name": "Double Snatch",
+        "displayName": "Double Snatch (Chain 2/3)",
+        "damageCoefficient": 16,
+        "damageType": "flat",
+        "targetReps": 1
+      },
+      {
+        "id": "rite-r1-chain-a-p2-clean",
+        "name": "Double Clean",
+        "displayName": "Double Clean (Chain 2/3)",
+        "damageCoefficient": 14,
+        "damageType": "flat",
+        "targetReps": 1
+      },
+      {
+        "id": "rite-r1-chain-a-p2-swing",
+        "name": "Double Swing",
+        "displayName": "Double Swing (Chain 2/3)",
+        "damageCoefficient": 10,
+        "damageType": "flat",
+        "targetReps": 1
+      },
+      {
+        "id": "rite-r1-chain-a-p3-jerk",
+        "name": "Double Jerk",
+        "displayName": "Double Jerk (Chain 3/3)",
+        "damageCoefficient": 16,
+        "damageType": "flat",
+        "targetReps": 1
+      },
+      {
+        "id": "rite-r1-chain-a-p3-snatch",
+        "name": "Double Snatch",
+        "displayName": "Double Snatch (Chain 3/3)",
+        "damageCoefficient": 16,
+        "damageType": "flat",
+        "targetReps": 1
+      },
+      {
+        "id": "rite-r1-chain-a-p3-clean",
+        "name": "Double Clean",
+        "displayName": "Double Clean (Chain 3/3)",
+        "damageCoefficient": 14,
+        "damageType": "flat",
+        "targetReps": 1
+      },
+      {
+        "id": "rite-r1-chain-a-p3-swing",
+        "name": "Double Swing",
+        "displayName": "Double Swing (Chain 3/3)",
+        "damageCoefficient": 10,
+        "damageType": "flat",
+        "targetReps": 1
+      },
+      {
+        "id": "rite-r1-complex-jerk",
+        "name": "Double Jerk",
+        "displayName": "Double Jerk (Complex ×3)",
+        "damageCoefficient": 16,
+        "damageType": "flat",
+        "targetReps": 3
+      },
+      {
+        "id": "rite-r1-complex-snatch",
+        "name": "Double Snatch",
+        "displayName": "Double Snatch (Complex ×3)",
+        "damageCoefficient": 16,
+        "damageType": "flat",
+        "targetReps": 3
+      },
+      {
+        "id": "rite-r1-complex-clean",
+        "name": "Double Clean",
+        "displayName": "Double Clean (Complex ×3)",
+        "damageCoefficient": 14,
+        "damageType": "flat",
+        "targetReps": 3
+      },
+      {
+        "id": "rite-r1-complex-swing",
+        "name": "Double Swing",
+        "displayName": "Double Swing (Complex ×3)",
+        "damageCoefficient": 10,
+        "damageType": "flat",
+        "targetReps": 3
+      },
+      {
+        "id": "rite-r1-chain-b-p1-jerk",
+        "name": "Double Jerk",
+        "displayName": "Double Jerk (Chain 1/3)",
+        "damageCoefficient": 16,
+        "damageType": "flat",
+        "targetReps": 1
+      },
+      {
+        "id": "rite-r1-chain-b-p1-snatch",
+        "name": "Double Snatch",
+        "displayName": "Double Snatch (Chain 1/3)",
+        "damageCoefficient": 16,
+        "damageType": "flat",
+        "targetReps": 1
+      },
+      {
+        "id": "rite-r1-chain-b-p1-clean",
+        "name": "Double Clean",
+        "displayName": "Double Clean (Chain 1/3)",
+        "damageCoefficient": 14,
+        "damageType": "flat",
+        "targetReps": 1
+      },
+      {
+        "id": "rite-r1-chain-b-p1-swing",
+        "name": "Double Swing",
+        "displayName": "Double Swing (Chain 1/3)",
+        "damageCoefficient": 10,
+        "damageType": "flat",
+        "targetReps": 1
+      },
+      {
+        "id": "rite-r1-chain-b-p2-jerk",
+        "name": "Double Jerk",
+        "displayName": "Double Jerk (Chain 2/3)",
+        "damageCoefficient": 16,
+        "damageType": "flat",
+        "targetReps": 1
+      },
+      {
+        "id": "rite-r1-chain-b-p2-snatch",
+        "name": "Double Snatch",
+        "displayName": "Double Snatch (Chain 2/3)",
+        "damageCoefficient": 16,
+        "damageType": "flat",
+        "targetReps": 1
+      },
+      {
+        "id": "rite-r1-chain-b-p2-clean",
+        "name": "Double Clean",
+        "displayName": "Double Clean (Chain 2/3)",
+        "damageCoefficient": 14,
+        "damageType": "flat",
+        "targetReps": 1
+      },
+      {
+        "id": "rite-r1-chain-b-p2-swing",
+        "name": "Double Swing",
+        "displayName": "Double Swing (Chain 2/3)",
+        "damageCoefficient": 10,
+        "damageType": "flat",
+        "targetReps": 1
+      },
+      {
+        "id": "rite-r1-chain-b-p3-jerk",
+        "name": "Double Jerk",
+        "displayName": "Double Jerk (Chain 3/3)",
+        "damageCoefficient": 16,
+        "damageType": "flat",
+        "targetReps": 1
+      },
+      {
+        "id": "rite-r1-chain-b-p3-snatch",
+        "name": "Double Snatch",
+        "displayName": "Double Snatch (Chain 3/3)",
+        "damageCoefficient": 16,
+        "damageType": "flat",
+        "targetReps": 1
+      },
+      {
+        "id": "rite-r1-chain-b-p3-clean",
+        "name": "Double Clean",
+        "displayName": "Double Clean (Chain 3/3)",
+        "damageCoefficient": 14,
+        "damageType": "flat",
+        "targetReps": 1
+      },
+      {
+        "id": "rite-r1-chain-b-p3-swing",
+        "name": "Double Swing",
+        "displayName": "Double Swing (Chain 3/3)",
+        "damageCoefficient": 10,
+        "damageType": "flat",
+        "targetReps": 1
+      }
+    ],
+    "sections": [
+      {
+        "label": "Round 1 — Chain ×3 → Complex → Chain ×3",
+        "exercises": [
+          {
+            "id": "rite-r1-chain-a-p1-jerk",
+            "name": "Double Jerk",
+            "displayName": "Double Jerk (Chain 1/3)",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r1-chain-a-p1-snatch",
+            "name": "Double Snatch",
+            "displayName": "Double Snatch (Chain 1/3)",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r1-chain-a-p1-clean",
+            "name": "Double Clean",
+            "displayName": "Double Clean (Chain 1/3)",
+            "damageCoefficient": 14,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r1-chain-a-p1-swing",
+            "name": "Double Swing",
+            "displayName": "Double Swing (Chain 1/3)",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r1-chain-a-p2-jerk",
+            "name": "Double Jerk",
+            "displayName": "Double Jerk (Chain 2/3)",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r1-chain-a-p2-snatch",
+            "name": "Double Snatch",
+            "displayName": "Double Snatch (Chain 2/3)",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r1-chain-a-p2-clean",
+            "name": "Double Clean",
+            "displayName": "Double Clean (Chain 2/3)",
+            "damageCoefficient": 14,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r1-chain-a-p2-swing",
+            "name": "Double Swing",
+            "displayName": "Double Swing (Chain 2/3)",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r1-chain-a-p3-jerk",
+            "name": "Double Jerk",
+            "displayName": "Double Jerk (Chain 3/3)",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r1-chain-a-p3-snatch",
+            "name": "Double Snatch",
+            "displayName": "Double Snatch (Chain 3/3)",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r1-chain-a-p3-clean",
+            "name": "Double Clean",
+            "displayName": "Double Clean (Chain 3/3)",
+            "damageCoefficient": 14,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r1-chain-a-p3-swing",
+            "name": "Double Swing",
+            "displayName": "Double Swing (Chain 3/3)",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r1-complex-jerk",
+            "name": "Double Jerk",
+            "displayName": "Double Jerk (Complex ×3)",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 3
+          },
+          {
+            "id": "rite-r1-complex-snatch",
+            "name": "Double Snatch",
+            "displayName": "Double Snatch (Complex ×3)",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 3
+          },
+          {
+            "id": "rite-r1-complex-clean",
+            "name": "Double Clean",
+            "displayName": "Double Clean (Complex ×3)",
+            "damageCoefficient": 14,
+            "damageType": "flat",
+            "targetReps": 3
+          },
+          {
+            "id": "rite-r1-complex-swing",
+            "name": "Double Swing",
+            "displayName": "Double Swing (Complex ×3)",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 3
+          },
+          {
+            "id": "rite-r1-chain-b-p1-jerk",
+            "name": "Double Jerk",
+            "displayName": "Double Jerk (Chain 1/3)",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r1-chain-b-p1-snatch",
+            "name": "Double Snatch",
+            "displayName": "Double Snatch (Chain 1/3)",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r1-chain-b-p1-clean",
+            "name": "Double Clean",
+            "displayName": "Double Clean (Chain 1/3)",
+            "damageCoefficient": 14,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r1-chain-b-p1-swing",
+            "name": "Double Swing",
+            "displayName": "Double Swing (Chain 1/3)",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r1-chain-b-p2-jerk",
+            "name": "Double Jerk",
+            "displayName": "Double Jerk (Chain 2/3)",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r1-chain-b-p2-snatch",
+            "name": "Double Snatch",
+            "displayName": "Double Snatch (Chain 2/3)",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r1-chain-b-p2-clean",
+            "name": "Double Clean",
+            "displayName": "Double Clean (Chain 2/3)",
+            "damageCoefficient": 14,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r1-chain-b-p2-swing",
+            "name": "Double Swing",
+            "displayName": "Double Swing (Chain 2/3)",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r1-chain-b-p3-jerk",
+            "name": "Double Jerk",
+            "displayName": "Double Jerk (Chain 3/3)",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r1-chain-b-p3-snatch",
+            "name": "Double Snatch",
+            "displayName": "Double Snatch (Chain 3/3)",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r1-chain-b-p3-clean",
+            "name": "Double Clean",
+            "displayName": "Double Clean (Chain 3/3)",
+            "damageCoefficient": 14,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r1-chain-b-p3-swing",
+            "name": "Double Swing",
+            "displayName": "Double Swing (Chain 3/3)",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 1
+          }
+        ]
+      },
+      {
+        "label": "Round 2 — Chain ×3 → Complex → Chain ×3",
+        "exercises": [
+          {
+            "id": "rite-r2-chain-a-p1-jerk",
+            "name": "Double Jerk",
+            "displayName": "Double Jerk (Chain 1/3)",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r2-chain-a-p1-snatch",
+            "name": "Double Snatch",
+            "displayName": "Double Snatch (Chain 1/3)",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r2-chain-a-p1-clean",
+            "name": "Double Clean",
+            "displayName": "Double Clean (Chain 1/3)",
+            "damageCoefficient": 14,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r2-chain-a-p1-swing",
+            "name": "Double Swing",
+            "displayName": "Double Swing (Chain 1/3)",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r2-chain-a-p2-jerk",
+            "name": "Double Jerk",
+            "displayName": "Double Jerk (Chain 2/3)",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r2-chain-a-p2-snatch",
+            "name": "Double Snatch",
+            "displayName": "Double Snatch (Chain 2/3)",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r2-chain-a-p2-clean",
+            "name": "Double Clean",
+            "displayName": "Double Clean (Chain 2/3)",
+            "damageCoefficient": 14,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r2-chain-a-p2-swing",
+            "name": "Double Swing",
+            "displayName": "Double Swing (Chain 2/3)",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r2-chain-a-p3-jerk",
+            "name": "Double Jerk",
+            "displayName": "Double Jerk (Chain 3/3)",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r2-chain-a-p3-snatch",
+            "name": "Double Snatch",
+            "displayName": "Double Snatch (Chain 3/3)",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r2-chain-a-p3-clean",
+            "name": "Double Clean",
+            "displayName": "Double Clean (Chain 3/3)",
+            "damageCoefficient": 14,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r2-chain-a-p3-swing",
+            "name": "Double Swing",
+            "displayName": "Double Swing (Chain 3/3)",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r2-complex-jerk",
+            "name": "Double Jerk",
+            "displayName": "Double Jerk (Complex ×3)",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 3
+          },
+          {
+            "id": "rite-r2-complex-snatch",
+            "name": "Double Snatch",
+            "displayName": "Double Snatch (Complex ×3)",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 3
+          },
+          {
+            "id": "rite-r2-complex-clean",
+            "name": "Double Clean",
+            "displayName": "Double Clean (Complex ×3)",
+            "damageCoefficient": 14,
+            "damageType": "flat",
+            "targetReps": 3
+          },
+          {
+            "id": "rite-r2-complex-swing",
+            "name": "Double Swing",
+            "displayName": "Double Swing (Complex ×3)",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 3
+          },
+          {
+            "id": "rite-r2-chain-b-p1-jerk",
+            "name": "Double Jerk",
+            "displayName": "Double Jerk (Chain 1/3)",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r2-chain-b-p1-snatch",
+            "name": "Double Snatch",
+            "displayName": "Double Snatch (Chain 1/3)",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r2-chain-b-p1-clean",
+            "name": "Double Clean",
+            "displayName": "Double Clean (Chain 1/3)",
+            "damageCoefficient": 14,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r2-chain-b-p1-swing",
+            "name": "Double Swing",
+            "displayName": "Double Swing (Chain 1/3)",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r2-chain-b-p2-jerk",
+            "name": "Double Jerk",
+            "displayName": "Double Jerk (Chain 2/3)",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r2-chain-b-p2-snatch",
+            "name": "Double Snatch",
+            "displayName": "Double Snatch (Chain 2/3)",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r2-chain-b-p2-clean",
+            "name": "Double Clean",
+            "displayName": "Double Clean (Chain 2/3)",
+            "damageCoefficient": 14,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r2-chain-b-p2-swing",
+            "name": "Double Swing",
+            "displayName": "Double Swing (Chain 2/3)",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r2-chain-b-p3-jerk",
+            "name": "Double Jerk",
+            "displayName": "Double Jerk (Chain 3/3)",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r2-chain-b-p3-snatch",
+            "name": "Double Snatch",
+            "displayName": "Double Snatch (Chain 3/3)",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r2-chain-b-p3-clean",
+            "name": "Double Clean",
+            "displayName": "Double Clean (Chain 3/3)",
+            "damageCoefficient": 14,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r2-chain-b-p3-swing",
+            "name": "Double Swing",
+            "displayName": "Double Swing (Chain 3/3)",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 1
+          }
+        ]
+      },
+      {
+        "label": "Round 3 — Chain ×3 → Complex → Chain ×3",
+        "exercises": [
+          {
+            "id": "rite-r3-chain-a-p1-jerk",
+            "name": "Double Jerk",
+            "displayName": "Double Jerk (Chain 1/3)",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r3-chain-a-p1-snatch",
+            "name": "Double Snatch",
+            "displayName": "Double Snatch (Chain 1/3)",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r3-chain-a-p1-clean",
+            "name": "Double Clean",
+            "displayName": "Double Clean (Chain 1/3)",
+            "damageCoefficient": 14,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r3-chain-a-p1-swing",
+            "name": "Double Swing",
+            "displayName": "Double Swing (Chain 1/3)",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r3-chain-a-p2-jerk",
+            "name": "Double Jerk",
+            "displayName": "Double Jerk (Chain 2/3)",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r3-chain-a-p2-snatch",
+            "name": "Double Snatch",
+            "displayName": "Double Snatch (Chain 2/3)",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r3-chain-a-p2-clean",
+            "name": "Double Clean",
+            "displayName": "Double Clean (Chain 2/3)",
+            "damageCoefficient": 14,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r3-chain-a-p2-swing",
+            "name": "Double Swing",
+            "displayName": "Double Swing (Chain 2/3)",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r3-chain-a-p3-jerk",
+            "name": "Double Jerk",
+            "displayName": "Double Jerk (Chain 3/3)",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r3-chain-a-p3-snatch",
+            "name": "Double Snatch",
+            "displayName": "Double Snatch (Chain 3/3)",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r3-chain-a-p3-clean",
+            "name": "Double Clean",
+            "displayName": "Double Clean (Chain 3/3)",
+            "damageCoefficient": 14,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r3-chain-a-p3-swing",
+            "name": "Double Swing",
+            "displayName": "Double Swing (Chain 3/3)",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r3-complex-jerk",
+            "name": "Double Jerk",
+            "displayName": "Double Jerk (Complex ×3)",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 3
+          },
+          {
+            "id": "rite-r3-complex-snatch",
+            "name": "Double Snatch",
+            "displayName": "Double Snatch (Complex ×3)",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 3
+          },
+          {
+            "id": "rite-r3-complex-clean",
+            "name": "Double Clean",
+            "displayName": "Double Clean (Complex ×3)",
+            "damageCoefficient": 14,
+            "damageType": "flat",
+            "targetReps": 3
+          },
+          {
+            "id": "rite-r3-complex-swing",
+            "name": "Double Swing",
+            "displayName": "Double Swing (Complex ×3)",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 3
+          },
+          {
+            "id": "rite-r3-chain-b-p1-jerk",
+            "name": "Double Jerk",
+            "displayName": "Double Jerk (Chain 1/3)",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r3-chain-b-p1-snatch",
+            "name": "Double Snatch",
+            "displayName": "Double Snatch (Chain 1/3)",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r3-chain-b-p1-clean",
+            "name": "Double Clean",
+            "displayName": "Double Clean (Chain 1/3)",
+            "damageCoefficient": 14,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r3-chain-b-p1-swing",
+            "name": "Double Swing",
+            "displayName": "Double Swing (Chain 1/3)",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r3-chain-b-p2-jerk",
+            "name": "Double Jerk",
+            "displayName": "Double Jerk (Chain 2/3)",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r3-chain-b-p2-snatch",
+            "name": "Double Snatch",
+            "displayName": "Double Snatch (Chain 2/3)",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r3-chain-b-p2-clean",
+            "name": "Double Clean",
+            "displayName": "Double Clean (Chain 2/3)",
+            "damageCoefficient": 14,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r3-chain-b-p2-swing",
+            "name": "Double Swing",
+            "displayName": "Double Swing (Chain 2/3)",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r3-chain-b-p3-jerk",
+            "name": "Double Jerk",
+            "displayName": "Double Jerk (Chain 3/3)",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r3-chain-b-p3-snatch",
+            "name": "Double Snatch",
+            "displayName": "Double Snatch (Chain 3/3)",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r3-chain-b-p3-clean",
+            "name": "Double Clean",
+            "displayName": "Double Clean (Chain 3/3)",
+            "damageCoefficient": 14,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r3-chain-b-p3-swing",
+            "name": "Double Swing",
+            "displayName": "Double Swing (Chain 3/3)",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 1
+          }
+        ]
+      },
+      {
+        "label": "Round 4 — Chain ×3 → Complex → Chain ×3",
+        "exercises": [
+          {
+            "id": "rite-r4-chain-a-p1-jerk",
+            "name": "Double Jerk",
+            "displayName": "Double Jerk (Chain 1/3)",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r4-chain-a-p1-snatch",
+            "name": "Double Snatch",
+            "displayName": "Double Snatch (Chain 1/3)",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r4-chain-a-p1-clean",
+            "name": "Double Clean",
+            "displayName": "Double Clean (Chain 1/3)",
+            "damageCoefficient": 14,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r4-chain-a-p1-swing",
+            "name": "Double Swing",
+            "displayName": "Double Swing (Chain 1/3)",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r4-chain-a-p2-jerk",
+            "name": "Double Jerk",
+            "displayName": "Double Jerk (Chain 2/3)",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r4-chain-a-p2-snatch",
+            "name": "Double Snatch",
+            "displayName": "Double Snatch (Chain 2/3)",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r4-chain-a-p2-clean",
+            "name": "Double Clean",
+            "displayName": "Double Clean (Chain 2/3)",
+            "damageCoefficient": 14,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r4-chain-a-p2-swing",
+            "name": "Double Swing",
+            "displayName": "Double Swing (Chain 2/3)",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r4-chain-a-p3-jerk",
+            "name": "Double Jerk",
+            "displayName": "Double Jerk (Chain 3/3)",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r4-chain-a-p3-snatch",
+            "name": "Double Snatch",
+            "displayName": "Double Snatch (Chain 3/3)",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r4-chain-a-p3-clean",
+            "name": "Double Clean",
+            "displayName": "Double Clean (Chain 3/3)",
+            "damageCoefficient": 14,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r4-chain-a-p3-swing",
+            "name": "Double Swing",
+            "displayName": "Double Swing (Chain 3/3)",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r4-complex-jerk",
+            "name": "Double Jerk",
+            "displayName": "Double Jerk (Complex ×3)",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 3
+          },
+          {
+            "id": "rite-r4-complex-snatch",
+            "name": "Double Snatch",
+            "displayName": "Double Snatch (Complex ×3)",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 3
+          },
+          {
+            "id": "rite-r4-complex-clean",
+            "name": "Double Clean",
+            "displayName": "Double Clean (Complex ×3)",
+            "damageCoefficient": 14,
+            "damageType": "flat",
+            "targetReps": 3
+          },
+          {
+            "id": "rite-r4-complex-swing",
+            "name": "Double Swing",
+            "displayName": "Double Swing (Complex ×3)",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 3
+          },
+          {
+            "id": "rite-r4-chain-b-p1-jerk",
+            "name": "Double Jerk",
+            "displayName": "Double Jerk (Chain 1/3)",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r4-chain-b-p1-snatch",
+            "name": "Double Snatch",
+            "displayName": "Double Snatch (Chain 1/3)",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r4-chain-b-p1-clean",
+            "name": "Double Clean",
+            "displayName": "Double Clean (Chain 1/3)",
+            "damageCoefficient": 14,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r4-chain-b-p1-swing",
+            "name": "Double Swing",
+            "displayName": "Double Swing (Chain 1/3)",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r4-chain-b-p2-jerk",
+            "name": "Double Jerk",
+            "displayName": "Double Jerk (Chain 2/3)",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r4-chain-b-p2-snatch",
+            "name": "Double Snatch",
+            "displayName": "Double Snatch (Chain 2/3)",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r4-chain-b-p2-clean",
+            "name": "Double Clean",
+            "displayName": "Double Clean (Chain 2/3)",
+            "damageCoefficient": 14,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r4-chain-b-p2-swing",
+            "name": "Double Swing",
+            "displayName": "Double Swing (Chain 2/3)",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r4-chain-b-p3-jerk",
+            "name": "Double Jerk",
+            "displayName": "Double Jerk (Chain 3/3)",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r4-chain-b-p3-snatch",
+            "name": "Double Snatch",
+            "displayName": "Double Snatch (Chain 3/3)",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r4-chain-b-p3-clean",
+            "name": "Double Clean",
+            "displayName": "Double Clean (Chain 3/3)",
+            "damageCoefficient": 14,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r4-chain-b-p3-swing",
+            "name": "Double Swing",
+            "displayName": "Double Swing (Chain 3/3)",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 1
+          }
+        ]
+      },
+      {
+        "label": "Round 5 — Chain ×3 → Complex → Chain ×3",
+        "exercises": [
+          {
+            "id": "rite-r5-chain-a-p1-jerk",
+            "name": "Double Jerk",
+            "displayName": "Double Jerk (Chain 1/3)",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r5-chain-a-p1-snatch",
+            "name": "Double Snatch",
+            "displayName": "Double Snatch (Chain 1/3)",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r5-chain-a-p1-clean",
+            "name": "Double Clean",
+            "displayName": "Double Clean (Chain 1/3)",
+            "damageCoefficient": 14,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r5-chain-a-p1-swing",
+            "name": "Double Swing",
+            "displayName": "Double Swing (Chain 1/3)",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r5-chain-a-p2-jerk",
+            "name": "Double Jerk",
+            "displayName": "Double Jerk (Chain 2/3)",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r5-chain-a-p2-snatch",
+            "name": "Double Snatch",
+            "displayName": "Double Snatch (Chain 2/3)",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r5-chain-a-p2-clean",
+            "name": "Double Clean",
+            "displayName": "Double Clean (Chain 2/3)",
+            "damageCoefficient": 14,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r5-chain-a-p2-swing",
+            "name": "Double Swing",
+            "displayName": "Double Swing (Chain 2/3)",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r5-chain-a-p3-jerk",
+            "name": "Double Jerk",
+            "displayName": "Double Jerk (Chain 3/3)",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r5-chain-a-p3-snatch",
+            "name": "Double Snatch",
+            "displayName": "Double Snatch (Chain 3/3)",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r5-chain-a-p3-clean",
+            "name": "Double Clean",
+            "displayName": "Double Clean (Chain 3/3)",
+            "damageCoefficient": 14,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r5-chain-a-p3-swing",
+            "name": "Double Swing",
+            "displayName": "Double Swing (Chain 3/3)",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r5-complex-jerk",
+            "name": "Double Jerk",
+            "displayName": "Double Jerk (Complex ×3)",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 3
+          },
+          {
+            "id": "rite-r5-complex-snatch",
+            "name": "Double Snatch",
+            "displayName": "Double Snatch (Complex ×3)",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 3
+          },
+          {
+            "id": "rite-r5-complex-clean",
+            "name": "Double Clean",
+            "displayName": "Double Clean (Complex ×3)",
+            "damageCoefficient": 14,
+            "damageType": "flat",
+            "targetReps": 3
+          },
+          {
+            "id": "rite-r5-complex-swing",
+            "name": "Double Swing",
+            "displayName": "Double Swing (Complex ×3)",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 3
+          },
+          {
+            "id": "rite-r5-chain-b-p1-jerk",
+            "name": "Double Jerk",
+            "displayName": "Double Jerk (Chain 1/3)",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r5-chain-b-p1-snatch",
+            "name": "Double Snatch",
+            "displayName": "Double Snatch (Chain 1/3)",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r5-chain-b-p1-clean",
+            "name": "Double Clean",
+            "displayName": "Double Clean (Chain 1/3)",
+            "damageCoefficient": 14,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r5-chain-b-p1-swing",
+            "name": "Double Swing",
+            "displayName": "Double Swing (Chain 1/3)",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r5-chain-b-p2-jerk",
+            "name": "Double Jerk",
+            "displayName": "Double Jerk (Chain 2/3)",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r5-chain-b-p2-snatch",
+            "name": "Double Snatch",
+            "displayName": "Double Snatch (Chain 2/3)",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r5-chain-b-p2-clean",
+            "name": "Double Clean",
+            "displayName": "Double Clean (Chain 2/3)",
+            "damageCoefficient": 14,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r5-chain-b-p2-swing",
+            "name": "Double Swing",
+            "displayName": "Double Swing (Chain 2/3)",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r5-chain-b-p3-jerk",
+            "name": "Double Jerk",
+            "displayName": "Double Jerk (Chain 3/3)",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r5-chain-b-p3-snatch",
+            "name": "Double Snatch",
+            "displayName": "Double Snatch (Chain 3/3)",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r5-chain-b-p3-clean",
+            "name": "Double Clean",
+            "displayName": "Double Clean (Chain 3/3)",
+            "damageCoefficient": 14,
+            "damageType": "flat",
+            "targetReps": 1
+          },
+          {
+            "id": "rite-r5-chain-b-p3-swing",
+            "name": "Double Swing",
+            "displayName": "Double Swing (Chain 3/3)",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 1
+          }
+        ]
+      }
+    ],
+    "finisher": {
+      "name": "The Rite Sealed",
+      "scheme": "5 Rounds"
+    }
+  },
+  "labyrinth-ladder": {
+    "id": "labyrinth-ladder",
+    "name": "The Labyrinth Ladder",
+    "description": "A 1-10-1 ladder on two lifts, nothing else. Choose your weight, then finish without skipping a single rep — the Minotaur does not forgive shortcuts.",
+    "difficulty": 4,
+    "estimatedMinutesRange": [
+      12,
+      18
+    ],
+    "gearWeightKg": 16,
+    "gearCount": 2,
+    "rounds": 19,
+    "restSeconds": 3,
+    "roundBonusDamage": 60,
+    "targetTimeSeconds": 780,
+    "stepLabel": "Rung",
+    "focus": [
+      "Pacing",
+      "Grip Endurance",
+      "Mental Toughness"
+    ],
+    "exercises": [
+      {
+        "id": "minotaur-rung-1-snatch",
+        "name": "Double Snatch",
+        "damageCoefficient": 8,
+        "damageType": "per_rep",
+        "targetReps": 1
+      },
+      {
+        "id": "minotaur-rung-1-thruster",
+        "name": "Double Thruster",
+        "damageCoefficient": 8,
+        "damageType": "per_rep",
+        "targetReps": 1
+      }
+    ],
+    "sections": [
+      {
+        "label": "Rung 1",
+        "exercises": [
+          {
+            "id": "minotaur-rung-1-snatch",
+            "name": "Double Snatch",
+            "damageCoefficient": 8,
+            "damageType": "per_rep",
+            "targetReps": 1
+          },
+          {
+            "id": "minotaur-rung-1-thruster",
+            "name": "Double Thruster",
+            "damageCoefficient": 8,
+            "damageType": "per_rep",
+            "targetReps": 1
+          }
+        ]
+      },
+      {
+        "label": "Rung 2",
+        "exercises": [
+          {
+            "id": "minotaur-rung-2-snatch",
+            "name": "Double Snatch",
+            "damageCoefficient": 8,
+            "damageType": "per_rep",
+            "targetReps": 2
+          },
+          {
+            "id": "minotaur-rung-2-thruster",
+            "name": "Double Thruster",
+            "damageCoefficient": 8,
+            "damageType": "per_rep",
+            "targetReps": 2
+          }
+        ]
+      },
+      {
+        "label": "Rung 3",
+        "exercises": [
+          {
+            "id": "minotaur-rung-3-snatch",
+            "name": "Double Snatch",
+            "damageCoefficient": 8,
+            "damageType": "per_rep",
+            "targetReps": 3
+          },
+          {
+            "id": "minotaur-rung-3-thruster",
+            "name": "Double Thruster",
+            "damageCoefficient": 8,
+            "damageType": "per_rep",
+            "targetReps": 3
+          }
+        ]
+      },
+      {
+        "label": "Rung 4",
+        "exercises": [
+          {
+            "id": "minotaur-rung-4-snatch",
+            "name": "Double Snatch",
+            "damageCoefficient": 8,
+            "damageType": "per_rep",
+            "targetReps": 4
+          },
+          {
+            "id": "minotaur-rung-4-thruster",
+            "name": "Double Thruster",
+            "damageCoefficient": 8,
+            "damageType": "per_rep",
+            "targetReps": 4
+          }
+        ]
+      },
+      {
+        "label": "Rung 5",
+        "exercises": [
+          {
+            "id": "minotaur-rung-5-snatch",
+            "name": "Double Snatch",
+            "damageCoefficient": 8,
+            "damageType": "per_rep",
+            "targetReps": 5
+          },
+          {
+            "id": "minotaur-rung-5-thruster",
+            "name": "Double Thruster",
+            "damageCoefficient": 8,
+            "damageType": "per_rep",
+            "targetReps": 5
+          }
+        ]
+      },
+      {
+        "label": "Rung 6",
+        "exercises": [
+          {
+            "id": "minotaur-rung-6-snatch",
+            "name": "Double Snatch",
+            "damageCoefficient": 8,
+            "damageType": "per_rep",
+            "targetReps": 6
+          },
+          {
+            "id": "minotaur-rung-6-thruster",
+            "name": "Double Thruster",
+            "damageCoefficient": 8,
+            "damageType": "per_rep",
+            "targetReps": 6
+          }
+        ]
+      },
+      {
+        "label": "Rung 7",
+        "exercises": [
+          {
+            "id": "minotaur-rung-7-snatch",
+            "name": "Double Snatch",
+            "damageCoefficient": 8,
+            "damageType": "per_rep",
+            "targetReps": 7
+          },
+          {
+            "id": "minotaur-rung-7-thruster",
+            "name": "Double Thruster",
+            "damageCoefficient": 8,
+            "damageType": "per_rep",
+            "targetReps": 7
+          }
+        ]
+      },
+      {
+        "label": "Rung 8",
+        "exercises": [
+          {
+            "id": "minotaur-rung-8-snatch",
+            "name": "Double Snatch",
+            "damageCoefficient": 8,
+            "damageType": "per_rep",
+            "targetReps": 8
+          },
+          {
+            "id": "minotaur-rung-8-thruster",
+            "name": "Double Thruster",
+            "damageCoefficient": 8,
+            "damageType": "per_rep",
+            "targetReps": 8
+          }
+        ]
+      },
+      {
+        "label": "Rung 9",
+        "exercises": [
+          {
+            "id": "minotaur-rung-9-snatch",
+            "name": "Double Snatch",
+            "damageCoefficient": 8,
+            "damageType": "per_rep",
+            "targetReps": 9
+          },
+          {
+            "id": "minotaur-rung-9-thruster",
+            "name": "Double Thruster",
+            "damageCoefficient": 8,
+            "damageType": "per_rep",
+            "targetReps": 9
+          }
+        ]
+      },
+      {
+        "label": "Rung 10",
+        "exercises": [
+          {
+            "id": "minotaur-rung-10-snatch",
+            "name": "Double Snatch",
+            "damageCoefficient": 8,
+            "damageType": "per_rep",
+            "targetReps": 10
+          },
+          {
+            "id": "minotaur-rung-10-thruster",
+            "name": "Double Thruster",
+            "damageCoefficient": 8,
+            "damageType": "per_rep",
+            "targetReps": 10
+          }
+        ]
+      },
+      {
+        "label": "Rung 11",
+        "exercises": [
+          {
+            "id": "minotaur-rung-11-snatch",
+            "name": "Double Snatch",
+            "damageCoefficient": 8,
+            "damageType": "per_rep",
+            "targetReps": 9
+          },
+          {
+            "id": "minotaur-rung-11-thruster",
+            "name": "Double Thruster",
+            "damageCoefficient": 8,
+            "damageType": "per_rep",
+            "targetReps": 9
+          }
+        ]
+      },
+      {
+        "label": "Rung 12",
+        "exercises": [
+          {
+            "id": "minotaur-rung-12-snatch",
+            "name": "Double Snatch",
+            "damageCoefficient": 8,
+            "damageType": "per_rep",
+            "targetReps": 8
+          },
+          {
+            "id": "minotaur-rung-12-thruster",
+            "name": "Double Thruster",
+            "damageCoefficient": 8,
+            "damageType": "per_rep",
+            "targetReps": 8
+          }
+        ]
+      },
+      {
+        "label": "Rung 13",
+        "exercises": [
+          {
+            "id": "minotaur-rung-13-snatch",
+            "name": "Double Snatch",
+            "damageCoefficient": 8,
+            "damageType": "per_rep",
+            "targetReps": 7
+          },
+          {
+            "id": "minotaur-rung-13-thruster",
+            "name": "Double Thruster",
+            "damageCoefficient": 8,
+            "damageType": "per_rep",
+            "targetReps": 7
+          }
+        ]
+      },
+      {
+        "label": "Rung 14",
+        "exercises": [
+          {
+            "id": "minotaur-rung-14-snatch",
+            "name": "Double Snatch",
+            "damageCoefficient": 8,
+            "damageType": "per_rep",
+            "targetReps": 6
+          },
+          {
+            "id": "minotaur-rung-14-thruster",
+            "name": "Double Thruster",
+            "damageCoefficient": 8,
+            "damageType": "per_rep",
+            "targetReps": 6
+          }
+        ]
+      },
+      {
+        "label": "Rung 15",
+        "exercises": [
+          {
+            "id": "minotaur-rung-15-snatch",
+            "name": "Double Snatch",
+            "damageCoefficient": 8,
+            "damageType": "per_rep",
+            "targetReps": 5
+          },
+          {
+            "id": "minotaur-rung-15-thruster",
+            "name": "Double Thruster",
+            "damageCoefficient": 8,
+            "damageType": "per_rep",
+            "targetReps": 5
+          }
+        ]
+      },
+      {
+        "label": "Rung 16",
+        "exercises": [
+          {
+            "id": "minotaur-rung-16-snatch",
+            "name": "Double Snatch",
+            "damageCoefficient": 8,
+            "damageType": "per_rep",
+            "targetReps": 4
+          },
+          {
+            "id": "minotaur-rung-16-thruster",
+            "name": "Double Thruster",
+            "damageCoefficient": 8,
+            "damageType": "per_rep",
+            "targetReps": 4
+          }
+        ]
+      },
+      {
+        "label": "Rung 17",
+        "exercises": [
+          {
+            "id": "minotaur-rung-17-snatch",
+            "name": "Double Snatch",
+            "damageCoefficient": 8,
+            "damageType": "per_rep",
+            "targetReps": 3
+          },
+          {
+            "id": "minotaur-rung-17-thruster",
+            "name": "Double Thruster",
+            "damageCoefficient": 8,
+            "damageType": "per_rep",
+            "targetReps": 3
+          }
+        ]
+      },
+      {
+        "label": "Rung 18",
+        "exercises": [
+          {
+            "id": "minotaur-rung-18-snatch",
+            "name": "Double Snatch",
+            "damageCoefficient": 8,
+            "damageType": "per_rep",
+            "targetReps": 2
+          },
+          {
+            "id": "minotaur-rung-18-thruster",
+            "name": "Double Thruster",
+            "damageCoefficient": 8,
+            "damageType": "per_rep",
+            "targetReps": 2
+          }
+        ]
+      },
+      {
+        "label": "Rung 19",
+        "exercises": [
+          {
+            "id": "minotaur-rung-19-snatch",
+            "name": "Double Snatch",
+            "damageCoefficient": 8,
+            "damageType": "per_rep",
+            "targetReps": 1
+          },
+          {
+            "id": "minotaur-rung-19-thruster",
+            "name": "Double Thruster",
+            "damageCoefficient": 8,
+            "damageType": "per_rep",
+            "targetReps": 1
+          }
+        ]
+      }
+    ],
+    "finisher": {
+      "name": "The Ladder",
+      "scheme": "1-10-1"
+    }
+  },
+  "abyss-carry": {
+    "id": "abyss-carry",
+    "name": "The Abyss Carry",
+    "description": "Five rounds, the same weight the whole way through. Never put the kettlebells down during the carry — carry the weight, or let it carry you.",
+    "difficulty": 4,
+    "estimatedMinutesRange": [
+      16,
+      20
+    ],
+    "gearWeightKg": 16,
+    "gearCount": 2,
+    "rounds": 5,
+    "restSeconds": 180,
+    "roundBonusDamage": 55,
+    "targetTimeSeconds": 1500,
+    "focus": [
+      "Full-Body Tension",
+      "Shoulder Endurance",
+      "Grip Strength"
+    ],
+    "exercises": [
+      {
+        "id": "leviathan-snatch",
+        "name": "Double Snatch",
+        "damageCoefficient": 16,
+        "damageType": "flat",
+        "targetReps": 5
+      },
+      {
+        "id": "leviathan-thruster",
+        "name": "Thruster",
+        "damageCoefficient": 16,
+        "damageType": "flat",
+        "targetReps": 5,
+        "usesGearCount": 1
+      },
+      {
+        "id": "leviathan-row",
+        "name": "Bent-over Row",
+        "damageCoefficient": 16,
+        "damageType": "flat",
+        "targetReps": 5
+      },
+      {
+        "id": "leviathan-clean",
+        "name": "Double Clean",
+        "damageCoefficient": 16,
+        "damageType": "flat",
+        "targetReps": 5
+      },
+      {
+        "id": "leviathan-carry",
+        "name": "Front Rack Carry",
+        "damageCoefficient": 3,
+        "damageType": "per_second",
+        "targetDistanceFt": 100,
+        "durationSeconds": 30
+      }
+    ],
+    "finisher": {
+      "name": "The Deep",
+      "scheme": "5 Rounds"
+    }
+  },
+  "iron-ascent": {
+    "id": "iron-ascent",
+    "name": "The Iron Ascent",
+    "description": "Three phases, three different demands — double-bell volume, then single-arm control, then double-bell precision. The Behemoth respects control, not speed.",
+    "difficulty": 5,
+    "estimatedMinutesRange": [
+      22,
+      28
+    ],
+    "gearWeightKg": 16,
+    "gearCount": 2,
+    "rounds": 3,
+    "restSeconds": 120,
+    "roundBonusDamage": 70,
+    "targetTimeSeconds": 1560,
+    "focus": [
+      "Technical Consistency",
+      "Total-Body Control",
+      "Mental Discipline"
+    ],
+    "exercises": [
+      {
+        "id": "behemoth-p1-snatch-a",
+        "name": "Tactical Double Snatch",
+        "displayName": "Double Snatch",
+        "damageCoefficient": 6,
+        "damageType": "per_rep",
+        "targetReps": 60
+      },
+      {
+        "id": "behemoth-p1-squat",
+        "name": "Tactical Double Front Squat",
+        "displayName": "Double Front Squat",
+        "damageCoefficient": 6,
+        "damageType": "per_rep",
+        "targetReps": 48
+      },
+      {
+        "id": "behemoth-p1-press",
+        "name": "Tactical Double Press",
+        "displayName": "Double Press",
+        "damageCoefficient": 6,
+        "damageType": "per_rep",
+        "targetReps": 36
+      },
+      {
+        "id": "behemoth-p1-clean",
+        "name": "Tactical Double Clean",
+        "displayName": "Double Clean",
+        "damageCoefficient": 6,
+        "damageType": "per_rep",
+        "targetReps": 24
+      },
+      {
+        "id": "behemoth-p1-snatch-b",
+        "name": "Tactical Double Snatch",
+        "displayName": "Double Snatch",
+        "damageCoefficient": 6,
+        "damageType": "per_rep",
+        "targetReps": 12
+      }
+    ],
+    "sections": [
+      {
+        "label": "Phase I — The Colossus",
+        "exercises": [
+          {
+            "id": "behemoth-p1-snatch-a",
+            "name": "Tactical Double Snatch",
+            "displayName": "Double Snatch",
+            "damageCoefficient": 6,
+            "damageType": "per_rep",
+            "targetReps": 60
+          },
+          {
+            "id": "behemoth-p1-squat",
+            "name": "Tactical Double Front Squat",
+            "displayName": "Double Front Squat",
+            "damageCoefficient": 6,
+            "damageType": "per_rep",
+            "targetReps": 48
+          },
+          {
+            "id": "behemoth-p1-press",
+            "name": "Tactical Double Press",
+            "displayName": "Double Press",
+            "damageCoefficient": 6,
+            "damageType": "per_rep",
+            "targetReps": 36
+          },
+          {
+            "id": "behemoth-p1-clean",
+            "name": "Tactical Double Clean",
+            "displayName": "Double Clean",
+            "damageCoefficient": 6,
+            "damageType": "per_rep",
+            "targetReps": 24
+          },
+          {
+            "id": "behemoth-p1-snatch-b",
+            "name": "Tactical Double Snatch",
+            "displayName": "Double Snatch",
+            "damageCoefficient": 6,
+            "damageType": "per_rep",
+            "targetReps": 12
+          }
+        ]
+      },
+      {
+        "label": "Phase II — The Climb",
+        "exercises": [
+          {
+            "id": "behemoth-p2-snatch",
+            "name": "Snatch",
+            "damageCoefficient": 6,
+            "damageType": "per_rep",
+            "targetReps": 20,
+            "usesGearCount": 1
+          },
+          {
+            "id": "behemoth-p2-squat",
+            "name": "Front Squat",
+            "damageCoefficient": 6,
+            "damageType": "per_rep",
+            "targetReps": 16
+          },
+          {
+            "id": "behemoth-p2-press",
+            "name": "Press",
+            "damageCoefficient": 6,
+            "damageType": "per_rep",
+            "targetReps": 12,
+            "usesGearCount": 1
+          },
+          {
+            "id": "behemoth-p2-clean",
+            "name": "Clean",
+            "damageCoefficient": 6,
+            "damageType": "per_rep",
+            "targetReps": 8,
+            "usesGearCount": 1
+          },
+          {
+            "id": "behemoth-p2-snatch-2",
+            "name": "Snatch",
+            "damageCoefficient": 6,
+            "damageType": "per_rep",
+            "targetReps": 4,
+            "usesGearCount": 1
+          }
+        ]
+      },
+      {
+        "label": "Phase III — The Summit",
+        "exercises": [
+          {
+            "id": "behemoth-p3-snatch",
+            "name": "Double Half Snatch",
+            "damageCoefficient": 7,
+            "damageType": "per_rep",
+            "targetReps": 10
+          },
+          {
+            "id": "behemoth-p3-squat",
+            "name": "Double Front Squat",
+            "damageCoefficient": 7,
+            "damageType": "per_rep",
+            "targetReps": 8
+          },
+          {
+            "id": "behemoth-p3-press",
+            "name": "Double Press",
+            "damageCoefficient": 7,
+            "damageType": "per_rep",
+            "targetReps": 6
+          },
+          {
+            "id": "behemoth-p3-clean",
+            "name": "Double Clean",
+            "damageCoefficient": 7,
+            "damageType": "per_rep",
+            "targetReps": 4
+          },
+          {
+            "id": "behemoth-p3-snatch-2",
+            "name": "Double Half Snatch",
+            "damageCoefficient": 7,
+            "damageType": "per_rep",
+            "targetReps": 2
+          }
+        ]
+      }
+    ],
+    "finisher": {
+      "name": "The Summit",
+      "scheme": "3 Phases"
+    }
+  },
+  "everlasting-cycle": {
+    "id": "everlasting-cycle",
+    "name": "The Everlasting Cycle",
+    "description": "Five rounds of continuous movement. Never fight one exercise — fight the entire round. The Hydra wins when you focus on only one head.",
+    "difficulty": 3,
+    "estimatedMinutesRange": [
+      14,
+      18
+    ],
+    "gearWeightKg": 16,
+    "gearCount": 2,
+    "rounds": 5,
+    "restSeconds": 90,
+    "roundBonusDamage": 50,
+    "targetTimeSeconds": 1080,
+    "focus": [
+      "Continuous Movement",
+      "Work Capacity",
+      "Pacing"
+    ],
+    "exercises": [
+      {
+        "id": "hydra-clean",
+        "name": "Double Clean",
+        "damageCoefficient": 14,
+        "damageType": "flat",
+        "targetReps": 5
+      },
+      {
+        "id": "hydra-lunge",
+        "name": "Reverse Lunge",
+        "damageCoefficient": 10,
+        "damageType": "flat",
+        "targetReps": 10
+      },
+      {
+        "id": "hydra-push-press",
+        "name": "Double Push Press",
+        "damageCoefficient": 16,
+        "damageType": "flat",
+        "targetReps": 5
+      },
+      {
+        "id": "hydra-swing",
+        "name": "Double Swing",
+        "damageCoefficient": 10,
+        "damageType": "flat",
+        "targetReps": 10
+      },
+      {
+        "id": "hydra-snatch",
+        "name": "Double Snatch",
+        "damageCoefficient": 16,
+        "damageType": "flat",
+        "targetReps": 5
+      }
+    ],
+    "finisher": {
+      "name": "The Cycle",
+      "scheme": "5 Rounds"
+    }
+  },
+  "web-of-motion": {
+    "id": "web-of-motion",
+    "name": "The Web of Motion",
+    "description": "Five rounds, one continuous thread. Never lose your rhythm — break it, and the web closes.",
+    "difficulty": 3,
+    "estimatedMinutesRange": [
+      14,
+      18
+    ],
+    "gearWeightKg": 14,
+    "gearCount": 2,
+    "rounds": 5,
+    "restSeconds": 120,
+    "roundBonusDamage": 50,
+    "targetTimeSeconds": 1020,
+    "focus": [
+      "Fluid Movement",
+      "Timing",
+      "Coordination"
+    ],
+    "exercises": [
+      {
+        "id": "arachne-high-pull",
+        "name": "Double High Pull",
+        "damageCoefficient": 12,
+        "damageType": "flat",
+        "targetReps": 5
+      },
+      {
+        "id": "arachne-snatch-a",
+        "name": "Double Snatch",
+        "damageCoefficient": 16,
+        "damageType": "flat",
+        "targetReps": 2
+      },
+      {
+        "id": "arachne-squat",
+        "name": "Double Front Squat",
+        "damageCoefficient": 14,
+        "damageType": "flat",
+        "targetReps": 5
+      },
+      {
+        "id": "arachne-snatch-b",
+        "name": "Double Snatch",
+        "damageCoefficient": 16,
+        "damageType": "flat",
+        "targetReps": 2
+      },
+      {
+        "id": "arachne-thruster",
+        "name": "Double Thruster",
+        "damageCoefficient": 14,
+        "damageType": "flat",
+        "targetReps": 5
+      },
+      {
+        "id": "arachne-snatch-c",
+        "name": "Double Snatch",
+        "damageCoefficient": 16,
+        "damageType": "flat",
+        "targetReps": 2
+      }
+    ],
+    "finisher": {
+      "name": "The Web",
+      "scheme": "5 Rounds"
+    }
+  },
+  "the-final-trial": {
+    "id": "the-final-trial",
+    "name": "The Final Trial",
+    "description": "One complete round from every monster you have already conquered, in order, with rest between each. There is no second attempt within the hunt — only forward.",
+    "difficulty": 5,
+    "estimatedMinutesRange": [
+      30,
+      40
+    ],
+    "gearWeightKg": 16,
+    "gearCount": 2,
+    "rounds": 5,
+    "restSeconds": 120,
+    "roundBonusDamage": 90,
+    "targetTimeSeconds": 2100,
+    "focus": [
+      "Total Mastery",
+      "Unbroken Composure",
+      "Everything You Have Learned"
+    ],
+    "exercises": [
+      {
+        "id": "weaver-mino-snatch",
+        "name": "Double Snatch",
+        "damageCoefficient": 8,
+        "damageType": "per_rep",
+        "targetReps": 5
+      },
+      {
+        "id": "weaver-mino-thruster",
+        "name": "Double Thruster",
+        "damageCoefficient": 8,
+        "damageType": "per_rep",
+        "targetReps": 5
+      }
+    ],
+    "sections": [
+      {
+        "label": "Minotaur",
+        "exercises": [
+          {
+            "id": "weaver-mino-snatch",
+            "name": "Double Snatch",
+            "damageCoefficient": 8,
+            "damageType": "per_rep",
+            "targetReps": 5
+          },
+          {
+            "id": "weaver-mino-thruster",
+            "name": "Double Thruster",
+            "damageCoefficient": 8,
+            "damageType": "per_rep",
+            "targetReps": 5
+          }
+        ]
+      },
+      {
+        "label": "Leviathan",
+        "exercises": [
+          {
+            "id": "weaver-levi-snatch",
+            "name": "Double Snatch",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 5
+          },
+          {
+            "id": "weaver-levi-thruster",
+            "name": "Thruster",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 5,
+            "usesGearCount": 1
+          },
+          {
+            "id": "weaver-levi-row",
+            "name": "Bent-over Row",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 5
+          },
+          {
+            "id": "weaver-levi-clean",
+            "name": "Double Clean",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 5
+          },
+          {
+            "id": "weaver-levi-carry",
+            "name": "Front Rack Carry",
+            "damageCoefficient": 3,
+            "damageType": "per_second",
+            "targetDistanceFt": 100,
+            "durationSeconds": 30
+          }
+        ]
+      },
+      {
+        "label": "Behemoth",
+        "exercises": [
+          {
+            "id": "weaver-beh-snatch-a",
+            "name": "Tactical Double Snatch",
+            "displayName": "Double Snatch",
+            "damageCoefficient": 6,
+            "damageType": "per_rep",
+            "targetReps": 20
+          },
+          {
+            "id": "weaver-beh-squat",
+            "name": "Tactical Double Front Squat",
+            "displayName": "Double Front Squat",
+            "damageCoefficient": 6,
+            "damageType": "per_rep",
+            "targetReps": 16
+          },
+          {
+            "id": "weaver-beh-press",
+            "name": "Tactical Double Press",
+            "displayName": "Double Press",
+            "damageCoefficient": 6,
+            "damageType": "per_rep",
+            "targetReps": 12
+          },
+          {
+            "id": "weaver-beh-clean",
+            "name": "Tactical Double Clean",
+            "displayName": "Double Clean",
+            "damageCoefficient": 6,
+            "damageType": "per_rep",
+            "targetReps": 8
+          },
+          {
+            "id": "weaver-beh-snatch-b",
+            "name": "Tactical Double Snatch",
+            "displayName": "Double Snatch",
+            "damageCoefficient": 6,
+            "damageType": "per_rep",
+            "targetReps": 4
+          }
+        ]
+      },
+      {
+        "label": "Arachne",
+        "exercises": [
+          {
+            "id": "weaver-arch-highpull",
+            "name": "Double High Pull",
+            "damageCoefficient": 12,
+            "damageType": "flat",
+            "targetReps": 5
+          },
+          {
+            "id": "weaver-arch-snatch-a",
+            "name": "Double Snatch",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 2
+          },
+          {
+            "id": "weaver-arch-squat",
+            "name": "Double Front Squat",
+            "damageCoefficient": 14,
+            "damageType": "flat",
+            "targetReps": 5
+          },
+          {
+            "id": "weaver-arch-snatch-b",
+            "name": "Double Snatch",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 2
+          },
+          {
+            "id": "weaver-arch-thruster",
+            "name": "Double Thruster",
+            "damageCoefficient": 14,
+            "damageType": "flat",
+            "targetReps": 5
+          },
+          {
+            "id": "weaver-arch-snatch-c",
+            "name": "Double Snatch",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 2
+          }
+        ]
+      },
+      {
+        "label": "Hydra",
+        "exercises": [
+          {
+            "id": "weaver-hydra-clean",
+            "name": "Double Clean",
+            "damageCoefficient": 14,
+            "damageType": "flat",
+            "targetReps": 5
+          },
+          {
+            "id": "weaver-hydra-lunge",
+            "name": "Reverse Lunge",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 10
+          },
+          {
+            "id": "weaver-hydra-pushpress",
+            "name": "Double Push Press",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 5
+          },
+          {
+            "id": "weaver-hydra-swing",
+            "name": "Double Swing",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 10
+          },
+          {
+            "id": "weaver-hydra-snatch",
+            "name": "Double Snatch",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 5
+          }
+        ]
+      }
+    ],
+    "finisher": {
+      "name": "The Weaver's Due",
+      "scheme": "5 Sections"
+    }
+  },
+  "hell-dive": {
+    "id": "hell-dive",
+    "name": "Hell-Dive",
+    "description": "Three moves, five rounds, no time to think. Swing, snatch, thruster — hit it hard and get out before it hits back.",
+    "difficulty": 3,
+    "estimatedMinutesRange": [
+      9,
+      13
+    ],
+    "gearWeightKg": 18,
+    "gearCount": 2,
+    "rounds": 5,
+    "restSeconds": 60,
+    "roundBonusDamage": 50,
+    "targetTimeSeconds": 690,
+    "focus": [
+      "Explosive Power",
+      "Fast Transitions",
+      "Cardio Capacity"
+    ],
+    "exercises": [
+      {
+        "id": "harpy-swing",
+        "name": "Double Swing",
+        "damageCoefficient": 10,
+        "damageType": "flat",
+        "targetReps": 5
+      },
+      {
+        "id": "harpy-snatch",
+        "name": "Double Snatch",
+        "damageCoefficient": 16,
+        "damageType": "flat",
+        "targetReps": 5
+      },
+      {
+        "id": "harpy-thruster",
+        "name": "Double Thruster",
+        "damageCoefficient": 14,
+        "damageType": "flat",
+        "targetReps": 5
+      }
+    ],
+    "finisher": {
+      "name": "The Dive",
+      "scheme": "5 Rounds"
+    }
+  },
+  "atlas-chain": {
+    "id": "atlas-chain",
+    "name": "The Sovereign's Chain",
+    "description": "The full chain first — squat, press, clean, push press, row, one rep each — five times through without a break. Then every movement answers alone, five reps at a time, with nothing left to carry it.",
+    "difficulty": 4,
+    "estimatedMinutesRange": [
+      16,
+      21
+    ],
+    "gearWeightKg": 16,
+    "gearCount": 2,
+    "rounds": 1,
+    "restSeconds": 150,
+    "roundBonusDamage": 430,
+    "targetTimeSeconds": 1125,
+    "focus": [
+      "Full-Body Strength",
+      "Movement Sequencing",
+      "Steady Pacing"
+    ],
+    "exercises": [
+      {
+        "id": "atlas-chain1-squat",
+        "name": "Double Front Squat",
+        "displayName": "Double Front Squat (Chain 1/5)",
+        "damageCoefficient": 14,
+        "damageType": "flat",
+        "targetReps": 1
+      },
+      {
+        "id": "atlas-chain1-press",
+        "name": "Double Press",
+        "displayName": "Double Press (Chain 1/5)",
+        "damageCoefficient": 14,
+        "damageType": "flat",
+        "targetReps": 1
+      },
+      {
+        "id": "atlas-chain1-clean",
+        "name": "Double Clean",
+        "displayName": "Double Clean (Chain 1/5)",
+        "damageCoefficient": 14,
+        "damageType": "flat",
+        "targetReps": 1
+      },
+      {
+        "id": "atlas-chain1-push-press",
+        "name": "Double Push Press",
+        "displayName": "Double Push Press (Chain 1/5)",
+        "damageCoefficient": 16,
+        "damageType": "flat",
+        "targetReps": 1
+      },
+      {
+        "id": "atlas-chain1-row",
+        "name": "Double Row",
+        "displayName": "Double Row (Chain 1/5)",
+        "damageCoefficient": 12,
+        "damageType": "flat",
+        "targetReps": 1
+      },
+      {
+        "id": "atlas-chain2-squat",
+        "name": "Double Front Squat",
+        "displayName": "Double Front Squat (Chain 2/5)",
+        "damageCoefficient": 14,
+        "damageType": "flat",
+        "targetReps": 1
+      },
+      {
+        "id": "atlas-chain2-press",
+        "name": "Double Press",
+        "displayName": "Double Press (Chain 2/5)",
+        "damageCoefficient": 14,
+        "damageType": "flat",
+        "targetReps": 1
+      },
+      {
+        "id": "atlas-chain2-clean",
+        "name": "Double Clean",
+        "displayName": "Double Clean (Chain 2/5)",
+        "damageCoefficient": 14,
+        "damageType": "flat",
+        "targetReps": 1
+      },
+      {
+        "id": "atlas-chain2-push-press",
+        "name": "Double Push Press",
+        "displayName": "Double Push Press (Chain 2/5)",
+        "damageCoefficient": 16,
+        "damageType": "flat",
+        "targetReps": 1
+      },
+      {
+        "id": "atlas-chain2-row",
+        "name": "Double Row",
+        "displayName": "Double Row (Chain 2/5)",
+        "damageCoefficient": 12,
+        "damageType": "flat",
+        "targetReps": 1
+      },
+      {
+        "id": "atlas-chain3-squat",
+        "name": "Double Front Squat",
+        "displayName": "Double Front Squat (Chain 3/5)",
+        "damageCoefficient": 14,
+        "damageType": "flat",
+        "targetReps": 1
+      },
+      {
+        "id": "atlas-chain3-press",
+        "name": "Double Press",
+        "displayName": "Double Press (Chain 3/5)",
+        "damageCoefficient": 14,
+        "damageType": "flat",
+        "targetReps": 1
+      },
+      {
+        "id": "atlas-chain3-clean",
+        "name": "Double Clean",
+        "displayName": "Double Clean (Chain 3/5)",
+        "damageCoefficient": 14,
+        "damageType": "flat",
+        "targetReps": 1
+      },
+      {
+        "id": "atlas-chain3-push-press",
+        "name": "Double Push Press",
+        "displayName": "Double Push Press (Chain 3/5)",
+        "damageCoefficient": 16,
+        "damageType": "flat",
+        "targetReps": 1
+      },
+      {
+        "id": "atlas-chain3-row",
+        "name": "Double Row",
+        "displayName": "Double Row (Chain 3/5)",
+        "damageCoefficient": 12,
+        "damageType": "flat",
+        "targetReps": 1
+      },
+      {
+        "id": "atlas-chain4-squat",
+        "name": "Double Front Squat",
+        "displayName": "Double Front Squat (Chain 4/5)",
+        "damageCoefficient": 14,
+        "damageType": "flat",
+        "targetReps": 1
+      },
+      {
+        "id": "atlas-chain4-press",
+        "name": "Double Press",
+        "displayName": "Double Press (Chain 4/5)",
+        "damageCoefficient": 14,
+        "damageType": "flat",
+        "targetReps": 1
+      },
+      {
+        "id": "atlas-chain4-clean",
+        "name": "Double Clean",
+        "displayName": "Double Clean (Chain 4/5)",
+        "damageCoefficient": 14,
+        "damageType": "flat",
+        "targetReps": 1
+      },
+      {
+        "id": "atlas-chain4-push-press",
+        "name": "Double Push Press",
+        "displayName": "Double Push Press (Chain 4/5)",
+        "damageCoefficient": 16,
+        "damageType": "flat",
+        "targetReps": 1
+      },
+      {
+        "id": "atlas-chain4-row",
+        "name": "Double Row",
+        "displayName": "Double Row (Chain 4/5)",
+        "damageCoefficient": 12,
+        "damageType": "flat",
+        "targetReps": 1
+      },
+      {
+        "id": "atlas-chain5-squat",
+        "name": "Double Front Squat",
+        "displayName": "Double Front Squat (Chain 5/5)",
+        "damageCoefficient": 14,
+        "damageType": "flat",
+        "targetReps": 1
+      },
+      {
+        "id": "atlas-chain5-press",
+        "name": "Double Press",
+        "displayName": "Double Press (Chain 5/5)",
+        "damageCoefficient": 14,
+        "damageType": "flat",
+        "targetReps": 1
+      },
+      {
+        "id": "atlas-chain5-clean",
+        "name": "Double Clean",
+        "displayName": "Double Clean (Chain 5/5)",
+        "damageCoefficient": 14,
+        "damageType": "flat",
+        "targetReps": 1
+      },
+      {
+        "id": "atlas-chain5-push-press",
+        "name": "Double Push Press",
+        "displayName": "Double Push Press (Chain 5/5)",
+        "damageCoefficient": 16,
+        "damageType": "flat",
+        "targetReps": 1
+      },
+      {
+        "id": "atlas-chain5-row",
+        "name": "Double Row",
+        "displayName": "Double Row (Chain 5/5)",
+        "damageCoefficient": 12,
+        "damageType": "flat",
+        "targetReps": 1
+      },
+      {
+        "id": "atlas-complex-squat",
+        "name": "Double Front Squat",
+        "displayName": "Double Front Squat (Complex ×5)",
+        "damageCoefficient": 14,
+        "damageType": "flat",
+        "targetReps": 5
+      },
+      {
+        "id": "atlas-complex-press",
+        "name": "Double Press",
+        "displayName": "Double Press (Complex ×5)",
+        "damageCoefficient": 14,
+        "damageType": "flat",
+        "targetReps": 5
+      },
+      {
+        "id": "atlas-complex-clean",
+        "name": "Double Clean",
+        "displayName": "Double Clean (Complex ×5)",
+        "damageCoefficient": 14,
+        "damageType": "flat",
+        "targetReps": 5
+      },
+      {
+        "id": "atlas-complex-push-press",
+        "name": "Double Push Press",
+        "displayName": "Double Push Press (Complex ×5)",
+        "damageCoefficient": 16,
+        "damageType": "flat",
+        "targetReps": 5
+      },
+      {
+        "id": "atlas-complex-row",
+        "name": "Double Row",
+        "displayName": "Double Row (Complex ×5)",
+        "damageCoefficient": 12,
+        "damageType": "flat",
+        "targetReps": 5
+      }
+    ],
+    "finisher": {
+      "name": "The Foundation",
+      "scheme": "Chain + Complex"
+    }
+  },
+  "ember-trial": {
+    "id": "ember-trial",
+    "name": "The Ember Trial",
+    "description": "Two rounds through the fire, then thirty reps with nothing left in the tank. The carry is the easy part.",
+    "difficulty": 4,
+    "estimatedMinutesRange": [
+      12,
+      17
+    ],
+    "gearWeightKg": 18,
+    "gearCount": 1,
+    "rounds": 3,
+    "restSeconds": 90,
+    "roundBonusDamage": 60,
+    "targetTimeSeconds": 880,
+    "focus": [
+      "Work Capacity",
+      "Grip Under Fatigue",
+      "Finishing Speed"
+    ],
+    "exercises": [
+      {
+        "id": "ifrit-r1-snatch-press",
+        "name": "Snatch / Press",
+        "damageCoefficient": 16,
+        "damageType": "flat",
+        "targetReps": 5
+      },
+      {
+        "id": "ifrit-r1-clean-squat",
+        "name": "Clean / Squat",
+        "damageCoefficient": 16,
+        "damageType": "flat",
+        "targetReps": 5
+      },
+      {
+        "id": "ifrit-r1-swing",
+        "name": "Swing",
+        "damageCoefficient": 10,
+        "damageType": "flat",
+        "targetReps": 5
+      },
+      {
+        "id": "ifrit-r1-deadlift-side",
+        "name": "Deadlift Side",
+        "damageCoefficient": 12,
+        "damageType": "flat",
+        "targetReps": 5
+      },
+      {
+        "id": "ifrit-r1-farmer-carry",
+        "name": "Farmer Carry",
+        "damageCoefficient": 3,
+        "damageType": "per_second",
+        "targetDistanceFt": 100,
+        "durationSeconds": 30
+      }
+    ],
+    "sections": [
+      {
+        "label": "Round I — The Coals",
+        "exercises": [
+          {
+            "id": "ifrit-r1-snatch-press",
+            "name": "Snatch / Press",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 5
+          },
+          {
+            "id": "ifrit-r1-clean-squat",
+            "name": "Clean / Squat",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 5
+          },
+          {
+            "id": "ifrit-r1-swing",
+            "name": "Swing",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 5
+          },
+          {
+            "id": "ifrit-r1-deadlift-side",
+            "name": "Deadlift Side",
+            "damageCoefficient": 12,
+            "damageType": "flat",
+            "targetReps": 5
+          },
+          {
+            "id": "ifrit-r1-farmer-carry",
+            "name": "Farmer Carry",
+            "damageCoefficient": 3,
+            "damageType": "per_second",
+            "targetDistanceFt": 100,
+            "durationSeconds": 30
+          }
+        ]
+      },
+      {
+        "label": "Round II — The Blaze",
+        "exercises": [
+          {
+            "id": "ifrit-r2-snatch-press",
+            "name": "Snatch / Press",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 5
+          },
+          {
+            "id": "ifrit-r2-clean-squat",
+            "name": "Clean / Squat",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 5
+          },
+          {
+            "id": "ifrit-r2-swing",
+            "name": "Swing",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 5
+          },
+          {
+            "id": "ifrit-r2-deadlift-side",
+            "name": "Deadlift Side",
+            "damageCoefficient": 12,
+            "damageType": "flat",
+            "targetReps": 5
+          },
+          {
+            "id": "ifrit-r2-farmer-carry",
+            "name": "Farmer Carry",
+            "damageCoefficient": 3,
+            "damageType": "per_second",
+            "targetDistanceFt": 100,
+            "durationSeconds": 30
+          }
+        ]
+      },
+      {
+        "label": "Round III — The Reckoning",
+        "exercises": [
+          {
+            "id": "ifrit-finisher-snatch-thruster",
+            "name": "Snatch / Thruster",
+            "damageCoefficient": 6,
+            "damageType": "per_rep",
+            "targetReps": 30
+          }
+        ]
+      }
+    ],
+    "finisher": {
+      "name": "The Reckoning",
+      "scheme": "30 Reps AFAP"
+    }
+  },
+  "endless-grind": {
+    "id": "endless-grind",
+    "name": "The Endless Grind",
+    "description": "Five rounds that never repeat the same shape twice — two bells, then one, then both hands trading off. Grit is not a burst. It is twenty-five minutes of not stopping.",
+    "difficulty": 5,
+    "estimatedMinutesRange": [
+      21,
+      26
+    ],
+    "gearWeightKg": 20,
+    "gearCount": 2,
+    "rounds": 5,
+    "restSeconds": 105,
+    "roundBonusDamage": 65,
+    "targetTimeSeconds": 1100,
+    "focus": [
+      "Muscular Endurance",
+      "Grip Under Fatigue",
+      "Sustained Output"
+    ],
+    "exercises": [
+      {
+        "id": "chimera-snatch",
+        "name": "Double Snatch",
+        "damageCoefficient": 16,
+        "damageType": "flat",
+        "targetReps": 5
+      },
+      {
+        "id": "chimera-thruster",
+        "name": "Double Thruster",
+        "damageCoefficient": 14,
+        "damageType": "flat",
+        "targetReps": 5
+      },
+      {
+        "id": "chimera-swing",
+        "name": "Double Swing",
+        "damageCoefficient": 10,
+        "damageType": "flat",
+        "targetReps": 5
+      },
+      {
+        "id": "chimera-snatch-thruster",
+        "name": "Snatch / Thruster",
+        "damageCoefficient": 16,
+        "damageType": "flat",
+        "targetReps": 5,
+        "displayName": "Single Snatch → Single Thruster ×5/hand",
+        "usesGearCount": 1
+      },
+      {
+        "id": "chimera-alt-swing",
+        "name": "Switching Swing",
+        "damageCoefficient": 10,
+        "damageType": "flat",
+        "targetReps": 10,
+        "displayName": "Switching Swing ×5/hand",
+        "usesGearCount": 1
+      }
+    ],
+    "finisher": {
+      "name": "The Grind",
+      "scheme": "5 Rounds"
+    }
+  },
+  "final-second": {
+    "id": "final-second",
+    "name": "The Final Second",
+    "description": "Five exercises, one minute each, four times through. The window does not wait for the last rep.",
+    "difficulty": 4,
+    "estimatedMinutesRange": [
+      14,
+      19
+    ],
+    "gearWeightKg": 16,
+    "gearCount": 2,
+    "rounds": 4,
+    "restSeconds": 90,
+    "roundBonusDamage": 55,
+    "targetTimeSeconds": 960,
+    "focus": [
+      "Pacing Under Pressure",
+      "Time Management",
+      "Movement Efficiency"
+    ],
+    "exercises": [
+      {
+        "id": "chronos-snatch",
+        "name": "Double Snatch",
+        "damageCoefficient": 16,
+        "damageType": "flat",
+        "targetReps": 11
+      },
+      {
+        "id": "chronos-lunge",
+        "name": "Reverse Lunge",
+        "damageCoefficient": 10,
+        "damageType": "flat",
+        "targetReps": 12
+      },
+      {
+        "id": "chronos-floor-press",
+        "name": "Floor Press",
+        "damageCoefficient": 14,
+        "damageType": "flat",
+        "targetReps": 11,
+        "usesGearCount": 1
+      },
+      {
+        "id": "chronos-pull-through",
+        "name": "Plank + KB Pull Through",
+        "damageCoefficient": 10,
+        "damageType": "flat",
+        "targetReps": 11,
+        "usesGearCount": 1
+      },
+      {
+        "id": "chronos-swing",
+        "name": "Double Swing",
+        "damageCoefficient": 10,
+        "damageType": "flat",
+        "targetReps": 11
+      }
+    ],
+    "finisher": {
+      "name": "The Last Window",
+      "scheme": "4 Rounds"
+    }
+  },
+  "mirror-trial": {
+    "id": "mirror-trial",
+    "name": "The Mirror Trial",
+    "description": "Left side, then right — the same thirty seconds of work, twice over, five times through. No side gets to skip its turn.",
+    "difficulty": 4,
+    "estimatedMinutesRange": [
+      22,
+      28
+    ],
+    "gearWeightKg": 20,
+    "gearCount": 1,
+    "rounds": 10,
+    "restSeconds": 30,
+    "roundBonusDamage": 28,
+    "targetTimeSeconds": 1500,
+    "focus": [
+      "Bilateral Balance",
+      "Grip Endurance",
+      "Unbroken Pacing"
+    ],
+    "exercises": [
+      {
+        "id": "janus-r1-left-clean-press",
+        "name": "Clean & Press",
+        "damageCoefficient": 16,
+        "damageType": "flat",
+        "targetReps": 8
+      },
+      {
+        "id": "janus-r1-left-swing",
+        "name": "Swing",
+        "damageCoefficient": 10,
+        "damageType": "flat",
+        "targetReps": 15
+      }
+    ],
+    "sections": [
+      {
+        "label": "Round 1 — Left",
+        "exercises": [
+          {
+            "id": "janus-r1-left-clean-press",
+            "name": "Clean & Press",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 8
+          },
+          {
+            "id": "janus-r1-left-swing",
+            "name": "Swing",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 15
+          }
+        ]
+      },
+      {
+        "label": "Round 1 — Right",
+        "exercises": [
+          {
+            "id": "janus-r1-right-clean-press",
+            "name": "Clean & Press",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 8
+          },
+          {
+            "id": "janus-r1-right-swing",
+            "name": "Swing",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 15
+          }
+        ]
+      },
+      {
+        "label": "Round 2 — Left",
+        "exercises": [
+          {
+            "id": "janus-r2-left-clean-press",
+            "name": "Clean & Press",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 8
+          },
+          {
+            "id": "janus-r2-left-swing",
+            "name": "Swing",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 15
+          }
+        ]
+      },
+      {
+        "label": "Round 2 — Right",
+        "exercises": [
+          {
+            "id": "janus-r2-right-clean-press",
+            "name": "Clean & Press",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 8
+          },
+          {
+            "id": "janus-r2-right-swing",
+            "name": "Swing",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 15
+          }
+        ]
+      },
+      {
+        "label": "Round 3 — Left",
+        "exercises": [
+          {
+            "id": "janus-r3-left-clean-press",
+            "name": "Clean & Press",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 8
+          },
+          {
+            "id": "janus-r3-left-swing",
+            "name": "Swing",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 15
+          }
+        ]
+      },
+      {
+        "label": "Round 3 — Right",
+        "exercises": [
+          {
+            "id": "janus-r3-right-clean-press",
+            "name": "Clean & Press",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 8
+          },
+          {
+            "id": "janus-r3-right-swing",
+            "name": "Swing",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 15
+          }
+        ]
+      },
+      {
+        "label": "Round 4 — Left",
+        "exercises": [
+          {
+            "id": "janus-r4-left-clean-press",
+            "name": "Clean & Press",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 8
+          },
+          {
+            "id": "janus-r4-left-swing",
+            "name": "Swing",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 15
+          }
+        ]
+      },
+      {
+        "label": "Round 4 — Right",
+        "exercises": [
+          {
+            "id": "janus-r4-right-clean-press",
+            "name": "Clean & Press",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 8
+          },
+          {
+            "id": "janus-r4-right-swing",
+            "name": "Swing",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 15
+          }
+        ]
+      },
+      {
+        "label": "Round 5 — Left",
+        "exercises": [
+          {
+            "id": "janus-r5-left-clean-press",
+            "name": "Clean & Press",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 8
+          },
+          {
+            "id": "janus-r5-left-swing",
+            "name": "Swing",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 15
+          }
+        ]
+      },
+      {
+        "label": "Round 5 — Right",
+        "exercises": [
+          {
+            "id": "janus-r5-right-clean-press",
+            "name": "Clean & Press",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 8
+          },
+          {
+            "id": "janus-r5-right-swing",
+            "name": "Swing",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 15
+          }
+        ]
+      }
+    ],
+    "finisher": {
+      "name": "The Other Face",
+      "scheme": "5 Rounds Each Side"
+    }
+  },
+  "twin-assault": {
+    "id": "twin-assault",
+    "name": "The Twin Assault",
+    "description": "One head from above, one from the ground. Five rounds each, and neither head is the easy one.",
+    "difficulty": 5,
+    "estimatedMinutesRange": [
+      16,
+      22
+    ],
+    "gearWeightKg": 20,
+    "gearCount": 2,
+    "rounds": 10,
+    "restSeconds": 90,
+    "roundBonusDamage": 30,
+    "targetTimeSeconds": 1160,
+    "focus": [
+      "Total-Body Power",
+      "Technical Consistency",
+      "Controlled Intensity"
+    ],
+    "exercises": [
+      {
+        "id": "orthrus-seq1-complex",
+        "name": "Snatch / Clean / Jerk",
+        "damageCoefficient": 10,
+        "damageType": "per_rep",
+        "targetReps": 5,
+        "usesGearCount": 1
+      }
+    ],
+    "sections": [
+      {
+        "label": "Sequence I — Round 1",
+        "exercises": [
+          {
+            "id": "orthrus-seq1-r1-complex",
+            "name": "Snatch / Clean / Jerk",
+            "damageCoefficient": 10,
+            "damageType": "per_rep",
+            "targetReps": 5,
+            "usesGearCount": 1
+          }
+        ]
+      },
+      {
+        "label": "Sequence I — Round 2",
+        "exercises": [
+          {
+            "id": "orthrus-seq1-r2-complex",
+            "name": "Snatch / Clean / Jerk",
+            "damageCoefficient": 10,
+            "damageType": "per_rep",
+            "targetReps": 5,
+            "usesGearCount": 1
+          }
+        ]
+      },
+      {
+        "label": "Sequence I — Round 3",
+        "exercises": [
+          {
+            "id": "orthrus-seq1-r3-complex",
+            "name": "Snatch / Clean / Jerk",
+            "damageCoefficient": 10,
+            "damageType": "per_rep",
+            "targetReps": 5,
+            "usesGearCount": 1
+          }
+        ]
+      },
+      {
+        "label": "Sequence I — Round 4",
+        "exercises": [
+          {
+            "id": "orthrus-seq1-r4-complex",
+            "name": "Snatch / Clean / Jerk",
+            "damageCoefficient": 10,
+            "damageType": "per_rep",
+            "targetReps": 5,
+            "usesGearCount": 1
+          }
+        ]
+      },
+      {
+        "label": "Sequence I — Round 5",
+        "exercises": [
+          {
+            "id": "orthrus-seq1-r5-complex",
+            "name": "Snatch / Clean / Jerk",
+            "damageCoefficient": 10,
+            "damageType": "per_rep",
+            "targetReps": 5,
+            "usesGearCount": 1
+          }
+        ]
+      },
+      {
+        "label": "Sequence II — Round 1",
+        "exercises": [
+          {
+            "id": "orthrus-seq2-r1-complex",
+            "name": "Row / Clean / Thruster",
+            "damageCoefficient": 10,
+            "damageType": "per_rep",
+            "targetReps": 5,
+            "usesGearCount": 1
+          }
+        ]
+      },
+      {
+        "label": "Sequence II — Round 2",
+        "exercises": [
+          {
+            "id": "orthrus-seq2-r2-complex",
+            "name": "Row / Clean / Thruster",
+            "damageCoefficient": 10,
+            "damageType": "per_rep",
+            "targetReps": 5,
+            "usesGearCount": 1
+          }
+        ]
+      },
+      {
+        "label": "Sequence II — Round 3",
+        "exercises": [
+          {
+            "id": "orthrus-seq2-r3-complex",
+            "name": "Row / Clean / Thruster",
+            "damageCoefficient": 10,
+            "damageType": "per_rep",
+            "targetReps": 5,
+            "usesGearCount": 1
+          }
+        ]
+      },
+      {
+        "label": "Sequence II — Round 4",
+        "exercises": [
+          {
+            "id": "orthrus-seq2-r4-complex",
+            "name": "Row / Clean / Thruster",
+            "damageCoefficient": 10,
+            "damageType": "per_rep",
+            "targetReps": 5,
+            "usesGearCount": 1
+          }
+        ]
+      },
+      {
+        "label": "Sequence II — Round 5",
+        "exercises": [
+          {
+            "id": "orthrus-seq2-r5-complex",
+            "name": "Row / Clean / Thruster",
+            "damageCoefficient": 10,
+            "damageType": "per_rep",
+            "targetReps": 5,
+            "usesGearCount": 1
+          }
+        ]
+      }
+    ],
+    "finisher": {
+      "name": "The Second Head",
+      "scheme": "5 + 5 Rounds"
+    }
+  },
+  "unbroken-cycle": {
+    "id": "unbroken-cycle",
+    "name": "The Unbroken Cycle",
+    "description": "Left hand first — three lifts, each one starting back on the ground. Then the right hand rises to the same debt. Ten sides in all, a minute to recover between each: what falls must be raised again, on both sides, before it's over.",
+    "difficulty": 5,
+    "estimatedMinutesRange": [
+      13,
+      18
+    ],
+    "gearWeightKg": 20,
+    "gearCount": 1,
+    "rounds": 10,
+    "restSeconds": 60,
+    "roundBonusDamage": 30,
+    "targetTimeSeconds": 900,
+    "focus": [
+      "Unilateral Strength",
+      "Asymmetric Endurance",
+      "Grip Under Fatigue"
+    ],
+    "exercises": [
+      {
+        "id": "agony-r1-left-snatch-floor",
+        "name": "Snatch from the Floor",
+        "damageCoefficient": 8,
+        "damageType": "per_rep",
+        "targetReps": 3
+      },
+      {
+        "id": "agony-r1-left-clean-floor",
+        "name": "Clean from the Floor",
+        "damageCoefficient": 8,
+        "damageType": "per_rep",
+        "targetReps": 3
+      },
+      {
+        "id": "agony-r1-left-clean-thruster",
+        "name": "Clean from the Floor / Thruster",
+        "damageCoefficient": 10,
+        "damageType": "per_rep",
+        "targetReps": 3
+      }
+    ],
+    "sections": [
+      {
+        "label": "Round 1 — Left Hand",
+        "exercises": [
+          {
+            "id": "agony-r1-left-snatch-floor",
+            "name": "Snatch from the Floor",
+            "damageCoefficient": 8,
+            "damageType": "per_rep",
+            "targetReps": 3
+          },
+          {
+            "id": "agony-r1-left-clean-floor",
+            "name": "Clean from the Floor",
+            "damageCoefficient": 8,
+            "damageType": "per_rep",
+            "targetReps": 3
+          },
+          {
+            "id": "agony-r1-left-clean-thruster",
+            "name": "Clean from the Floor / Thruster",
+            "damageCoefficient": 10,
+            "damageType": "per_rep",
+            "targetReps": 3
+          }
+        ]
+      },
+      {
+        "label": "Round 1 — Right Hand",
+        "exercises": [
+          {
+            "id": "agony-r1-right-snatch-floor",
+            "name": "Snatch from the Floor",
+            "damageCoefficient": 8,
+            "damageType": "per_rep",
+            "targetReps": 3
+          },
+          {
+            "id": "agony-r1-right-clean-floor",
+            "name": "Clean from the Floor",
+            "damageCoefficient": 8,
+            "damageType": "per_rep",
+            "targetReps": 3
+          },
+          {
+            "id": "agony-r1-right-clean-thruster",
+            "name": "Clean from the Floor / Thruster",
+            "damageCoefficient": 10,
+            "damageType": "per_rep",
+            "targetReps": 3
+          }
+        ]
+      },
+      {
+        "label": "Round 2 — Left Hand",
+        "exercises": [
+          {
+            "id": "agony-r2-left-snatch-floor",
+            "name": "Snatch from the Floor",
+            "damageCoefficient": 8,
+            "damageType": "per_rep",
+            "targetReps": 3
+          },
+          {
+            "id": "agony-r2-left-clean-floor",
+            "name": "Clean from the Floor",
+            "damageCoefficient": 8,
+            "damageType": "per_rep",
+            "targetReps": 3
+          },
+          {
+            "id": "agony-r2-left-clean-thruster",
+            "name": "Clean from the Floor / Thruster",
+            "damageCoefficient": 10,
+            "damageType": "per_rep",
+            "targetReps": 3
+          }
+        ]
+      },
+      {
+        "label": "Round 2 — Right Hand",
+        "exercises": [
+          {
+            "id": "agony-r2-right-snatch-floor",
+            "name": "Snatch from the Floor",
+            "damageCoefficient": 8,
+            "damageType": "per_rep",
+            "targetReps": 3
+          },
+          {
+            "id": "agony-r2-right-clean-floor",
+            "name": "Clean from the Floor",
+            "damageCoefficient": 8,
+            "damageType": "per_rep",
+            "targetReps": 3
+          },
+          {
+            "id": "agony-r2-right-clean-thruster",
+            "name": "Clean from the Floor / Thruster",
+            "damageCoefficient": 10,
+            "damageType": "per_rep",
+            "targetReps": 3
+          }
+        ]
+      },
+      {
+        "label": "Round 3 — Left Hand",
+        "exercises": [
+          {
+            "id": "agony-r3-left-snatch-floor",
+            "name": "Snatch from the Floor",
+            "damageCoefficient": 8,
+            "damageType": "per_rep",
+            "targetReps": 3
+          },
+          {
+            "id": "agony-r3-left-clean-floor",
+            "name": "Clean from the Floor",
+            "damageCoefficient": 8,
+            "damageType": "per_rep",
+            "targetReps": 3
+          },
+          {
+            "id": "agony-r3-left-clean-thruster",
+            "name": "Clean from the Floor / Thruster",
+            "damageCoefficient": 10,
+            "damageType": "per_rep",
+            "targetReps": 3
+          }
+        ]
+      },
+      {
+        "label": "Round 3 — Right Hand",
+        "exercises": [
+          {
+            "id": "agony-r3-right-snatch-floor",
+            "name": "Snatch from the Floor",
+            "damageCoefficient": 8,
+            "damageType": "per_rep",
+            "targetReps": 3
+          },
+          {
+            "id": "agony-r3-right-clean-floor",
+            "name": "Clean from the Floor",
+            "damageCoefficient": 8,
+            "damageType": "per_rep",
+            "targetReps": 3
+          },
+          {
+            "id": "agony-r3-right-clean-thruster",
+            "name": "Clean from the Floor / Thruster",
+            "damageCoefficient": 10,
+            "damageType": "per_rep",
+            "targetReps": 3
+          }
+        ]
+      },
+      {
+        "label": "Round 4 — Left Hand",
+        "exercises": [
+          {
+            "id": "agony-r4-left-snatch-floor",
+            "name": "Snatch from the Floor",
+            "damageCoefficient": 8,
+            "damageType": "per_rep",
+            "targetReps": 3
+          },
+          {
+            "id": "agony-r4-left-clean-floor",
+            "name": "Clean from the Floor",
+            "damageCoefficient": 8,
+            "damageType": "per_rep",
+            "targetReps": 3
+          },
+          {
+            "id": "agony-r4-left-clean-thruster",
+            "name": "Clean from the Floor / Thruster",
+            "damageCoefficient": 10,
+            "damageType": "per_rep",
+            "targetReps": 3
+          }
+        ]
+      },
+      {
+        "label": "Round 4 — Right Hand",
+        "exercises": [
+          {
+            "id": "agony-r4-right-snatch-floor",
+            "name": "Snatch from the Floor",
+            "damageCoefficient": 8,
+            "damageType": "per_rep",
+            "targetReps": 3
+          },
+          {
+            "id": "agony-r4-right-clean-floor",
+            "name": "Clean from the Floor",
+            "damageCoefficient": 8,
+            "damageType": "per_rep",
+            "targetReps": 3
+          },
+          {
+            "id": "agony-r4-right-clean-thruster",
+            "name": "Clean from the Floor / Thruster",
+            "damageCoefficient": 10,
+            "damageType": "per_rep",
+            "targetReps": 3
+          }
+        ]
+      },
+      {
+        "label": "Round 5 — Left Hand",
+        "exercises": [
+          {
+            "id": "agony-r5-left-snatch-floor",
+            "name": "Snatch from the Floor",
+            "damageCoefficient": 8,
+            "damageType": "per_rep",
+            "targetReps": 3
+          },
+          {
+            "id": "agony-r5-left-clean-floor",
+            "name": "Clean from the Floor",
+            "damageCoefficient": 8,
+            "damageType": "per_rep",
+            "targetReps": 3
+          },
+          {
+            "id": "agony-r5-left-clean-thruster",
+            "name": "Clean from the Floor / Thruster",
+            "damageCoefficient": 10,
+            "damageType": "per_rep",
+            "targetReps": 3
+          }
+        ]
+      },
+      {
+        "label": "Round 5 — Right Hand",
+        "exercises": [
+          {
+            "id": "agony-r5-right-snatch-floor",
+            "name": "Snatch from the Floor",
+            "damageCoefficient": 8,
+            "damageType": "per_rep",
+            "targetReps": 3
+          },
+          {
+            "id": "agony-r5-right-clean-floor",
+            "name": "Clean from the Floor",
+            "damageCoefficient": 8,
+            "damageType": "per_rep",
+            "targetReps": 3
+          },
+          {
+            "id": "agony-r5-right-clean-thruster",
+            "name": "Clean from the Floor / Thruster",
+            "damageCoefficient": 10,
+            "damageType": "per_rep",
+            "targetReps": 3
+          }
+        ]
+      }
+    ],
+    "finisher": {
+      "name": "The Other Arm",
+      "scheme": "5 Rounds Each Side"
+    }
+  },
+  "twin-engine": {
+    "id": "twin-engine",
+    "name": "The Twin Engine",
+    "description": "One side, then the other, then both bells together — nothing here stays unilateral or bilateral long enough to get comfortable. Five rounds, every pattern kettlebells know.",
+    "difficulty": 5,
+    "estimatedMinutesRange": [
+      16,
+      21
+    ],
+    "gearWeightKg": 18,
+    "gearCount": 2,
+    "rounds": 5,
+    "restSeconds": 90,
+    "roundBonusDamage": 65,
+    "targetTimeSeconds": 1140,
+    "focus": [
+      "Bilateral/Unilateral Transition",
+      "Total-Body Coordination",
+      "Work Capacity"
+    ],
+    "exercises": [
+      {
+        "id": "ambidexter-alt-clean",
+        "name": "Alternating Double Clean",
+        "damageCoefficient": 14,
+        "damageType": "flat",
+        "targetReps": 4
+      },
+      {
+        "id": "ambidexter-double-clean",
+        "name": "Double Clean",
+        "damageCoefficient": 14,
+        "damageType": "flat",
+        "targetReps": 2
+      },
+      {
+        "id": "ambidexter-lunge",
+        "name": "Reverse Lunge",
+        "damageCoefficient": 10,
+        "damageType": "flat",
+        "targetReps": 4
+      },
+      {
+        "id": "ambidexter-front-squat",
+        "name": "Double Front Squat",
+        "damageCoefficient": 14,
+        "damageType": "flat",
+        "targetReps": 2
+      },
+      {
+        "id": "ambidexter-alt-press",
+        "name": "Alternating Press",
+        "damageCoefficient": 14,
+        "damageType": "flat",
+        "targetReps": 4
+      },
+      {
+        "id": "ambidexter-push-press",
+        "name": "Double Push Press",
+        "damageCoefficient": 16,
+        "damageType": "flat",
+        "targetReps": 2
+      },
+      {
+        "id": "ambidexter-gorilla-row",
+        "name": "Gorilla Row",
+        "damageCoefficient": 12,
+        "damageType": "flat",
+        "targetReps": 4
+      },
+      {
+        "id": "ambidexter-row",
+        "name": "Double Row",
+        "damageCoefficient": 12,
+        "damageType": "flat",
+        "targetReps": 2
+      },
+      {
+        "id": "ambidexter-swing",
+        "name": "Double Swing",
+        "damageCoefficient": 10,
+        "damageType": "flat",
+        "targetReps": 6
+      },
+      {
+        "id": "ambidexter-carry",
+        "name": "Front Rack Carry",
+        "damageCoefficient": 3,
+        "damageType": "per_second",
+        "targetDistanceFt": 100,
+        "durationSeconds": 60
+      }
+    ],
+    "finisher": {
+      "name": "Both Engines",
+      "scheme": "5 Rounds"
+    }
+  },
+  "living-current": {
+    "id": "living-current",
+    "name": "The Unbroken Chain",
+    "description": "Left hand runs the full chain — swing, clean, lunge, jerk, thruster, snatch — five times without setting the bell down. Then the right hand takes on the same chain, five times more. Five rounds, both hands, no gap anywhere inside the chain itself.",
+    "difficulty": 3,
+    "estimatedMinutesRange": [
+      16,
+      21
+    ],
+    "gearWeightKg": 18,
+    "gearCount": 1,
+    "rounds": 10,
+    "restSeconds": 150,
+    "roundBonusDamage": 50,
+    "targetTimeSeconds": 1098,
+    "focus": [
+      "Continuous Flow",
+      "Movement Transitions",
+      "Pacing"
+    ],
+    "exercises": [
+      {
+        "id": "fluid-r1-left-swing",
+        "name": "Swing",
+        "damageCoefficient": 10,
+        "damageType": "flat",
+        "targetReps": 5
+      },
+      {
+        "id": "fluid-r1-left-clean",
+        "name": "Clean",
+        "damageCoefficient": 14,
+        "damageType": "flat",
+        "targetReps": 5
+      },
+      {
+        "id": "fluid-r1-left-lunge",
+        "name": "Reverse Lunge",
+        "damageCoefficient": 10,
+        "damageType": "flat",
+        "targetReps": 5
+      },
+      {
+        "id": "fluid-r1-left-jerk",
+        "name": "Jerk",
+        "damageCoefficient": 16,
+        "damageType": "flat",
+        "targetReps": 5
+      },
+      {
+        "id": "fluid-r1-left-thruster",
+        "name": "Thruster",
+        "damageCoefficient": 16,
+        "damageType": "flat",
+        "targetReps": 5
+      },
+      {
+        "id": "fluid-r1-left-tactical-snatch",
+        "name": "Tactical Snatch",
+        "damageCoefficient": 16,
+        "damageType": "flat",
+        "targetReps": 5
+      }
+    ],
+    "sections": [
+      {
+        "label": "Round 1 — Left Hand",
+        "exercises": [
+          {
+            "id": "fluid-r1-left-swing",
+            "name": "Swing",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 5
+          },
+          {
+            "id": "fluid-r1-left-clean",
+            "name": "Clean",
+            "damageCoefficient": 14,
+            "damageType": "flat",
+            "targetReps": 5
+          },
+          {
+            "id": "fluid-r1-left-lunge",
+            "name": "Reverse Lunge",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 5
+          },
+          {
+            "id": "fluid-r1-left-jerk",
+            "name": "Jerk",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 5
+          },
+          {
+            "id": "fluid-r1-left-thruster",
+            "name": "Thruster",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 5
+          },
+          {
+            "id": "fluid-r1-left-tactical-snatch",
+            "name": "Tactical Snatch",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 5
+          }
+        ]
+      },
+      {
+        "label": "Round 1 — Right Hand",
+        "exercises": [
+          {
+            "id": "fluid-r1-right-swing",
+            "name": "Swing",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 5
+          },
+          {
+            "id": "fluid-r1-right-clean",
+            "name": "Clean",
+            "damageCoefficient": 14,
+            "damageType": "flat",
+            "targetReps": 5
+          },
+          {
+            "id": "fluid-r1-right-lunge",
+            "name": "Reverse Lunge",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 5
+          },
+          {
+            "id": "fluid-r1-right-jerk",
+            "name": "Jerk",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 5
+          },
+          {
+            "id": "fluid-r1-right-thruster",
+            "name": "Thruster",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 5
+          },
+          {
+            "id": "fluid-r1-right-tactical-snatch",
+            "name": "Tactical Snatch",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 5
+          }
+        ]
+      },
+      {
+        "label": "Round 2 — Left Hand",
+        "exercises": [
+          {
+            "id": "fluid-r2-left-swing",
+            "name": "Swing",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 5
+          },
+          {
+            "id": "fluid-r2-left-clean",
+            "name": "Clean",
+            "damageCoefficient": 14,
+            "damageType": "flat",
+            "targetReps": 5
+          },
+          {
+            "id": "fluid-r2-left-lunge",
+            "name": "Reverse Lunge",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 5
+          },
+          {
+            "id": "fluid-r2-left-jerk",
+            "name": "Jerk",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 5
+          },
+          {
+            "id": "fluid-r2-left-thruster",
+            "name": "Thruster",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 5
+          },
+          {
+            "id": "fluid-r2-left-tactical-snatch",
+            "name": "Tactical Snatch",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 5
+          }
+        ]
+      },
+      {
+        "label": "Round 2 — Right Hand",
+        "exercises": [
+          {
+            "id": "fluid-r2-right-swing",
+            "name": "Swing",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 5
+          },
+          {
+            "id": "fluid-r2-right-clean",
+            "name": "Clean",
+            "damageCoefficient": 14,
+            "damageType": "flat",
+            "targetReps": 5
+          },
+          {
+            "id": "fluid-r2-right-lunge",
+            "name": "Reverse Lunge",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 5
+          },
+          {
+            "id": "fluid-r2-right-jerk",
+            "name": "Jerk",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 5
+          },
+          {
+            "id": "fluid-r2-right-thruster",
+            "name": "Thruster",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 5
+          },
+          {
+            "id": "fluid-r2-right-tactical-snatch",
+            "name": "Tactical Snatch",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 5
+          }
+        ]
+      },
+      {
+        "label": "Round 3 — Left Hand",
+        "exercises": [
+          {
+            "id": "fluid-r3-left-swing",
+            "name": "Swing",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 5
+          },
+          {
+            "id": "fluid-r3-left-clean",
+            "name": "Clean",
+            "damageCoefficient": 14,
+            "damageType": "flat",
+            "targetReps": 5
+          },
+          {
+            "id": "fluid-r3-left-lunge",
+            "name": "Reverse Lunge",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 5
+          },
+          {
+            "id": "fluid-r3-left-jerk",
+            "name": "Jerk",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 5
+          },
+          {
+            "id": "fluid-r3-left-thruster",
+            "name": "Thruster",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 5
+          },
+          {
+            "id": "fluid-r3-left-tactical-snatch",
+            "name": "Tactical Snatch",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 5
+          }
+        ]
+      },
+      {
+        "label": "Round 3 — Right Hand",
+        "exercises": [
+          {
+            "id": "fluid-r3-right-swing",
+            "name": "Swing",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 5
+          },
+          {
+            "id": "fluid-r3-right-clean",
+            "name": "Clean",
+            "damageCoefficient": 14,
+            "damageType": "flat",
+            "targetReps": 5
+          },
+          {
+            "id": "fluid-r3-right-lunge",
+            "name": "Reverse Lunge",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 5
+          },
+          {
+            "id": "fluid-r3-right-jerk",
+            "name": "Jerk",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 5
+          },
+          {
+            "id": "fluid-r3-right-thruster",
+            "name": "Thruster",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 5
+          },
+          {
+            "id": "fluid-r3-right-tactical-snatch",
+            "name": "Tactical Snatch",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 5
+          }
+        ]
+      },
+      {
+        "label": "Round 4 — Left Hand",
+        "exercises": [
+          {
+            "id": "fluid-r4-left-swing",
+            "name": "Swing",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 5
+          },
+          {
+            "id": "fluid-r4-left-clean",
+            "name": "Clean",
+            "damageCoefficient": 14,
+            "damageType": "flat",
+            "targetReps": 5
+          },
+          {
+            "id": "fluid-r4-left-lunge",
+            "name": "Reverse Lunge",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 5
+          },
+          {
+            "id": "fluid-r4-left-jerk",
+            "name": "Jerk",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 5
+          },
+          {
+            "id": "fluid-r4-left-thruster",
+            "name": "Thruster",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 5
+          },
+          {
+            "id": "fluid-r4-left-tactical-snatch",
+            "name": "Tactical Snatch",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 5
+          }
+        ]
+      },
+      {
+        "label": "Round 4 — Right Hand",
+        "exercises": [
+          {
+            "id": "fluid-r4-right-swing",
+            "name": "Swing",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 5
+          },
+          {
+            "id": "fluid-r4-right-clean",
+            "name": "Clean",
+            "damageCoefficient": 14,
+            "damageType": "flat",
+            "targetReps": 5
+          },
+          {
+            "id": "fluid-r4-right-lunge",
+            "name": "Reverse Lunge",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 5
+          },
+          {
+            "id": "fluid-r4-right-jerk",
+            "name": "Jerk",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 5
+          },
+          {
+            "id": "fluid-r4-right-thruster",
+            "name": "Thruster",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 5
+          },
+          {
+            "id": "fluid-r4-right-tactical-snatch",
+            "name": "Tactical Snatch",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 5
+          }
+        ]
+      },
+      {
+        "label": "Round 5 — Left Hand",
+        "exercises": [
+          {
+            "id": "fluid-r5-left-swing",
+            "name": "Swing",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 5
+          },
+          {
+            "id": "fluid-r5-left-clean",
+            "name": "Clean",
+            "damageCoefficient": 14,
+            "damageType": "flat",
+            "targetReps": 5
+          },
+          {
+            "id": "fluid-r5-left-lunge",
+            "name": "Reverse Lunge",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 5
+          },
+          {
+            "id": "fluid-r5-left-jerk",
+            "name": "Jerk",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 5
+          },
+          {
+            "id": "fluid-r5-left-thruster",
+            "name": "Thruster",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 5
+          },
+          {
+            "id": "fluid-r5-left-tactical-snatch",
+            "name": "Tactical Snatch",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 5
+          }
+        ]
+      },
+      {
+        "label": "Round 5 — Right Hand",
+        "exercises": [
+          {
+            "id": "fluid-r5-right-swing",
+            "name": "Swing",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 5
+          },
+          {
+            "id": "fluid-r5-right-clean",
+            "name": "Clean",
+            "damageCoefficient": 14,
+            "damageType": "flat",
+            "targetReps": 5
+          },
+          {
+            "id": "fluid-r5-right-lunge",
+            "name": "Reverse Lunge",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 5
+          },
+          {
+            "id": "fluid-r5-right-jerk",
+            "name": "Jerk",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 5
+          },
+          {
+            "id": "fluid-r5-right-thruster",
+            "name": "Thruster",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 5
+          },
+          {
+            "id": "fluid-r5-right-tactical-snatch",
+            "name": "Tactical Snatch",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 5
+          }
+        ]
+      }
+    ],
+    "finisher": {
+      "name": "Left, Right, Repeat",
+      "scheme": "5 Rounds Each Side"
+    }
+  },
+  "iron-descent": {
+    "id": "iron-descent",
+    "name": "The Risen",
+    "description": "Deadlift it off the floor, pull it up, clean it into a push, thruster it, snatch it — the whole chain, twice through. Then every movement is made to answer alone, two reps each, with nothing left to carry it. The floor does not stay empty long.",
+    "difficulty": 4,
+    "estimatedMinutesRange": [
+      6,
+      10
+    ],
+    "gearWeightKg": 20,
+    "gearCount": 1,
+    "rounds": 1,
+    "restSeconds": 90,
+    "roundBonusDamage": 170,
+    "targetTimeSeconds": 450,
+    "focus": [
+      "Floor-to-Overhead Power",
+      "Technical Precision",
+      "Dead-Stop Strength"
+    ],
+    "exercises": [
+      {
+        "id": "moloch-chain1-deadlift",
+        "name": "Floor Deadlift",
+        "displayName": "Floor Deadlift (Chain 1/2)",
+        "damageCoefficient": 10,
+        "damageType": "per_rep",
+        "targetReps": 1
+      },
+      {
+        "id": "moloch-chain1-pull",
+        "name": "Floor Pull",
+        "displayName": "Floor Pull (Chain 1/2)",
+        "damageCoefficient": 12,
+        "damageType": "per_rep",
+        "targetReps": 1
+      },
+      {
+        "id": "moloch-chain1-clean-push",
+        "name": "Floor Clean / Push",
+        "displayName": "Floor Clean / Push (Chain 1/2)",
+        "damageCoefficient": 14,
+        "damageType": "per_rep",
+        "targetReps": 1
+      },
+      {
+        "id": "moloch-chain1-thruster",
+        "name": "Floor Thruster",
+        "displayName": "Floor Thruster (Chain 1/2)",
+        "damageCoefficient": 14,
+        "damageType": "per_rep",
+        "targetReps": 1
+      },
+      {
+        "id": "moloch-chain1-snatch",
+        "name": "Snatch from the Floor",
+        "displayName": "Snatch from the Floor (Chain 1/2)",
+        "damageCoefficient": 16,
+        "damageType": "per_rep",
+        "targetReps": 1
+      },
+      {
+        "id": "moloch-chain2-deadlift",
+        "name": "Floor Deadlift",
+        "displayName": "Floor Deadlift (Chain 2/2)",
+        "damageCoefficient": 10,
+        "damageType": "per_rep",
+        "targetReps": 1
+      },
+      {
+        "id": "moloch-chain2-pull",
+        "name": "Floor Pull",
+        "displayName": "Floor Pull (Chain 2/2)",
+        "damageCoefficient": 12,
+        "damageType": "per_rep",
+        "targetReps": 1
+      },
+      {
+        "id": "moloch-chain2-clean-push",
+        "name": "Floor Clean / Push",
+        "displayName": "Floor Clean / Push (Chain 2/2)",
+        "damageCoefficient": 14,
+        "damageType": "per_rep",
+        "targetReps": 1
+      },
+      {
+        "id": "moloch-chain2-thruster",
+        "name": "Floor Thruster",
+        "displayName": "Floor Thruster (Chain 2/2)",
+        "damageCoefficient": 14,
+        "damageType": "per_rep",
+        "targetReps": 1
+      },
+      {
+        "id": "moloch-chain2-snatch",
+        "name": "Snatch from the Floor",
+        "displayName": "Snatch from the Floor (Chain 2/2)",
+        "damageCoefficient": 16,
+        "damageType": "per_rep",
+        "targetReps": 1
+      },
+      {
+        "id": "moloch-complex-deadlift",
+        "name": "Floor Deadlift",
+        "displayName": "Floor Deadlift (Complex ×2)",
+        "damageCoefficient": 10,
+        "damageType": "per_rep",
+        "targetReps": 2
+      },
+      {
+        "id": "moloch-complex-pull",
+        "name": "Floor Pull",
+        "displayName": "Floor Pull (Complex ×2)",
+        "damageCoefficient": 12,
+        "damageType": "per_rep",
+        "targetReps": 2
+      },
+      {
+        "id": "moloch-complex-clean-push",
+        "name": "Floor Clean / Push",
+        "displayName": "Floor Clean / Push (Complex ×2)",
+        "damageCoefficient": 14,
+        "damageType": "per_rep",
+        "targetReps": 2
+      },
+      {
+        "id": "moloch-complex-thruster",
+        "name": "Floor Thruster",
+        "displayName": "Floor Thruster (Complex ×2)",
+        "damageCoefficient": 14,
+        "damageType": "per_rep",
+        "targetReps": 2
+      },
+      {
+        "id": "moloch-complex-snatch",
+        "name": "Snatch from the Floor",
+        "displayName": "Snatch from the Floor (Complex ×2)",
+        "damageCoefficient": 16,
+        "damageType": "per_rep",
+        "targetReps": 2
+      }
+    ],
+    "finisher": {
+      "name": "The Ancient Machine",
+      "scheme": "2 Chains"
+    }
+  },
+  "war-engine": {
+    "id": "war-engine",
+    "name": "The Breaking",
+    "description": "Swing, jerk, pull, recover — fifteen times through with no wasted motion. No single round is hard. Round fifteen is a different question.",
+    "difficulty": 5,
+    "estimatedMinutesRange": [
+      16,
+      20
+    ],
+    "gearWeightKg": 20,
+    "gearCount": 2,
+    "rounds": 15,
+    "restSeconds": 30,
+    "roundBonusDamage": 55,
+    "targetTimeSeconds": 1050,
+    "emomSeconds": 30,
+    "focus": [
+      "Interval Pacing",
+      "Repeatable Power",
+      "Mechanical Consistency"
+    ],
+    "exercises": [
+      {
+        "id": "ares-swing",
+        "name": "Double Swing",
+        "damageCoefficient": 10,
+        "damageType": "flat",
+        "targetReps": 5
+      },
+      {
+        "id": "ares-jerk",
+        "name": "Double Jerk",
+        "damageCoefficient": 16,
+        "damageType": "flat",
+        "targetReps": 5
+      },
+      {
+        "id": "ares-pull",
+        "name": "Double High Pull",
+        "damageCoefficient": 12,
+        "damageType": "flat",
+        "targetReps": 5
+      }
+    ],
+    "finisher": {
+      "name": "Round Fifteen",
+      "scheme": "15 Rounds"
+    }
+  },
+  "endless-spiral": {
+    "id": "endless-spiral",
+    "name": "The Wraith",
+    "description": "Snatch, overhead lunge, jerk, windmill, swing — one hand completes the full chain, then the other answers for the same current. The danger was never one movement. It's losing the chain in the moment it changes hands.",
+    "difficulty": 3,
+    "estimatedMinutesRange": [
+      5,
+      8
+    ],
+    "gearWeightKg": 20,
+    "gearCount": 1,
+    "rounds": 2,
+    "restSeconds": 105,
+    "roundBonusDamage": 85,
+    "targetTimeSeconds": 385,
+    "focus": [
+      "Continuous Flow",
+      "Overhead Stability",
+      "Bilateral Symmetry"
+    ],
+    "exercises": [
+      {
+        "id": "aether-left-snatch",
+        "name": "Snatch",
+        "damageCoefficient": 16,
+        "damageType": "flat",
+        "targetReps": 5
+      },
+      {
+        "id": "aether-left-overhead-lunge",
+        "name": "Overhead Lunge",
+        "damageCoefficient": 12,
+        "damageType": "flat",
+        "targetReps": 5
+      },
+      {
+        "id": "aether-left-jerk",
+        "name": "Jerk",
+        "damageCoefficient": 16,
+        "damageType": "flat",
+        "targetReps": 5
+      },
+      {
+        "id": "aether-left-windmill",
+        "name": "Windmill",
+        "damageCoefficient": 10,
+        "damageType": "flat",
+        "targetReps": 5
+      },
+      {
+        "id": "aether-left-swing",
+        "name": "Swing",
+        "damageCoefficient": 10,
+        "damageType": "flat",
+        "targetReps": 5
+      }
+    ],
+    "sections": [
+      {
+        "label": "Left Hand",
+        "exercises": [
+          {
+            "id": "aether-left-snatch",
+            "name": "Snatch",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 5
+          },
+          {
+            "id": "aether-left-overhead-lunge",
+            "name": "Overhead Lunge",
+            "damageCoefficient": 12,
+            "damageType": "flat",
+            "targetReps": 5
+          },
+          {
+            "id": "aether-left-jerk",
+            "name": "Jerk",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 5
+          },
+          {
+            "id": "aether-left-windmill",
+            "name": "Windmill",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 5
+          },
+          {
+            "id": "aether-left-swing",
+            "name": "Swing",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 5
+          }
+        ]
+      },
+      {
+        "label": "Right Hand",
+        "exercises": [
+          {
+            "id": "aether-right-snatch",
+            "name": "Snatch",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 5
+          },
+          {
+            "id": "aether-right-overhead-lunge",
+            "name": "Overhead Lunge",
+            "damageCoefficient": 12,
+            "damageType": "flat",
+            "targetReps": 5
+          },
+          {
+            "id": "aether-right-jerk",
+            "name": "Jerk",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 5
+          },
+          {
+            "id": "aether-right-windmill",
+            "name": "Windmill",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 5
+          },
+          {
+            "id": "aether-right-swing",
+            "name": "Swing",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 5
+          }
+        ]
+      }
+    ],
+    "finisher": {
+      "name": "The Other Current",
+      "scheme": "Left → Right"
+    }
+  },
+  "mammoth-emom": {
+    "id": "mammoth-emom",
+    "name": "Mammoth Complex",
+    "description": "An EMOM complex — five kettlebell movements against a three-minute clock, five rounds. Whatever time is left after the work is yours; the next minute starts whether you're ready or not.",
+    "difficulty": 4,
+    "estimatedMinutesRange": [
+      15,
+      15
+    ],
+    "gearWeightKg": 16,
+    "gearCount": 2,
+    "rounds": 5,
+    "restSeconds": 0,
+    "roundBonusDamage": 55,
+    "targetTimeSeconds": 900,
+    "focus": [
+      "Conditioning",
+      "Full-Body Power",
+      "Pacing"
+    ],
+    "exercises": [
+      {
+        "id": "mammoth-burpee-kb",
+        "name": "Burpee → Kettlebell",
+        "damageCoefficient": 3,
+        "damageType": "per_second",
+        "durationSeconds": 36
+      },
+      {
+        "id": "mammoth-long-hike-snatch",
+        "name": "Long-Hike Snatch",
+        "damageCoefficient": 3,
+        "damageType": "per_second",
+        "durationSeconds": 36
+      },
+      {
+        "id": "mammoth-thruster",
+        "name": "Thruster",
+        "damageCoefficient": 3,
+        "damageType": "per_second",
+        "durationSeconds": 36,
+        "usesGearCount": 1
+      },
+      {
+        "id": "mammoth-long-hike-clean",
+        "name": "Long-Hike Clean",
+        "damageCoefficient": 3,
+        "damageType": "per_second",
+        "durationSeconds": 36
+      },
+      {
+        "id": "mammoth-gorilla-row",
+        "name": "Gorilla Row",
+        "damageCoefficient": 3,
+        "damageType": "per_second",
+        "durationSeconds": 36
+      }
+    ],
+    "finisher": {
+      "name": "The Clock",
+      "scheme": "EMOM × 5 Rounds"
+    }
+  },
+  "basilisk-confrontation": {
+    "id": "basilisk-confrontation",
+    "name": "Basilisk Confrontation",
+    "description": "PROVISIONAL PRESCRIPTION — the movement sequence below is locked, but the round count, rest, and overall format (fixed rounds, EMOM, or time-capped) have not been finalized and are pending physical testing. Rounds/rest/roundBonusDamage/targetTimeSeconds here are a reasonable placeholder only — see PROJECT_CONTEXT.md for what to change once a final prescription is set. Burpee, then Clean → Jerk. Deadlift, then Clean → Jerk again. Deep Snatch, then Clean → Jerk a third time. The same confrontation, three times a round, with more fatigue in your hands each time you arrive at it.",
+    "difficulty": 3,
+    "estimatedMinutesRange": [
+      12,
+      18
+    ],
+    "gearWeightKg": 16,
+    "gearCount": 2,
+    "rounds": 5,
+    "restSeconds": 120,
+    "roundBonusDamage": 55,
+    "targetTimeSeconds": 900,
+    "focus": [
+      "Technical Composure",
+      "Repeated Confrontation",
+      "Overhead Power"
+    ],
+    "exercises": [
+      {
+        "id": "basilisk-burpee",
+        "name": "Burpee",
+        "damageCoefficient": 12,
+        "damageType": "flat",
+        "targetReps": 4
+      },
+      {
+        "id": "basilisk-clean-jerk-1",
+        "name": "Clean → Jerk",
+        "damageCoefficient": 16,
+        "damageType": "flat",
+        "targetReps": 2
+      },
+      {
+        "id": "basilisk-deadlift",
+        "name": "Deadlift",
+        "damageCoefficient": 12,
+        "damageType": "flat",
+        "targetReps": 4
+      },
+      {
+        "id": "basilisk-clean-jerk-2",
+        "name": "Clean → Jerk",
+        "damageCoefficient": 16,
+        "damageType": "flat",
+        "targetReps": 2
+      },
+      {
+        "id": "basilisk-deep-snatch",
+        "name": "Deep Snatch",
+        "damageCoefficient": 16,
+        "damageType": "flat",
+        "targetReps": 4,
+        "usesGearCount": 1
+      },
+      {
+        "id": "basilisk-clean-jerk-3",
+        "name": "Clean → Jerk",
+        "damageCoefficient": 16,
+        "damageType": "flat",
+        "targetReps": 2
+      }
+    ],
+    "finisher": {
+      "name": "The Return",
+      "scheme": "5 Rounds — TBD"
+    }
+  }
+}

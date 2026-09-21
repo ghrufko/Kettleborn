@@ -1,0 +1,46 @@
+{
+  "id": "basilisk",
+  "name": "Basilisk",
+  "title": "The Same Threat, Again",
+  "description": "PROVISIONAL ENTRY \u2014 the movement sequence is locked (Burpee, Clean \u2192 Jerk, Deadlift, Clean \u2192 Jerk, Deep Snatch, Clean \u2192 Jerk), but the round count, rest, and overall format have not been physically tested yet. The Basilisk doesn't chase you. It makes you face it again \u2014 the same Clean \u2192 Jerk, three times a round, and you are more tired each time you arrive at it than the last.",
+  "rarity": "boss",
+  "personality": "steady",
+  "battle": {
+    "hp": 787,
+    "phases": [70, 40],
+    "damageMultiplier": 1.0,
+    "performanceBonuses": {
+      "perfectExecutionDamage": 8,
+      "relentlessAssaultDamage": 35,
+      "relentlessAssaultStreak": 3,
+      "personalRecordDamage": 70,
+      "fastFinishDamage": 50
+    }
+  },
+  "hunts": [
+    {
+      "id": "basilisk-first-encounter",
+      "monsterId": "basilisk",
+      "order": 1,
+      "name": "First Encounter",
+      "locked": false,
+      "workoutId": "basilisk-confrontation"
+    },
+    {
+      "id": "basilisk-second-encounter",
+      "monsterId": "basilisk",
+      "order": 2,
+      "name": "Second Encounter",
+      "locked": false,
+      "workoutId": "basilisk-confrontation"
+    },
+    {
+      "id": "basilisk-final-hunt",
+      "monsterId": "basilisk",
+      "order": 3,
+      "name": "Final Hunt",
+      "locked": false,
+      "workoutId": "basilisk-confrontation"
+    }
+  ]
+}

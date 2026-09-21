@@ -1,0 +1,26 @@
+{
+    "id": "forgotten-trials",
+    "name": "The Abyss",
+    "order": 3,
+    "monsterIds": [
+        "rite",
+        "moloch",
+        "crooked",
+        "ares",
+        "aether",
+        "descent",
+        "ravager"
+    ],
+    "finalBossId": null,
+    "unlockRequiresCampaignId": null,
+    "tagline": "Will. Corruption. Transformation.",
+    "introText": "There is no floor to the Abyss, only further. What waits down here doesn't fight you — it asks how much of yourself you're willing to spend.",
+    "completionText": "The Rite, The Risen, The Crooked, The Breaking, The Wraith, The Descent, and The Ravager are down. The Abyss doesn't celebrate this. It just waits to see what you bring down here next.",
+    "heroImageAsset": "territory-abyss",
+    "territoryLore": {
+        "theTerritory": "There is no floor to the Abyss, only further. What waits down here doesn't fight you — it asks how much of yourself you're willing to spend.",
+        "whatDwellsHere": "Things that were once something else. Obsession given shape. The Abyss doesn't grow monsters — it grows what's left after everything reasonable has been burned out of you.",
+        "huntersPurpose": "You come here after the Wilds and the Ruins stop being enough. Somewhere below, you start to wonder if you're still hunting, or becoming.",
+        "transition": "Go slow. Nothing down here is in a hurry, and neither should you be."
+    }
+}

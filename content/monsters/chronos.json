@@ -1,0 +1,54 @@
+{
+  "id": "chronos",
+  "name": "Chronos",
+  "title": "Keeper of the Final Second",
+  "description": "Chronos does not attack with force. It attacks with a deadline. Five heads, one minute each, and the clock does not care how tired your arms are when it turns.",
+  "rarity": "boss",
+  "personality": "agile",
+  "accentColor": "#4a4a8a",
+  "battle": {
+    "hp": 506,
+    "phases": [
+      70,
+      45,
+      20
+    ],
+    "damageMultiplier": 1.0,
+    "performanceBonuses": {
+      "perfectExecutionDamage": 8,
+      "relentlessAssaultDamage": 35,
+      "relentlessAssaultStreak": 3,
+      "personalRecordDamage": 70,
+      "fastFinishDamage": 50
+    }
+  },
+  "hunts": [
+    {
+      "id": "chronos-first-encounter",
+      "monsterId": "chronos",
+      "order": 1,
+      "name": "First Encounter",
+      "locked": false,
+      "workoutId": "final-second",
+      "restSecondsOverride": 90
+    },
+    {
+      "id": "chronos-second-encounter",
+      "monsterId": "chronos",
+      "order": 2,
+      "name": "Second Encounter",
+      "locked": false,
+      "workoutId": "final-second",
+      "restSecondsOverride": 75
+    },
+    {
+      "id": "chronos-final-hunt",
+      "monsterId": "chronos",
+      "order": 3,
+      "name": "Final Hunt",
+      "locked": false,
+      "workoutId": "final-second",
+      "restSecondsOverride": 60
+    }
+  ]
+}

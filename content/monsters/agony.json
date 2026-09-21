@@ -1,0 +1,54 @@
+{
+  "id": "agony",
+  "name": "The Fallen",
+  "title": "The Rising Debt",
+  "description": "Everything The Fallen holds starts on the ground — nothing is handed to the Hunter standing up. Snatch it from the floor, clean it from the floor, clean it again and drive it overhead: the same short climb, repeated, until the left arm has nothing left to raise. Then the right arm inherits the same fall, the same three steps back up. The Fallen doesn't test strength. It tests whether you can keep lifting what keeps returning to the ground.",
+  "rarity": "boss",
+  "personality": "brutal",
+  "accentColor": "#5a2a4a",
+  "battle": {
+    "hp": 1188,
+    "phases": [
+      70,
+      40
+    ],
+    "damageMultiplier": 1.0,
+    "performanceBonuses": {
+      "perfectExecutionDamage": 10,
+      "relentlessAssaultDamage": 40,
+      "relentlessAssaultStreak": 3,
+      "personalRecordDamage": 75,
+      "fastFinishDamage": 55
+    }
+  },
+  "hunts": [
+    {
+      "id": "agony-first-encounter",
+      "monsterId": "agony",
+      "order": 1,
+      "name": "First Encounter",
+      "locked": false,
+      "workoutId": "unbroken-cycle",
+      "restSecondsOverride": 60
+    },
+    {
+      "id": "agony-second-encounter",
+      "monsterId": "agony",
+      "order": 2,
+      "name": "Second Encounter",
+      "locked": false,
+      "workoutId": "unbroken-cycle",
+      "restSecondsOverride": 50
+    },
+    {
+      "id": "agony-final-hunt",
+      "monsterId": "agony",
+      "order": 3,
+      "name": "Final Hunt",
+      "locked": false,
+      "workoutId": "unbroken-cycle",
+      "restSecondsOverride": 40
+    }
+  ],
+  "portraitAsset": "fallen"
+}

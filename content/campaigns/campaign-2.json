@@ -1,0 +1,26 @@
+{
+    "id": "iron-trials",
+    "name": "The Ruins",
+    "order": 2,
+    "monsterIds": [
+        "atlas",
+        "ifrit",
+        "chimera",
+        "agony",
+        "ambidexter",
+        "fluid",
+        "judge"
+    ],
+    "finalBossId": null,
+    "unlockRequiresCampaignId": null,
+    "tagline": "Seven proven complexes. No myth, no mercy — just the work.",
+    "introText": "Beyond the Wilds lie seven tests drawn from real iron, not legend. No narrative arc ties them together — only the weight in your hands and the clock on the wall.",
+    "completionText": "The Ruins are done. Every one of the seven — The Sovereign, The Colossus, The Dualist, The Fallen, The Two-Faced, The Unbroken, and The Judge — has fallen to the same complexes that were tested and proven long before they had names.",
+    "heroImageAsset": "territory-ruins",
+    "territoryLore": {
+        "theTerritory": "Something stood here once — a structure, a system, a plan. All that's left is the weight of it, waiting to be lifted again.",
+        "whatDwellsHere": "Machines that outlived their makers. Champions who never stopped training after there was anything left to defend. Power with nowhere left to go.",
+        "huntersPurpose": "You come here to take back what was built and abandoned — one complex at a time, proven the same way it always was, no myth required.",
+        "transition": "The iron doesn't know it's a ruin. Pick up where it left off."
+    }
+}

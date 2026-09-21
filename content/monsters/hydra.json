@@ -1,0 +1,55 @@
+{
+  "id": "hydra",
+  "name": "Hydra",
+  "title": "The Everlasting Serpent",
+  "description": "The Hydra never stops. Cut off one head, another rises. Break one attack, the next has already begun.",
+  "rarity": "boss",
+  "personality": "regenerating",
+  "accentColor": "#4a9a6d",
+  "battle": {
+    "hp": 655,
+    "phases": [
+      70,
+      45,
+      20
+    ],
+    "damageMultiplier": 1.0,
+    "performanceBonuses": {
+      "perfectExecutionDamage": 8,
+      "relentlessAssaultDamage": 35,
+      "relentlessAssaultStreak": 3,
+      "personalRecordDamage": 70,
+      "fastFinishDamage": 50
+    }
+  },
+  "hunts": [
+    {
+      "id": "hydra-first-encounter",
+      "monsterId": "hydra",
+      "order": 1,
+      "name": "First Encounter",
+      "locked": false,
+      "workoutId": "everlasting-cycle",
+      "restSecondsOverride": 90
+    },
+    {
+      "id": "hydra-second-encounter",
+      "monsterId": "hydra",
+      "order": 2,
+      "name": "Second Encounter",
+      "locked": false,
+      "workoutId": "everlasting-cycle",
+      "restSecondsOverride": 75
+    },
+    {
+      "id": "hydra-final-hunt",
+      "monsterId": "hydra",
+      "order": 3,
+      "name": "Final Hunt",
+      "locked": false,
+      "workoutId": "everlasting-cycle",
+      "restSecondsOverride": 60
+    }
+  ],
+  "portraitAsset": "hydra"
+}

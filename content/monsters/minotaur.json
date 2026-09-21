@@ -1,0 +1,53 @@
+{
+  "id": "minotaur",
+  "name": "Minotaur",
+  "title": "The Guardian of the Labyrinth",
+  "description": "Deep within the burning labyrinth, the Minotaur waits \u2014 not to overpower you, but to outlast you. It does not grow weaker with each visit. You simply learn the way out.",
+  "rarity": "boss",
+  "personality": "brutal",
+  "accentColor": "#c9743e",
+  "battle": {
+    "hp": 3102,
+    "phases": [
+      70,
+      40
+    ],
+    "damageMultiplier": 1.0,
+    "performanceBonuses": {
+      "perfectExecutionDamage": 8,
+      "relentlessAssaultDamage": 35,
+      "relentlessAssaultStreak": 3,
+      "personalRecordDamage": 70,
+      "fastFinishDamage": 50
+    }
+  },
+  "hunts": [
+    {
+      "id": "minotaur-first-encounter",
+      "monsterId": "minotaur",
+      "order": 1,
+      "name": "First Encounter",
+      "locked": false,
+      "workoutId": "labyrinth-ladder"
+    },
+    {
+      "id": "minotaur-second-encounter",
+      "monsterId": "minotaur",
+      "order": 2,
+      "name": "Second Encounter",
+      "locked": false,
+      "workoutId": "labyrinth-ladder",
+      "targetTimeIsEstimate": true
+    },
+    {
+      "id": "minotaur-final-hunt",
+      "monsterId": "minotaur",
+      "order": 3,
+      "name": "Final Hunt",
+      "locked": false,
+      "workoutId": "labyrinth-ladder",
+      "targetTimeIsEstimate": true
+    }
+  ],
+  "portraitAsset": "minotaur"
+}

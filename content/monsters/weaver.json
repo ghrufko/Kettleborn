@@ -1,0 +1,38 @@
+{
+  "id": "weaver",
+  "name": "The Weaver",
+  "title": "That Which Forged Every Trial",
+  "description": "This is not a sixth monster. This is everything you have already survived, asked of you once more, all at once.",
+  "rarity": "legendary",
+  "personality": "brutal",
+  "accentColor": "#b08a3e",
+  "battle": {
+    "hp": 1220,
+    "phases": [
+      80,
+      60,
+      40,
+      20
+    ],
+    "damageMultiplier": 1.0,
+    "performanceBonuses": {
+      "perfectExecutionDamage": 12,
+      "relentlessAssaultDamage": 50,
+      "relentlessAssaultStreak": 3,
+      "personalRecordDamage": 90,
+      "fastFinishDamage": 70
+    }
+  },
+  "hunts": [
+    {
+      "id": "weaver-final-hunt",
+      "monsterId": "weaver",
+      "order": 1,
+      "name": "The Final Hunt",
+      "locked": false,
+      "workoutId": "the-final-trial",
+      "restSecondsOverride": 120
+    }
+  ],
+  "portraitAsset": "weaver"
+}

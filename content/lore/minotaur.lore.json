@@ -1,0 +1,18 @@
+{
+  "monsterId": "minotaur",
+  "origin": "Deep within the burning labyrinth, the Minotaur waits — not to overpower you, but to outlast you.",
+  "story": "It does not grow weaker with each visit. You simply learn the way out.",
+  "quotes": [
+    "The Minotaur never becomes weaker. You simply learn the way out."
+  ],
+  "unlockText": "The Wilds begin. Somewhere ahead, the labyrinth is already burning.",
+  "victoryText": "The ladder is climbed. The Minotaur does not rise again — not today.",
+  "demands": [
+    "Pacing",
+    "Breath control",
+    "Mental toughness",
+    "Grip endurance"
+  ],
+  "rule": "Choose your weight, then finish without skipping a single rep. The ladder does not forgive shortcuts.",
+  "hunterAdvice": "The Minotaur never becomes weaker. You simply learn the way out."
+}

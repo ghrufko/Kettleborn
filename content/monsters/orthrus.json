@@ -1,0 +1,53 @@
+{
+  "id": "orthrus",
+  "name": "Orthrus",
+  "title": "The Two-Headed Assault",
+  "description": "The first head strikes from above — snatch, clean, jerk. Survive it, and the second rises from the ground to finish what the first started.",
+  "rarity": "boss",
+  "personality": "brutal",
+  "accentColor": "#7a2626",
+  "battle": {
+    "hp": 880,
+    "phases": [
+      70,
+      40
+    ],
+    "damageMultiplier": 1.0,
+    "performanceBonuses": {
+      "perfectExecutionDamage": 10,
+      "relentlessAssaultDamage": 40,
+      "relentlessAssaultStreak": 3,
+      "personalRecordDamage": 75,
+      "fastFinishDamage": 55
+    }
+  },
+  "hunts": [
+    {
+      "id": "orthrus-first-encounter",
+      "monsterId": "orthrus",
+      "order": 1,
+      "name": "First Encounter",
+      "locked": false,
+      "workoutId": "twin-assault",
+      "restSecondsOverride": 90
+    },
+    {
+      "id": "orthrus-second-encounter",
+      "monsterId": "orthrus",
+      "order": 2,
+      "name": "Second Encounter",
+      "locked": false,
+      "workoutId": "twin-assault",
+      "restSecondsOverride": 75
+    },
+    {
+      "id": "orthrus-final-hunt",
+      "monsterId": "orthrus",
+      "order": 3,
+      "name": "Final Hunt",
+      "locked": false,
+      "workoutId": "twin-assault",
+      "restSecondsOverride": 60
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "id": "fluid",
+  "name": "The Unbroken",
+  "title": "What Refuses to Break",
+  "description": "The ruins around it are rubble — walls down, floors caved, nothing left standing on its own. The Unbroken is what happens when a chain of motion never lets that stillness catch up: swing into clean into lunge into jerk into thruster into snatch, one hand carrying the weight until it has nothing left, then the other hand taking it without a pause. Stop anywhere in that chain and you've already lost — not to the weight, but to the silence after it. The ruins are broken. The Hunter isn't allowed to be.",
+  "rarity": "boss",
+  "personality": "agile",
+  "accentColor": "#3f9ea8",
+  "battle": {
+    "hp": 1452,
+    "phases": [
+      70,
+      45,
+      20
+    ],
+    "damageMultiplier": 1.0,
+    "performanceBonuses": {
+      "perfectExecutionDamage": 8,
+      "relentlessAssaultDamage": 35,
+      "relentlessAssaultStreak": 3,
+      "personalRecordDamage": 70,
+      "fastFinishDamage": 50
+    }
+  },
+  "hunts": [
+    {
+      "id": "fluid-first-encounter",
+      "monsterId": "fluid",
+      "order": 1,
+      "name": "First Encounter",
+      "locked": false,
+      "workoutId": "living-current",
+      "restSecondsOverride": 150
+    },
+    {
+      "id": "fluid-second-encounter",
+      "monsterId": "fluid",
+      "order": 2,
+      "name": "Second Encounter",
+      "locked": false,
+      "workoutId": "living-current",
+      "restSecondsOverride": 125
+    },
+    {
+      "id": "fluid-final-hunt",
+      "monsterId": "fluid",
+      "order": 3,
+      "name": "Final Hunt",
+      "locked": false,
+      "workoutId": "living-current",
+      "restSecondsOverride": 105
+    }
+  ],
+  "portraitAsset": "unbroken"
+}

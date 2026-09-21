@@ -1,0 +1,55 @@
+{
+  "id": "behemoth",
+  "name": "Behemoth",
+  "title": "The Iron Colossus",
+  "description": "Long before kingdoms rose and fell, the Behemoth stood unmoved. It does not overpower its enemies with speed \u2014 it crushes them with relentless precision. Only those who master every form of strength earn the right to stand before the Colossus.",
+  "rarity": "boss",
+  "personality": "steady",
+  "accentColor": "#8d7a5a",
+  "battle": {
+    "hp": 1930,
+    "phases": [
+      75,
+      50,
+      25
+    ],
+    "damageMultiplier": 1.0,
+    "performanceBonuses": {
+      "perfectExecutionDamage": 10,
+      "relentlessAssaultDamage": 40,
+      "relentlessAssaultStreak": 3,
+      "personalRecordDamage": 75,
+      "fastFinishDamage": 55
+    }
+  },
+  "hunts": [
+    {
+      "id": "behemoth-first-encounter",
+      "monsterId": "behemoth",
+      "order": 1,
+      "name": "First Encounter",
+      "locked": false,
+      "workoutId": "iron-ascent",
+      "restSecondsOverride": 120
+    },
+    {
+      "id": "behemoth-second-encounter",
+      "monsterId": "behemoth",
+      "order": 2,
+      "name": "Second Encounter",
+      "locked": false,
+      "workoutId": "iron-ascent",
+      "restSecondsOverride": 90
+    },
+    {
+      "id": "behemoth-final-hunt",
+      "monsterId": "behemoth",
+      "order": 3,
+      "name": "Final Hunt",
+      "locked": false,
+      "workoutId": "iron-ascent",
+      "restSecondsOverride": 60
+    }
+  ],
+  "portraitAsset": "behemoth"
+}
