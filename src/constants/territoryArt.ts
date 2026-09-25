@@ -1,18 +1,13 @@
 import { ImageSourcePropType } from 'react-native';
 
 /**
- * Territory Hub redesign: no territory artwork exists in the project yet
- * (confirmed — assets/images has monster portraits only, no location
- * art). Left empty rather than requiring a `require()` for a file that
- * doesn't exist, which would break the Metro bundle. When real artwork
- * is ready, add e.g. `wilds: require('../../assets/images/territories/territory-wilds.jpg')`
- * using the same `heroImageAsset` keys already set in
- * content/campaigns/*.json ('territory-wilds' / 'territory-ruins' /
- * 'territory-abyss') — no other code changes needed; every screen that
- * renders a hero image already goes through getTerritoryArt and already
- * has a themed-gradient fallback for the `undefined` case.
+ * Territory artwork is keyed by the heroImageAsset values in
+ * content/campaigns/*.json. Screens use getTerritoryArt and retain
+ * their themed fallback when a key has no artwork yet.
  */
-export const TERRITORY_ART: Record<string, ImageSourcePropType> = {};
+export const TERRITORY_ART: Record<string, ImageSourcePropType> = {
+  'territory-wilds': require('../../assets/images/territories/territory-wilds.jpg'),
+};
 
 export function getTerritoryArt(heroImageAsset?: string): ImageSourcePropType | undefined {
   if (!heroImageAsset) {
