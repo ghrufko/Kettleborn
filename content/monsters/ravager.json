@@ -1,6 +1,7 @@
 {
   "id": "ravager",
   "name": "The Ravager",
+  "portraitAsset": "ravager",
   "title": "What's Left After",
   "description": "The Ravager doesn't build toward anything. Burpee, then clean and jerk twice; deadlift, then clean and jerk twice again; a deep snatch, then clean and jerk twice more — floor to overhead, floor to overhead, floor to overhead, no round to catch your breath between them, because there are no rounds. There is only the sequence, once, start to finish. It doesn't wear you down gradually. It just takes what it takes, in one pass, and doesn't apologize for how much that turned out to be.",
   "rarity": "boss",

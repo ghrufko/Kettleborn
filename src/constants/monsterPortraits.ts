@@ -16,6 +16,9 @@ export const MONSTER_PORTRAITS: Record<string, ImageSourcePropType> = {
   judge: require('../../assets/images/monsters/judge.jpg'),
   rite: require('../../assets/images/monsters/rite.jpg'),
   wraith: require('../../assets/images/monsters/wraith.jpg'),
+  breaking: require('../../assets/images/monsters/breaking.jpg'),
+  descent: require('../../assets/images/monsters/descent.jpg'),
+  ravager: require('../../assets/images/monsters/ravager.jpg'),
 };
 
 export function getMonsterPortrait(portraitAsset?: string): ImageSourcePropType | undefined {

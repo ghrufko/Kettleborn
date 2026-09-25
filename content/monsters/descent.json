@@ -1,6 +1,7 @@
 {
   "id": "descent",
   "name": "The Descent",
+  "portraitAsset": "descent",
   "title": "The Last Rung",
   "description": "Every rung on the way down costs something different than the one before it. Long Cycle takes one more rep each time; Renegade gives one back. The ratio never lies to you — you can see exactly how much weight the ladder is handing over, rung by rung, and there is no rung where it becomes easy. It only becomes honest about what it always was.",
   "rarity": "boss",

@@ -7,6 +7,7 @@ import { ImageSourcePropType } from 'react-native';
  */
 export const TERRITORY_ART: Record<string, ImageSourcePropType> = {
   'territory-wilds': require('../../assets/images/territories/territory-wilds.jpg'),
+  'territory-abyss': require('../../assets/images/territories/territory-abyss.jpg'),
 };
 
 export function getTerritoryArt(heroImageAsset?: string): ImageSourcePropType | undefined {

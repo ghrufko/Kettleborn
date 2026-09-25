@@ -1,6 +1,7 @@
 {
   "id": "ares",
   "name": "The Breaking",
+  "portraitAsset": "breaking",
   "title": "The Shrinking Window",
   "description": "Swing, jerk, pull, recover — thirty seconds for all of it, every time, fifteen times through. The Breaking doesn't get faster and it doesn't hit harder. It just keeps the window exactly thirty seconds wide and waits to see which round is the one where you can't fit inside it anymore.",
   "rarity": "boss",
