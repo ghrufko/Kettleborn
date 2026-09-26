@@ -10,8 +10,6 @@ import { getHuntRank } from '../../utils/huntRank';
 import { getWeeklySummary, getMonthlySummary, getTrainingCalendar } from '../../utils/chronicleSummary';
 import { ExerciseStats, WeaknessProfile } from '../../utils/exerciseStats';
 import { getLongestSilenceDays, getMostDangerousOpponent } from '../../utils/chronicleStory';
-import { getRPELabel } from '../../utils/rpeLabels';
-import { getExerciseBreakdown } from '../../utils/exerciseBreakdown';
 import { formatWeightPair } from '../../utils/weight';
 import { WorkoutResult, CustomWorkoutResult, StopwatchResult } from '../../models';
 import { colors, fontFamily, fontSize, spacing } from '../../theme';
@@ -253,30 +251,6 @@ export function ChronicleScreen() {
               const workout = contentEngine.getWorkout(result.workoutId);
               const seconds = result.timeMinutes * 60 + result.timeSeconds;
               const rank = workout ? getHuntRank(seconds, workout.targetTimeSeconds, wasPersonalRecord) : 'C';
-              // Bug #3: reads the already-saved WorkoutResult.rpe as-is —
-              // null for any result recorded before RPE existed or where
-              // the player skipped the prompt, and this renders nothing
-              // extra in that case (no invented value, no placeholder).
-              const rpeLabel = getRPELabel(result.rpe);
-              // Reconstructed the same way getAllExerciseStats already
-              // does for the lifetime aggregate above: workout.gearCount
-              // (the canonical content), never a per-result override —
-              // WorkoutResult doesn't persist a used-gearCount at all, so
-              // this is the same established assumption already made
-              // elsewhere, not a new one. Rounds, however, use this
-              // result's own rungLaps.length when available (Task 3 —
-              // an open-ended EMOM workout's real round count can differ
-              // from workout.rounds, a reference value only for those).
-              const exerciseBreakdown = workout
-                ? getExerciseBreakdown(
-                    workout,
-                    result.rungLaps?.length ?? workout.rounds,
-                    result.weightValueA,
-                    workout.gearCount,
-                    result.weightValueB
-                  )
-                : [];
-
               return (
                 <GlassCard key={result.id} style={styles.entryCard}>
                   <View style={styles.entryHeader}>
@@ -295,26 +269,7 @@ export function ChronicleScreen() {
                   <Text style={styles.entryDetail}>
                     {formatWeightPair(result.weightValueA, result.weightValueB, result.weightUnit)} ·{' '}
                     {result.timeMinutes}:{result.timeSeconds.toString().padStart(2, '0')}
-                    {rpeLabel ? ` · Felt: ${rpeLabel}` : ''}
                   </Text>
-                  {/* Task 10: old results have notes === null and simply
-                      render nothing extra here — no placeholder text. */}
-                  {result.notes ? <Text style={styles.entryNote}>"{result.notes}"</Text> : null}
-                  {exerciseBreakdown.length > 0 ? (
-                    <Text style={styles.entryNote}>
-                      {exerciseBreakdown
-                        .map((e) => {
-                          const amount =
-                            e.totalReps > 0 ? `${e.totalReps}` : `${e.totalDistanceFt} ft`;
-                          return `${e.displayName ?? e.name} — ${amount} × ${formatWeightPair(
-                            e.weightAKg,
-                            e.weightBKg,
-                            result.weightUnit
-                          )}`;
-                        })
-                        .join('  ·  ')}
-                    </Text>
-                  ) : null}
                   {wasPersonalRecord ? (
                     <View style={styles.prRow}>
                       <Ionicons name="flame" size={12} color={colors.gold} />

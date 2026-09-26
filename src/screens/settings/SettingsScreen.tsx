@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Switch, Pressable, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Switch, Pressable } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { ForgeStackParamList } from '../../navigation/types';
-import { Header, GlassCard, Button } from '../../components/core';
+import { Header, GlassCard, Button, ConfirmDialog } from '../../components/core';
 import { useAppStore } from '../../store';
 import { colors, fontFamily, fontSize, spacing } from '../../theme';
 
@@ -35,27 +35,20 @@ export function SettingsScreen({ navigation }: Props) {
   const updateSettings = useAppStore((state) => state.updateSettings);
   const resetCampaignProgress = useAppStore((state) => state.resetCampaignProgress);
   const [isResetting, setIsResetting] = useState(false);
+  const [resetDialogVisible, setResetDialogVisible] = useState(false);
 
   const confirmResetCampaign = () => {
-    Alert.alert(
-      'Reset Campaign Progress?',
-      'This will erase your campaign progress and Personal Best records, and start Campaign I over as a new player. This cannot be undone.',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Reset',
-          style: 'destructive',
-          onPress: async () => {
-            setIsResetting(true);
-            try {
-              await resetCampaignProgress();
-            } finally {
-              setIsResetting(false);
-            }
-          },
-        },
-      ]
-    );
+    setResetDialogVisible(true);
+  };
+
+  const handleResetCampaign = async () => {
+    setResetDialogVisible(false);
+    setIsResetting(true);
+    try {
+      await resetCampaignProgress();
+    } finally {
+      setIsResetting(false);
+    }
   };
 
   if (!settings) {
@@ -137,6 +130,16 @@ export function SettingsScreen({ navigation }: Props) {
           </Text>
         </GlassCard>
       </ScrollView>
+      <ConfirmDialog
+        visible={resetDialogVisible}
+        title="Reset Campaign Progress?"
+        message="This will erase your campaign progress and Personal Best records, and start Campaign I over as a new player. This cannot be undone."
+        cancelLabel="Cancel"
+        confirmLabel="Reset"
+        confirmDisabled={isResetting}
+        onCancel={() => setResetDialogVisible(false)}
+        onConfirm={handleResetCampaign}
+      />
     </View>
   );
 }

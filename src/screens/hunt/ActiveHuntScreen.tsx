@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Alert, Image, Animated, BackHandler } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Image, Animated, BackHandler } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { HuntStackParamList } from '../../navigation/types';
-import { Button, GlassCard, AppBackground } from '../../components/core';
+import { Button, GlassCard, AppBackground, ConfirmDialog } from '../../components/core';
 import { ProgressBar } from '../../components/progress';
 import { TimerWidget } from '../../components/workout';
 import { contentEngine } from '../../../engines/content';
@@ -286,24 +286,12 @@ export function ActiveHuntScreen({ route, navigation }: Props) {
         }
       }}
       onQuit={(stoppedAtRound) => {
-        Alert.alert(
-          'Abandon Hunt?',
-          'The boss will be marked as undefeated. No experience will be awarded, and this attempt will not be saved.',
-          [
-            { text: 'Keep Fighting', style: 'cancel' },
-            {
-              text: 'Abandon',
-              style: 'destructive',
-              onPress: () =>
-                navigation.replace('HuntFailed', {
-                  monsterId,
-                  huntId,
-                  workoutId,
-                  stoppedAtRound,
-                }),
-            },
-          ]
-        );
+        navigation.replace('HuntFailed', {
+          monsterId,
+          huntId,
+          workoutId,
+          stoppedAtRound,
+        });
       }}
     />
   );
@@ -352,6 +340,16 @@ function ActiveHuntSession({
 }: ActiveHuntSessionProps) {
   const keepScreenAwake = useAppStore((state) => state.settings?.keepScreenAwake ?? false);
   useConditionalKeepAwake(keepScreenAwake);
+  const [quitDialogVisible, setQuitDialogVisible] = useState(false);
+  const [quitRound, setQuitRound] = useState(1);
+  const requestQuit = useCallback((round: number) => {
+    setQuitRound(round);
+    setQuitDialogVisible(true);
+  }, []);
+  const confirmQuit = useCallback(() => {
+    setQuitDialogVisible(false);
+    onQuit(quitRound);
+  }, [onQuit, quitRound]);
 
   const battle = useBattleEngine(monster.battle, workout);
   const personality = getCombatPersonality(monster.personality, monster.accentColor);
@@ -394,11 +392,11 @@ function ActiveHuntSession({
         if (session.phase === 'complete') {
           return true;
         }
-        onQuit(session.currentRound);
+        requestQuit(session.currentRound);
         return true;
       });
       return () => subscription.remove();
-    }, [session.phase, session.currentRound, onQuit])
+    }, [session.phase, session.currentRound, requestQuit])
   );
 
   const elapsedClock = formatClock(session.elapsedSeconds);
@@ -1138,7 +1136,7 @@ function ActiveHuntSession({
                 <Button
                   label="Quit"
                   variant="destructive"
-                  onPress={() => onQuit(session.currentRound)}
+                  onPress={() => requestQuit(session.currentRound)}
                   style={styles.actionButton}
                 />
               </View>
@@ -1147,6 +1145,15 @@ function ActiveHuntSession({
         </View>
       </View>
       </SafeAreaView>
+      <ConfirmDialog
+        visible={quitDialogVisible}
+        title="Abandon Hunt?"
+        message="The boss will be marked as undefeated. No experience will be awarded, and this attempt will not be saved."
+        cancelLabel="Keep Fighting"
+        confirmLabel="Abandon"
+        onCancel={() => setQuitDialogVisible(false)}
+        onConfirm={confirmQuit}
+      />
     </AppBackground>
   );
 }
