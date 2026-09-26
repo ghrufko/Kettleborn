@@ -1,6 +1,7 @@
 {
   "id": "atlas",
   "name": "The Sovereign",
+  "portraitAsset": "sovereign",
   "title": "The Unbending Rule",
   "description": "The Sovereign does not ask to be lifted. It commands it, and has never once doubted the command would be obeyed. Squat, press, clean, push, pull — not effort, decree. It does not rush and it does not raise its voice. It has never needed to. The weight was always going to end up on your shoulders; The Sovereign is just the one who decided when.",
   "rarity": "boss",
