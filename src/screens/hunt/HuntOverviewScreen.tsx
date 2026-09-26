@@ -4,6 +4,7 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import { HuntStackParamList } from '../../navigation/types';
 import { Header, Button, GlassCard, AppBackground } from '../../components/core';
+import { WorkoutStructure } from '../../components/workout/WorkoutStructure';
 import { contentEngine } from '../../../engines/content';
 import { getMonsterPortrait } from '../../constants/monsterPortraits';
 import { getStructuralControlConfig, StructuralControlConfig, buildCustomWorkout, getRepsCustomizableTemplate } from '../../utils/customWorkoutStructure';
@@ -16,6 +17,7 @@ import {
 } from '../../utils/encounterLock';
 import { useAppStore } from '../../store';
 import { flavorTextFor } from '../../utils/flavorText';
+import { groupWorkoutStructure } from '../../utils/workoutPresentation';
 import { WorkoutResult, CustomHuntPreset } from '../../models';
 import { convertKgToDisplay, convertDisplayToKg, formatWeightPair } from '../../utils/weight';
 import { colors, fontFamily, fontSize, radii, spacing } from '../../theme';
@@ -478,6 +480,9 @@ export function HuntOverviewScreen({ route, navigation }: Props) {
     : [];
   const repeatingStructureUnitLabel = `${(workout.stepLabel ?? 'Round').toLowerCase()}s`;
   const previewGroups = workout.sections ?? [{ label: null, exercises: workout.exercises }];
+  const structuredExercises = isRepeatingStructure ? workout.sections![0].exercises : workout.exercises;
+  const workoutStructure = groupWorkoutStructure(structuredExercises);
+  const hasWorkoutStructure = workoutStructure.length > 0;
   // Polish pass, fix 2 (exercise list density): same shape as
   // ActiveHuntScreen's in-combat `exerciseListDensity` (Task 8) — purely
   // a row count, no monster names — applied here to the PRE-FIGHT preview
@@ -524,7 +529,22 @@ export function HuntOverviewScreen({ route, navigation }: Props) {
 
         <GlassCard style={styles.section}>
           <Text style={styles.sectionLabel}>Workout</Text>
-          {isRepeatingStructure ? (
+          {hasWorkoutStructure ? (
+            <View style={styles.exerciseList}>
+              <WorkoutStructure
+                groups={workoutStructure}
+                onExercisePress={(exerciseName) => {
+                  const libraryEntry = contentEngine.getExerciseLibraryEntryByName(exerciseName);
+                  if (libraryEntry) navigation.navigate('ExerciseDetail', { exerciseId: libraryEntry.id });
+                }}
+              />
+              {isRepeatingStructure ? (
+                <Text style={styles.exerciseGroupLabel}>
+                  {workout.sections!.length} {repeatingStructureUnitLabel}
+                </Text>
+              ) : null}
+            </View>
+          ) : isRepeatingStructure ? (
             <View style={styles.exerciseList}>
               {repeatingStructurePreview.map((exercise, index) => {
                 const libraryEntry = contentEngine.getExerciseLibraryEntryByName(exercise.name);

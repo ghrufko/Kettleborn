@@ -1,11 +1,12 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, Animated, BackHandler } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Image, Animated, BackHandler, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { HuntStackParamList } from '../../navigation/types';
 import { Button, GlassCard, AppBackground, ConfirmDialog } from '../../components/core';
+import { WorkoutStructure } from '../../components/workout/WorkoutStructure';
 import { ProgressBar } from '../../components/progress';
 import { TimerWidget } from '../../components/workout';
 import { contentEngine } from '../../../engines/content';
@@ -26,6 +27,7 @@ import { useConditionalKeepAwake } from '../../utils/useConditionalKeepAwake';
 import { getCombatPersonality, getAtmosphericColor } from '../../utils/bossPersonality';
 import { restFlavorFor } from '../../utils/huntAtmosphere';
 import { getRoundStats } from '../../utils/roundStats';
+import { groupWorkoutStructure } from '../../utils/workoutPresentation';
 import { triggerHaptic } from '../../utils/haptics';
 import { audioEngine } from '../../../engines/audio/AudioEngine';
 import * as Haptics from 'expo-haptics';
@@ -51,6 +53,50 @@ function formatClock(totalSeconds: number) {
 function chainPassNumber(displayName: string | undefined): number | null {
   const match = displayName?.match(/\(Chain (\d+)\/\d+\)/);
   return match ? parseInt(match[1], 10) : null;
+}
+
+function exerciseDisplayName(exercise: Workout['exercises'][number]): string {
+  return (exercise.displayName ?? exercise.name)
+    .replace(/\s*\((?:Chain \d+\/\d+|Complex\s*[×x]\s*\d+)\)\s*$/i, '')
+    .trim();
+}
+
+function exerciseStepLabel(exercises: Workout['exercises'], index: number): string {
+  const exercise = exercises[index];
+  if (!exercise) return '';
+  const chain = exercise.displayName?.match(/\(Chain (\d+)\/(\d+)\)/i);
+  const complex = exercise.displayName?.match(/\(Complex\s*[×x]\s*(\d+)\)/i);
+  const marker = chain ? `chain-${chain[1]}-${chain[2]}` : complex ? `complex-${complex[1]}` : null;
+  let start = index;
+  let end = index;
+  if (marker) {
+    while (start > 0) {
+      const previous = exercises[start - 1].displayName ?? '';
+      const previousMarker = previous.match(/\(Chain (\d+)\/(\d+)\)/i);
+      const previousComplex = previous.match(/\(Complex\s*[×x]\s*(\d+)\)/i);
+      const key = previousMarker ? `chain-${previousMarker[1]}-${previousMarker[2]}` : previousComplex ? `complex-${previousComplex[1]}` : null;
+      if (key !== marker) break;
+      start -= 1;
+    }
+    while (end < exercises.length - 1) {
+      const next = exercises[end + 1].displayName ?? '';
+      const nextMarker = next.match(/\(Chain (\d+)\/(\d+)\)/i);
+      const nextComplex = next.match(/\(Complex\s*[×x]\s*(\d+)\)/i);
+      const key = nextMarker ? `chain-${nextMarker[1]}-${nextMarker[2]}` : nextComplex ? `complex-${nextComplex[1]}` : null;
+      if (key !== marker) break;
+      end += 1;
+    }
+  } else {
+    start = 0;
+    end = exercises.length - 1;
+  }
+  const position = index - start + 1;
+  const total = end - start + 1;
+  return chain
+    ? `Chain ${chain[1]} / ${chain[2]}  ·  Exercise ${position} / ${total}`
+    : complex
+      ? `Complex ${complex[1]}  ·  Exercise ${position} / ${total}`
+      : `Exercise ${index + 1} / ${exercises.length}`;
 }
 
 const BONUS_LABELS: Record<string, string> = {
@@ -423,28 +469,16 @@ function ActiveHuntSession({
   const currentRoundExerciseCount = (
     workout.sections?.[session.currentRound - 1]?.exercises ?? workout.exercises
   ).length;
+  const currentRoundExercises = workout.sections?.[session.currentRound - 1]?.exercises ?? workout.exercises;
+  const currentRoundStructure = groupWorkoutStructure(currentRoundExercises);
+  const [activeSequencePosition, setActiveSequencePosition] = useState({ round: 1, index: 0 });
+  const activeExerciseIndex = activeSequencePosition.round === session.currentRound ? activeSequencePosition.index : 0;
+  const activeExercise = currentRoundExercises[activeExerciseIndex];
+  const nextExercise = currentRoundExercises[activeExerciseIndex + 1];
   const exerciseListDensity: 'normal' | 'compact' | 'dense' =
     currentRoundExerciseCount >= 8 ? 'dense' : currentRoundExerciseCount >= 5 ? 'compact' : 'normal';
   const hpFraction = battle.maxHP > 0 ? battle.currentHP / battle.maxHP : 0;
   const wasCriticalHit = !!battle.lastDamage && battle.lastBonuses.length > 0;
-
-  // --- Combat feedback: phase transition banner ---
-  const previousPhaseRef = useRef(battle.phaseIndex);
-  const [phaseBanner, setPhaseBanner] = useState<string | null>(null);
-  const phaseBannerAnim = useRef(new Animated.Value(0)).current;
-
-  useEffect(() => {
-    if (battle.phaseIndex !== previousPhaseRef.current) {
-      previousPhaseRef.current = battle.phaseIndex;
-      setPhaseBanner(phaseLabel(battle.phaseIndex));
-      phaseBannerAnim.setValue(0);
-      Animated.sequence([
-        Animated.timing(phaseBannerAnim, { toValue: 1, duration: 220, useNativeDriver: true }),
-        Animated.delay(1000 * personality.animationPace),
-        Animated.timing(phaseBannerAnim, { toValue: 0, duration: 300, useNativeDriver: true }),
-      ]).start(() => setPhaseBanner(null));
-    }
-  }, [battle.phaseIndex, phaseBannerAnim]);
 
   // --- Combat feedback: combo pulse (grows with streak, shatters on reset) ---
   const previousStreakRef = useRef(0);
@@ -482,8 +516,29 @@ function ActiveHuntSession({
 
   // --- Combat feedback: damage/bonus pop + portrait shake on heavy hits ---
   const damageAnim = useRef(new Animated.Value(0)).current;
+  const criticalAnim = useRef(new Animated.Value(0)).current;
+  const bonusAnim = useRef(new Animated.Value(0)).current;
   const portraitShakeAnim = useRef(new Animated.Value(0)).current;
   const { animationPace, heavyHitThreshold, shakeDistance } = personality;
+  useEffect(() => {
+    if (!wasCriticalHit) return;
+    criticalAnim.setValue(0);
+    Animated.sequence([
+      Animated.timing(criticalAnim, { toValue: 1, duration: 120, useNativeDriver: true }),
+      Animated.delay(450 * animationPace),
+      Animated.timing(criticalAnim, { toValue: 0, duration: 220, useNativeDriver: true }),
+    ]).start();
+  }, [battle.lastDamage, wasCriticalHit, animationPace, criticalAnim]);
+
+  useEffect(() => {
+    if (!battle.lastBonuses.length) return;
+    bonusAnim.setValue(0);
+    Animated.sequence([
+      Animated.timing(bonusAnim, { toValue: 1, duration: 100, useNativeDriver: true }),
+      Animated.delay(350 * animationPace),
+      Animated.timing(bonusAnim, { toValue: 0, duration: 200, useNativeDriver: true }),
+    ]).start();
+  }, [battle.lastBonuses, animationPace, bonusAnim]);
   useEffect(() => {
     if (battle.lastDamage) {
       damageAnim.setValue(0);
@@ -655,12 +710,7 @@ function ActiveHuntSession({
     >
       <SafeAreaView style={styles.safeArea} edges={['top']}>
       {showDefeatOverlay ? (
-        // Task 5 (Monster Defeated moment): fixed over the whole safe area
-        // like phaseBanner, not tied to scroll position, so it reads the
-        // same regardless of where the player has scrolled to. Covers a
-        // moderate central band rather than the full screen (kept small
-        // and clean, not a full-screen takeover) and never intercepts
-        // touches, so "Finish Hunt" underneath is always reachable.
+        // The transient defeat title does not block the finishing controls.
         <Animated.View pointerEvents="none" style={[styles.defeatOverlay, { opacity: defeatBackdropAnim }]}>
           <Animated.Text
             style={[
@@ -675,13 +725,7 @@ function ActiveHuntSession({
 
       <ScrollView style={styles.scrollArea} contentContainerStyle={styles.content}>
         {/* Boss */}
-        {/* Sprint 4 (Boss Status Feedback Placement): wrapping the existing
-            portrait Animated.View in a same-size plain View so a status
-            overlay can sit on top of it via absolute positioning, without
-            touching the portrait's own size, border, glow, or shake
-            animation, and without adding height to this column — the
-            wrapper is exactly PORTRAIT_SIZE × PORTRAIT_SIZE, so the block's
-            total footprint (and the gap/spacing around it) is unchanged. */}
+        {/* Boss portrait and status. */}
         <View style={styles.portraitContainer}>
           <Animated.View
             style={[
@@ -710,68 +754,18 @@ function ActiveHuntSession({
               <Text style={styles.portraitInitial}>{monster.name.charAt(0)}</Text>
             )}
           </Animated.View>
-          {/* This is a sibling of the (overflow: hidden, circular) portrait
-              Animated.View above, not a child of it — so the status pill
-              can sit slightly outside the circle's own clipped bounds
-              (readable width for longer labels) while still visually
-              reading as "on the portrait," anchored at its lower-middle.
-              Not the phaseBanner: reuses the plain, always-current
-              `phaseLabel(battle.phaseIndex)` value already read below for
-              hpValue — no new state, no new Animated.Value, no new
-              trigger logic. The existing phaseBanner element (its own
-              transient toast, own animation) sits below, also inside
-              this container now — see its own comment for why.
-              Real-device report: this text was showing "ENGAGED"
-              immediately at Hunt start, before any damage — gated on
-              `battle.totalDamageDealt > 0` (a real battle-state field,
-              not a timer/delay) so nothing shows here until the first
-              hit actually lands. */}
+
+        </View>
+        <View style={styles.monsterHeader}>
+          <Text style={styles.monsterName} numberOfLines={2}>{monster.name}</Text>
           {battle.totalDamageDealt > 0 ? (
             <View style={styles.portraitStatusPill} pointerEvents="none">
-              <Text style={styles.portraitStatusText} numberOfLines={1}>
+              <Text style={[styles.portraitStatusText, { color: personality.accentColor }]} numberOfLines={1}>
                 {phaseLabel(battle.phaseIndex).toUpperCase()}
               </Text>
             </View>
           ) : null}
-
-          {/* Real-device report: this is the TEMPORARY combat-status
-              toast (fires once per phase transition, via
-              previousPhaseRef/phaseBannerAnim above) — a different
-              element from the persistent pill right above. It used to
-              live outside the ScrollView, fixed near the top of the
-              safe area (see the git-blame comment that used to be here
-              about avoiding overlap with the feedback-number zone,
-              which sits further down the page below the HP bar and
-              never actually reaches up into the portrait's own bounds —
-              so that concern doesn't apply here). Moved inside
-              portraitContainer, sibling to the pill above it, so
-              "appears around the middle of the portrait" is literally
-              true regardless of scroll position, not a fixed guess at
-              where the portrait happens to be on screen. Own animation/
-              typography/card style (phaseBanner/phaseBannerText) is
-              completely unchanged — only its position properties moved
-              from screen-relative to portrait-relative. */}
-          {phaseBanner ? (
-            <Animated.View
-              pointerEvents="none"
-              style={[
-                styles.phaseBanner,
-                { borderColor: personality.accentColor },
-                {
-                  opacity: phaseBannerAnim,
-                  transform: [
-                    { scale: phaseBannerAnim.interpolate({ inputRange: [0, 1], outputRange: [0.9, 1] }) },
-                  ],
-                },
-              ]}
-            >
-              <Text style={[styles.phaseBannerText, { color: personality.accentColor }]}>
-                {phaseBanner.toUpperCase()}
-              </Text>
-            </Animated.View>
-          ) : null}
         </View>
-        <Text style={styles.monsterName}>{monster.name}</Text>
         <View style={styles.hpBarWrap}>
           <ProgressBar
             progress={hpFraction}
@@ -841,14 +835,14 @@ function ActiveHuntSession({
           <View style={styles.feedbackAnchor} pointerEvents="none">
             <Animated.View
               style={[
-                styles.feedbackRow,
+                styles.damageFeedback,
                 {
                   opacity: damageAnim,
                   transform: [
                     {
                       scale: damageAnim.interpolate({
                         inputRange: [0, 1],
-                        outputRange: [0.85, wasCriticalHit ? 1.15 : 1],
+                        outputRange: [0.88, wasCriticalHit ? 1.08 : 1],
                       }),
                     },
                   ],
@@ -856,27 +850,44 @@ function ActiveHuntSession({
               ]}
             >
               {battle.lastDamage ? (
-                <Text
-                  style={[
-                    wasCriticalHit ? styles.critDamageText : styles.damageText,
-                    wasCriticalHit && { color: personality.critColor },
-                  ]}
-                >
-                  -{battle.lastDamage.amount}
-                  {battle.lastDamage.source === 'round' ? ' (Round Bonus)' : ''}
-                </Text>
+                <>
+                  <Text style={[styles.damageText, wasCriticalHit && { color: personality.critColor }]}>
+                    -{battle.lastDamage.amount}
+                  </Text>
+                  {battle.lastDamage.source === 'round' ? (
+                    <Text style={styles.roundBonusLabel}>ROUND BONUS</Text>
+                  ) : null}
+                </>
               ) : null}
-              {wasCriticalHit ? (
-                <Text style={[styles.critTag, { color: personality.critColor }]}>CRITICAL HIT</Text>
-              ) : null}
-              {battle.lastBonuses.map((bonus) => (
-                <Text key={bonus.type} style={styles.bonusText}>
-                  {BONUS_LABELS[bonus.type]} +{bonus.amount}
-                </Text>
-              ))}
             </Animated.View>
 
-            {comboVisible ? (
+            {wasCriticalHit ? (
+              <Animated.Text
+                style={[
+                  styles.critTag,
+                  { color: personality.critColor, opacity: criticalAnim },
+                  {
+                    transform: [
+                      { scale: criticalAnim.interpolate({ inputRange: [0, 1], outputRange: [0.96, 1] }) },
+                    ],
+                  },
+                ]}
+              >
+                CRITICAL HIT
+              </Animated.Text>
+            ) : null}
+
+            {battle.lastBonuses.length ? (
+              <Animated.View style={[styles.bonusRow, { opacity: bonusAnim }]}>
+                {battle.lastBonuses.map((bonus) => (
+                  <Text key={bonus.type} style={styles.bonusText}>
+                    {BONUS_LABELS[bonus.type].toUpperCase()} +{bonus.amount}
+                  </Text>
+                ))}
+              </Animated.View>
+            ) : null}
+
+            {comboVisible && !comboResetVisible ? (
               <Animated.Text
                 style={[
                   styles.comboText,
@@ -886,7 +897,7 @@ function ActiveHuntSession({
                       {
                         scale: comboAnim.interpolate({
                           inputRange: [0, 1],
-                          outputRange: [0.7, comboScale],
+                        outputRange: [0.94, Math.min(1.05, comboScale)],
                         }),
                       },
                     ],
@@ -954,7 +965,7 @@ function ActiveHuntSession({
           </GlassCard>
         ) : (
           <>
-            {/* The whole round's complex, at a glance — no per-exercise interaction */}
+            {/* Display-only cursor and compact grouped prescription for structured workouts. */}
             <GlassCard
               style={[
                 styles.exerciseCard,
@@ -982,7 +993,36 @@ function ActiveHuntSession({
                   <Text style={styles.sectionLabel}>
                     {workout.sections?.[session.currentRound - 1]?.label ?? `This ${stepLabel}`}
                   </Text>
-                  {(workout.sections?.[session.currentRound - 1]?.exercises ?? workout.exercises).map(
+                  {currentRoundStructure.length ? (
+                    <>
+                      <View style={styles.activeExerciseFocus}>
+                        <Text style={styles.activeExerciseLabel}>CURRENT EXERCISE</Text>
+                        <Text style={styles.activeExerciseName} numberOfLines={2}>
+                          {exerciseDisplayName(activeExercise)}
+                        </Text>
+                        <Text style={styles.activeExerciseProgress}>
+                          {exerciseStepLabel(currentRoundExercises, activeExerciseIndex)}
+                        </Text>
+                        <View style={styles.nextExerciseRow}>
+                          <Text style={styles.nextExerciseLabel}>NEXT</Text>
+                          <Text style={styles.nextExerciseName} numberOfLines={1}>
+                            {nextExercise ? exerciseDisplayName(nextExercise) : 'Complete the round'}
+                          </Text>
+                        </View>
+                        {nextExercise ? (
+                          <Pressable
+                            accessibilityRole="button"
+                            accessibilityLabel={`Mark ${exerciseDisplayName(activeExercise)} complete and show ${exerciseDisplayName(nextExercise)}`}
+                            style={styles.nextExerciseButton}
+                            onPress={() => setActiveSequencePosition({ round: session.currentRound, index: activeExerciseIndex + 1 })}
+                          >
+                            <Text style={styles.nextExerciseButtonText}>Next Exercise</Text>
+                          </Pressable>
+                        ) : null}
+                      </View>
+                      <WorkoutStructure groups={currentRoundStructure} compact />
+                    </>
+                  ) : currentRoundExercises.map(
                     (exercise) => {
                       const passNumber = chainPassNumber(exercise.displayName);
                       // Odd/even alternation by Chain pass number — a
@@ -1201,39 +1241,7 @@ const styles = StyleSheet.create({
   missingButton: {
     marginTop: spacing.md,
   },
-  phaseBanner: {
-    // Real-device report (this sprint): moved from screen-relative
-    // (top: spacing.sm, anchored to the safe area, above everything)
-    // to portrait-relative, so "appears around the middle of the
-    // portrait" holds regardless of scroll position. left/right escape
-    // the 96px portrait width the same way portraitStatusPill's do,
-    // just with more room for a longer word like "STAGGERING" at this
-    // element's larger fontSize.xl. Card look (background/border/
-    // radius/padding) below is completely unchanged from before.
-    position: 'absolute',
-    top: PORTRAIT_SIZE * 0.32,
-    left: -70,
-    right: -70,
-    zIndex: 10,
-    alignItems: 'center',
-    backgroundColor: 'rgba(10, 9, 8, 0.85)',
-    borderWidth: 1,
-    borderColor: colors.ember.glow,
-    borderRadius: 12,
-    paddingVertical: spacing.sm,
-  },
-  phaseBannerText: {
-    fontFamily: fontFamily.displayBold,
-    fontSize: fontSize.xl,
-    color: colors.ember.glow,
-    letterSpacing: 3,
-  },
-  // Task 5 (Monster Defeated moment): a centered band, not a full-screen
-  // takeover — deliberately small and clean rather than a big "you win"
-  // interstitial. zIndex above phaseBanner's own 10 so it always reads on
-  // top if both were ever visible at once (they can't overlap in
-  // practice — the phase banner only fires on a phase drop, which can't
-  // coincide with the final completion moment).
+  // A centered victory band that never blocks the finish controls.
   defeatOverlay: {
     position: 'absolute',
     top: '38%',
@@ -1284,44 +1292,25 @@ const styles = StyleSheet.create({
     fontSize: 36,
     color: colors.text.secondary,
   },
-  // Sprint 4 (Boss Status Feedback Placement): a small pill anchored to
-  // the portrait's own container, not the screen — "bottom" is relative
-  // to portraitContainer (PORTRAIT_SIZE tall), landing in the portrait's
-  // lower-middle per the requested composition. It's a sibling of the
-  // circular (overflow: hidden) portrait View, not a child of it, so a
-  // longer word like "STAGGERING" isn't hard-clipped by the circle mask —
-  // it can sit a few px past the circle's own edge while still reading as
-  // part of the portrait. The dark translucent pill + border give it
-  // contrast against any monster art, light or dark.
-  // Real-device follow-up: centers the pill's own vertical midpoint at
-  // the portrait's vertical middle (bottom ≈ half of PORTRAIT_SIZE, minus
-  // roughly half the pill's own rendered height so the pill's *center* —
-  // not its bottom edge — lands at that midpoint), per explicit request.
-  portraitStatusPill: {
-    // Real-device report (this sprint): restored to its original
-    // placement — a prior edit moved this too far down, covering the
-    // artwork. bottom = 0.16 of the portrait's own height, i.e. the
-    // pill's *center* sits in the portrait's lower area, not its middle
-    // (that's the separate phaseBanner element below, moved there this
-    // same sprint).
-    position: 'absolute',
-    bottom: PORTRAIT_SIZE * 0.16,
-    left: -12,
-    right: -12,
-    alignItems: 'center',
-  },
+  portraitStatusPill: { alignSelf: 'center' },
   portraitStatusText: {
     fontFamily: fontFamily.displayBold,
-    fontSize: 11,
-    letterSpacing: 1.5,
+    fontSize: 9,
+    letterSpacing: 1,
     color: colors.text.primary,
-    backgroundColor: 'rgba(10, 9, 8, 0.72)',
-    borderWidth: 1,
-    borderColor: colors.ember.glow,
     borderRadius: 8,
-    paddingHorizontal: spacing.xs,
-    paddingVertical: 2,
+    paddingHorizontal: spacing.xxs,
+    paddingVertical: 1,
     overflow: 'hidden',
+  },
+  monsterHeader: {
+    width: '100%',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'center',
+    justifyContent: 'center',
+    columnGap: spacing.xs,
+    rowGap: 2,
   },
   monsterName: {
     fontFamily: fontFamily.displayBold,
@@ -1329,6 +1318,8 @@ const styles = StyleSheet.create({
     color: colors.text.primary,
     textTransform: 'uppercase',
     letterSpacing: 2,
+    textAlign: 'center',
+    flexShrink: 1,
   },
   hpBarWrap: {
     width: '100%',
@@ -1384,64 +1375,142 @@ const styles = StyleSheet.create({
     color: colors.text.primary,
   },
   feedbackAnchor: {
-    // Task 1 (Combat Feedback Overlay), revised for Bug #1 (real-device
-    // report, second pass): the previous revision reserved a fixed
-    // height so the overlay had its own space instead of collapsing onto
-    // the card below it — that part stayed correct. What was still wrong
-    // is that feedbackRow and the combo/combo-broken texts were each
-    // independently absolutely positioned with guessed pixel offsets
-    // (top: 0, top: 44), so when several things fired at once (a hit +
-    // a bonus + a combo, as in the report), they overlapped each other
-    // inside this box even though the box itself no longer overlapped
-    // the card beneath it. Removing the per-element absolute positioning
-    // below lets them stack in normal top-to-bottom flow instead, so
-    // they can never occupy the same pixels — while this outer anchor
-    // keeps its own fixed height, so the exercise/round card beneath
-    // still never jumps when feedback appears or disappears.
-    height: 108,
+    height: 78,
     width: '100%',
     alignItems: 'center',
+    justifyContent: 'flex-start',
   },
-  feedbackRow: {
-    minHeight: 20,
+  damageFeedback: {
+    flexDirection: 'row',
+    minHeight: 30,
     alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.xs,
   },
   damageText: {
-    fontFamily: fontFamily.monoBold,
-    fontSize: fontSize.base,
-    color: colors.ember.base,
-  },
-  critDamageText: {
     fontFamily: fontFamily.displayBold,
     fontSize: fontSize.xl,
+    color: colors.ember.base,
+    letterSpacing: 1,
+    lineHeight: 30,
+  },
+  roundBonusLabel: {
+    fontFamily: fontFamily.monoBold,
+    fontSize: 8,
+    lineHeight: 10,
+    color: colors.text.muted,
     letterSpacing: 1,
   },
   critTag: {
     fontFamily: fontFamily.monoBold,
-    fontSize: fontSize.xs,
-    letterSpacing: 2,
-    marginTop: 2,
+    fontSize: 10,
+    letterSpacing: 1.5,
+    lineHeight: 13,
+  },
+  bonusRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    columnGap: spacing.xs,
+    minHeight: 13,
   },
   bonusText: {
     fontFamily: fontFamily.monoBold,
-    fontSize: fontSize.sm,
+    fontSize: 9,
+    lineHeight: 12,
     color: colors.gold,
   },
   comboText: {
     fontFamily: fontFamily.displayBold,
-    fontSize: fontSize.lg,
+    fontSize: fontSize.xs,
     color: colors.ember.glow,
-    letterSpacing: 2,
-    marginTop: spacing.xxs,
+    letterSpacing: 1,
+    marginTop: 2,
     textAlign: 'center',
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: `${colors.ember.base}66`,
+    borderRadius: 999,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 1,
+    backgroundColor: colors.void.surface,
   },
   comboResetText: {
     fontFamily: fontFamily.monoBold,
-    fontSize: fontSize.sm,
+    fontSize: fontSize.xs,
     color: colors.steel,
     letterSpacing: 2,
     marginTop: spacing.xxs,
     textAlign: 'center',
+  },
+  activeExerciseFocus: {
+    width: '100%',
+    alignItems: 'center',
+    marginTop: spacing.xs,
+    marginBottom: spacing.xs,
+    paddingBottom: spacing.xs,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border.hairline,
+  },
+  activeExerciseName: {
+    fontFamily: fontFamily.displayBold,
+    fontSize: fontSize.xl,
+    color: colors.text.primary,
+    textTransform: 'uppercase',
+    textAlign: 'center',
+  },
+  activeExerciseLabel: {
+    fontFamily: fontFamily.monoBold,
+    fontSize: 9,
+    color: colors.text.muted,
+    letterSpacing: 1.5,
+    marginBottom: 2,
+  },
+  activeExerciseProgress: {
+    fontFamily: fontFamily.monoBold,
+    fontSize: fontSize.xs,
+    color: colors.bronze.active,
+    marginTop: 2,
+    textAlign: 'center',
+  },
+  nextExerciseRow: {
+    width: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.xs,
+    marginTop: spacing.xxs,
+  },
+  nextExerciseLabel: {
+    fontFamily: fontFamily.monoBold,
+    fontSize: 9,
+    color: colors.text.muted,
+    letterSpacing: 1,
+  },
+  nextExerciseName: {
+    flexShrink: 1,
+    fontFamily: fontFamily.bodySemiBold,
+    fontSize: fontSize.sm,
+    color: colors.text.secondary,
+  },
+  nextExerciseButton: {
+    minHeight: 36,
+    minWidth: 130,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: spacing.xxs,
+    paddingHorizontal: spacing.md,
+    borderRadius: radii.md,
+    borderWidth: 1,
+    borderColor: `${colors.bronze.base}66`,
+    backgroundColor: colors.void.surface,
+  },
+  nextExerciseButtonText: {
+    fontFamily: fontFamily.monoBold,
+    fontSize: fontSize.xs,
+    color: colors.bronze.active,
+    textTransform: 'uppercase',
+    letterSpacing: 1,
   },
   completeCard: {
     width: '100%',

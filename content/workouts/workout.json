@@ -23,42 +23,42 @@
       {
         "id": "crooked-suitcase-deadlift",
         "name": "Suitcase Deadlift",
-        "damageCoefficient": 0,
+        "damageCoefficient": 10,
         "damageType": "flat",
         "targetReps": 3
       },
       {
         "id": "crooked-single-leg-rdl",
         "name": "Single-Leg Romanian Deadlift",
-        "damageCoefficient": 0,
+        "damageCoefficient": 10,
         "damageType": "flat",
         "targetReps": 3
       },
       {
         "id": "crooked-rdl",
         "name": "Romanian Deadlift",
-        "damageCoefficient": 0,
+        "damageCoefficient": 10,
         "damageType": "flat",
         "targetReps": 3
       },
       {
         "id": "crooked-single-arm-clean",
         "name": "Single-Arm Clean",
-        "damageCoefficient": 0,
+        "damageCoefficient": 10,
         "damageType": "flat",
         "targetReps": 3
       },
       {
         "id": "crooked-single-arm-press",
         "name": "Single-Arm Press",
-        "damageCoefficient": 0,
+        "damageCoefficient": 10,
         "damageType": "flat",
         "targetReps": 3
       },
       {
         "id": "crooked-single-arm-thruster",
         "name": "Single-Arm Thruster",
-        "damageCoefficient": 0,
+        "damageCoefficient": 10,
         "damageType": "flat",
         "targetReps": 3
       }
@@ -4905,7 +4905,7 @@
     ],
     "gearWeightKg": 20,
     "gearCount": 1,
-    "rounds": 2,
+    "rounds": 5,
     "restSeconds": 105,
     "roundBonusDamage": 85,
     "targetTimeSeconds": 385,
@@ -4918,6 +4918,7 @@
       {
         "id": "aether-left-snatch",
         "name": "Snatch",
+        "displayName": "Left Hand · Snatch",
         "damageCoefficient": 16,
         "damageType": "flat",
         "targetReps": 5
@@ -4925,6 +4926,7 @@
       {
         "id": "aether-left-overhead-lunge",
         "name": "Overhead Lunge",
+        "displayName": "Left Hand · Overhead Lunge",
         "damageCoefficient": 12,
         "damageType": "flat",
         "targetReps": 5
@@ -4932,6 +4934,7 @@
       {
         "id": "aether-left-jerk",
         "name": "Jerk",
+        "displayName": "Left Hand · Jerk",
         "damageCoefficient": 16,
         "damageType": "flat",
         "targetReps": 5
@@ -4939,6 +4942,7 @@
       {
         "id": "aether-left-windmill",
         "name": "Windmill",
+        "displayName": "Left Hand · Windmill",
         "damageCoefficient": 10,
         "damageType": "flat",
         "targetReps": 5
@@ -4946,91 +4950,50 @@
       {
         "id": "aether-left-swing",
         "name": "Swing",
+        "displayName": "Left Hand · Swing",
         "damageCoefficient": 10,
         "damageType": "flat",
         "targetReps": 5
-      }
-    ],
-    "sections": [
-      {
-        "label": "Left Hand",
-        "exercises": [
-          {
-            "id": "aether-left-snatch",
-            "name": "Snatch",
-            "damageCoefficient": 16,
-            "damageType": "flat",
-            "targetReps": 5
-          },
-          {
-            "id": "aether-left-overhead-lunge",
-            "name": "Overhead Lunge",
-            "damageCoefficient": 12,
-            "damageType": "flat",
-            "targetReps": 5
-          },
-          {
-            "id": "aether-left-jerk",
-            "name": "Jerk",
-            "damageCoefficient": 16,
-            "damageType": "flat",
-            "targetReps": 5
-          },
-          {
-            "id": "aether-left-windmill",
-            "name": "Windmill",
-            "damageCoefficient": 10,
-            "damageType": "flat",
-            "targetReps": 5
-          },
-          {
-            "id": "aether-left-swing",
-            "name": "Swing",
-            "damageCoefficient": 10,
-            "damageType": "flat",
-            "targetReps": 5
-          }
-        ]
       },
       {
-        "label": "Right Hand",
-        "exercises": [
-          {
-            "id": "aether-right-snatch",
-            "name": "Snatch",
-            "damageCoefficient": 16,
-            "damageType": "flat",
-            "targetReps": 5
-          },
-          {
-            "id": "aether-right-overhead-lunge",
-            "name": "Overhead Lunge",
-            "damageCoefficient": 12,
-            "damageType": "flat",
-            "targetReps": 5
-          },
-          {
-            "id": "aether-right-jerk",
-            "name": "Jerk",
-            "damageCoefficient": 16,
-            "damageType": "flat",
-            "targetReps": 5
-          },
-          {
-            "id": "aether-right-windmill",
-            "name": "Windmill",
-            "damageCoefficient": 10,
-            "damageType": "flat",
-            "targetReps": 5
-          },
-          {
-            "id": "aether-right-swing",
-            "name": "Swing",
-            "damageCoefficient": 10,
-            "damageType": "flat",
-            "targetReps": 5
-          }
-        ]
+        "id": "aether-right-snatch",
+        "name": "Snatch",
+        "displayName": "Right Hand · Snatch",
+        "damageCoefficient": 16,
+        "damageType": "flat",
+        "targetReps": 5
+      },
+      {
+        "id": "aether-right-overhead-lunge",
+        "name": "Overhead Lunge",
+        "displayName": "Right Hand · Overhead Lunge",
+        "damageCoefficient": 12,
+        "damageType": "flat",
+        "targetReps": 5
+      },
+      {
+        "id": "aether-right-jerk",
+        "name": "Jerk",
+        "displayName": "Right Hand · Jerk",
+        "damageCoefficient": 16,
+        "damageType": "flat",
+        "targetReps": 5
+      },
+      {
+        "id": "aether-right-windmill",
+        "name": "Windmill",
+        "displayName": "Right Hand · Windmill",
+        "damageCoefficient": 10,
+        "damageType": "flat",
+        "targetReps": 5
+      },
+      {
+        "id": "aether-right-swing",
+        "name": "Swing",
+        "displayName": "Right Hand · Swing",
+        "damageCoefficient": 10,
+        "damageType": "flat",
+        "targetReps": 5
       }
     ],
     "finisher": {
