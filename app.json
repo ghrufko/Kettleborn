@@ -33,7 +33,15 @@
       "package": "com.kettleborn.app"
     },
     "web": {
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/favicon.png",
+      "name": "Kettleborn",
+      "shortName": "Kettleborn",
+      "lang": "en",
+      "display": "standalone",
+      "startUrl": ".",
+      "scope": ".",
+      "themeColor": "#0A0908",
+      "backgroundColor": "#0A0908"
     }
   }
 }
