@@ -61,7 +61,10 @@ export function HuntScreen({ navigation }: Props) {
               onPress={() => navigation.navigate('WorldMap', { campaignId: campaign.id })}
               style={({ pressed }) => [pressed && !isLocked && styles.pressed]}
             >
-              <GlassCard padded={false} style={styles.card}>
+              <GlassCard
+                padded={false}
+                style={[styles.card, { borderColor: `${accentColor}66` }]}
+              >
                 {/* Hero panel: real artwork if one is ever added under this
                     campaign's heroImageAsset key (see territoryArt.ts),
                     otherwise a flat accent-tinted panel — plain Views only,
@@ -87,26 +90,36 @@ export function HuntScreen({ navigation }: Props) {
                 </View>
 
                 <View style={styles.body}>
-                  <Text style={[styles.stateLabel, { color: isLocked ? colors.steel : accentColor }]}>
-                    {STATE_LABEL[state]}
-                  </Text>
-
                   {!isLocked ? (
                     <>
-                      <ProgressBar
-                        progress={totalCount > 0 ? defeatedCount / totalCount : 0}
-                        fillColor={colors.gold}
-                        style={styles.progressBar}
-                      />
-                      <Text style={styles.progressLabel}>
-                        {defeatedCount} / {totalCount} Monsters Defeated
-                      </Text>
+                      <View style={styles.enterTerritoryRow}>
+                        <Text style={[styles.enterTerritoryLabel, { color: accentColor }]}>Enter Territory</Text>
+                        <Ionicons name="arrow-forward" size={15} color={accentColor} />
+                      </View>
+                      <View style={styles.progressBlock}>
+                        <Text style={[styles.stateLabel, { color: accentColor }]}>
+                          {STATE_LABEL[state]}
+                        </Text>
+                        <ProgressBar
+                          progress={totalCount > 0 ? defeatedCount / totalCount : 0}
+                          fillColor={colors.gold}
+                          style={styles.progressBar}
+                        />
+                        <Text style={styles.progressLabel}>
+                          {defeatedCount} / {totalCount} Monsters Defeated
+                        </Text>
+                      </View>
                       {isCampaignComplete(campaign, monsterProgress) ? (
                         <Text style={styles.completionMessage}>{campaign.completionText}</Text>
                       ) : null}
                     </>
                   ) : (
-                    <Text style={styles.lockedHint}>This territory isn't open yet.</Text>
+                    <>
+                      <Text style={[styles.stateLabel, { color: colors.steel }]}>
+                        {STATE_LABEL[state]}
+                      </Text>
+                      <Text style={styles.lockedHint}>This territory isn't open yet.</Text>
+                    </>
                   )}
                 </View>
               </GlassCard>
@@ -135,6 +148,12 @@ const styles = StyleSheet.create({
   card: {
     width: '100%',
     overflow: 'hidden',
+    borderWidth: 1,
+    shadowColor: colors.bronze.base,
+    shadowOpacity: 0.12,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 2,
   },
   hero: {
     width: '100%',
@@ -163,11 +182,12 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    height: HERO_HEIGHT * 0.7,
-    backgroundColor: 'rgba(10, 9, 8, 0.72)',
+    height: HERO_HEIGHT * 0.44,
+    backgroundColor: 'rgba(10, 9, 8, 0.78)',
   },
   heroTextWrap: {
-    padding: spacing.md,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
   },
   lockBadge: {
     position: 'absolute',
@@ -181,7 +201,28 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   body: {
-    padding: spacing.md,
+    paddingHorizontal: spacing.md,
+    paddingTop: spacing.sm,
+    paddingBottom: spacing.sm,
+    backgroundColor: colors.void.surface,
+    borderTopWidth: 1,
+    borderTopColor: colors.border.hairline,
+  },
+  enterTerritoryRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    minHeight: 24,
+    marginBottom: spacing.xxs,
+  },
+  enterTerritoryLabel: {
+    fontFamily: fontFamily.monoBold,
+    fontSize: fontSize.xs,
+    textTransform: 'uppercase',
+    letterSpacing: 1.2,
+  },
+  progressBlock: {
+    gap: 0,
   },
   territoryName: {
     fontFamily: fontFamily.displayBold,
@@ -212,15 +253,16 @@ const styles = StyleSheet.create({
     fontSize: fontSize.xs,
     textTransform: 'uppercase',
     letterSpacing: 1,
+    marginBottom: 2,
   },
   progressBar: {
-    marginTop: spacing.sm,
+    marginTop: 4,
   },
   progressLabel: {
     fontFamily: fontFamily.monoRegular,
     fontSize: fontSize.xs,
     color: colors.text.muted,
-    marginTop: spacing.xxs,
+    marginTop: 3,
     textAlign: 'right',
   },
   lockedHint: {

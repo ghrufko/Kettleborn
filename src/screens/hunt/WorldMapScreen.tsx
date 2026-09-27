@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, Pressable, useWindowDimensions } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { Animated, View, Text, StyleSheet, ScrollView, Image, Pressable, useWindowDimensions } from 'react-native';
+import { useIsFocused } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import { HuntStackParamList } from '../../navigation/types';
@@ -58,6 +59,22 @@ export function WorldMapScreen({ route, navigation }: Props) {
   const campaign = contentEngine.getCampaign(campaignId);
   const orderedMonsterIds = campaign?.monsterIds ?? [];
   const [tab, setTab] = useState<HubTab>('hunts');
+  const targetPulse = useRef(new Animated.Value(0)).current;
+  const isFocused = useIsFocused();
+
+  useEffect(() => {
+    if (!isFocused || tab !== 'hunts') {
+      return;
+    }
+    const pulse = Animated.loop(
+      Animated.sequence([
+        Animated.timing(targetPulse, { toValue: 1, duration: 900, useNativeDriver: true }),
+        Animated.timing(targetPulse, { toValue: 0, duration: 900, useNativeDriver: true }),
+      ])
+    );
+    pulse.start();
+    return () => pulse.stop();
+  }, [isFocused, tab, targetPulse]);
 
   const nodes = orderedMonsterIds
     .map((monsterId) => contentEngine.getMonster(monsterId))
@@ -199,11 +216,18 @@ export function WorldMapScreen({ route, navigation }: Props) {
               {bossPages.length > 1 ? (
                 <View style={styles.dotsRow}>
                   {bossPages.map((entry, index) => (
-                    <View
+                    <Animated.View
                       key={entry.monster.id}
                       style={[
                         styles.dot,
-                        index === pageIndex && [styles.dotActive, { backgroundColor: accentColor }],
+                        index === pageIndex && [styles.dotSelected, { backgroundColor: accentColor }],
+                        index === currentTargetIndex && styles.dotCurrentTarget,
+                        index === currentTargetIndex && {
+                          opacity: targetPulse.interpolate({ inputRange: [0, 1], outputRange: [0.78, 1] }),
+                          transform: [
+                            { scale: targetPulse.interpolate({ inputRange: [0, 1], outputRange: [1, 1.14] }) },
+                          ],
+                        },
                       ]}
                     />
                   ))}
@@ -323,7 +347,6 @@ function BossHeroPage({
             <Text style={styles.heroPageFallbackInitial}>{isLocked ? '?' : monster.name.charAt(0)}</Text>
           </View>
         )}
-        <View style={[styles.heroPageScrim, isDefeated && styles.heroPageScrimDefeated]} />
         {isLocked ? (
           <View style={styles.heroPageLockOverlay}>
             <Ionicons name="lock-closed" size={36} color={colors.text.secondary} />
@@ -349,32 +372,38 @@ function BossHeroPage({
         )}
       </View>
 
-      <View style={styles.heroPageTextWrap}>
-        <Text style={styles.heroPageName} numberOfLines={1}>
-          {isLocked ? '????' : monster.name}
-        </Text>
-        <Text style={styles.heroPageTitle} numberOfLines={1}>
-          {isLocked ? 'Unknown Creature' : monster.title}
-        </Text>
-        {!isLocked ? (
-          <Text style={styles.heroPageFocus}>{getCombatPersonality(monster.personality).label}</Text>
-        ) : null}
-        {isCurrentTarget && !isLocked ? (
-          <Text style={styles.heroPageFlavor} numberOfLines={2}>
-            {flavorTextFor(monster.id)}
+      <View style={styles.heroPageInfo}>
+        <View style={styles.heroPageTitleZone}>
+          <Text style={styles.heroPageName} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.72}>
+            {isLocked ? '????' : monster.name}
           </Text>
-        ) : null}
-        <Text style={styles.heroPageProgress}>
-          {huntsCompleted} / {huntsTotal} Hunts
-        </Text>
-      </View>
-
-      {isCurrentTarget ? (
-        <View style={styles.currentTargetBadge}>
-          <Ionicons name="locate" size={11} color={colors.ember.base} />
-          <Text style={styles.currentTargetBadgeText}>Current Target</Text>
         </View>
-      ) : null}
+
+        <View style={[styles.heroPageDetails, { borderTopColor: `${accentColor}66` }]}>
+          <Text style={styles.heroPageTitle} numberOfLines={2}>
+            {isLocked ? 'Unknown Creature' : monster.title}
+          </Text>
+          {!isLocked ? (
+            <View style={styles.heroPageStatusHeader}>
+              <Text style={styles.heroPageFocus}>{getCombatPersonality(monster.personality).label}</Text>
+              {isCurrentTarget ? (
+                <View style={[styles.currentTargetBadge, { borderColor: `${accentColor}88` }]}>
+                  <Ionicons name="locate" size={13} color={colors.ember.base} />
+                  <Text style={styles.currentTargetBadgeText}>Current Target</Text>
+                </View>
+              ) : null}
+            </View>
+          ) : null}
+          {isCurrentTarget && !isLocked ? (
+            <Text style={styles.heroPageFlavor} numberOfLines={2}>
+              {flavorTextFor(monster.id)}
+            </Text>
+          ) : null}
+          <Text style={styles.heroPageProgress}>
+            {huntsCompleted} / {huntsTotal} Hunts Complete
+          </Text>
+        </View>
+      </View>
     </Pressable>
   );
 }
@@ -578,17 +607,6 @@ const styles = StyleSheet.create({
     fontSize: 96,
     color: colors.text.secondary,
   },
-  heroPageScrim: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    bottom: 0,
-    height: '25%',
-    backgroundColor: 'rgba(10, 9, 8, 0.82)',
-  },
-  heroPageScrimDefeated: {
-    backgroundColor: 'rgba(10, 9, 8, 0.62)',
-  },
   heroPageLockOverlay: {
     position: 'absolute',
     top: 0,
@@ -638,21 +656,38 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     letterSpacing: 1,
   },
-  heroPageTextWrap: {
-    padding: spacing.lg,
-    paddingBottom: spacing.xl,
+  heroPageInfo: {
+    width: '100%',
+  },
+  heroPageTitleZone: {
+    height: 64,
+    justifyContent: 'center',
+    paddingHorizontal: spacing.md,
+    backgroundColor: 'rgba(10, 9, 8, 0.2)',
+  },
+  heroPageDetails: {
+    paddingHorizontal: spacing.md,
+    paddingTop: spacing.sm,
+    paddingBottom: spacing.md,
+    backgroundColor: 'rgba(10, 9, 8, 0.92)',
+    borderTopWidth: 1,
+  },
+  heroPageStatusHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: spacing.sm,
+    marginTop: spacing.xxs,
   },
   currentTargetBadge: {
-    position: 'absolute',
-    right: spacing.lg,
-    bottom: spacing.lg,
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.xxs,
-    paddingHorizontal: spacing.xs,
+    paddingHorizontal: spacing.sm,
     paddingVertical: 3,
     borderRadius: radii.pill,
-    backgroundColor: 'rgba(10, 9, 8, 0.6)',
+    borderWidth: 1,
+    backgroundColor: 'rgba(36, 27, 20, 0.9)',
   },
   currentTargetBadgeText: {
     fontFamily: fontFamily.monoBold,
@@ -667,34 +702,37 @@ const styles = StyleSheet.create({
     color: colors.text.primary,
     textTransform: 'uppercase',
     letterSpacing: 1.5,
+    textShadowColor: 'rgba(0, 0, 0, 0.85)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 5,
   },
   heroPageTitle: {
     fontFamily: fontFamily.bodyRegular,
-    fontSize: fontSize.lg,
+    fontSize: fontSize.base,
     fontStyle: 'italic',
-    color: colors.text.secondary,
-    marginTop: spacing.xxs,
+    color: colors.bronze.active,
+    lineHeight: 20,
   },
   heroPageFocus: {
     fontFamily: fontFamily.monoRegular,
-    fontSize: fontSize.sm,
-    color: colors.bronze.active,
+    fontSize: fontSize.xs,
+    color: colors.text.secondary,
     textTransform: 'uppercase',
     letterSpacing: 1.5,
-    marginTop: spacing.sm,
+    opacity: 0.82,
   },
   heroPageFlavor: {
     fontFamily: fontFamily.bodyRegular,
-    fontSize: fontSize.sm,
+    fontSize: fontSize.xs,
     fontStyle: 'italic',
     color: colors.text.muted,
-    marginTop: spacing.xs,
+    marginTop: spacing.xxs,
   },
   heroPageProgress: {
     fontFamily: fontFamily.monoRegular,
     fontSize: fontSize.xs,
     color: colors.text.muted,
-    marginTop: spacing.sm,
+    marginTop: spacing.xs,
   },
   dotsRow: {
     flexDirection: 'row',
@@ -709,9 +747,14 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     backgroundColor: colors.steel,
   },
-  dotActive: {
-    width: 14,
-    height: 14,
-    borderRadius: 7,
+  dotSelected: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+  },
+  dotCurrentTarget: {
+    backgroundColor: colors.gold,
+    borderColor: colors.bronze.base,
+    borderWidth: 1,
   },
 });
