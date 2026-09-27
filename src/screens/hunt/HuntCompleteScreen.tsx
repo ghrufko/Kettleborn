@@ -14,8 +14,6 @@ import { getMonsterPortrait } from '../../constants/monsterPortraits';
 import { useAppStore } from '../../store';
 import { getLevelProgress } from '../../../engines/progress/progressionEngine';
 import { isCampaignComplete } from '../../utils/campaignState';
-import { getNextObjective, NextObjective } from '../../utils/nextObjective';
-import { flavorTextFor } from '../../utils/flavorText';
 import { detectMilestone, Milestone } from '../../utils/milestones';
 import { useStaggeredReveal } from '../../utils/useStaggeredReveal';
 import { getRoundStats } from '../../utils/roundStats';
@@ -80,12 +78,6 @@ export function HuntCompleteScreen({ route, navigation }: Props) {
 
   const campaign = contentEngine.getCampaignForMonster(monsterId);
   const justCompletedCampaign = campaign ? isCampaignComplete(campaign, monsterProgress) : false;
-  const nextObjective: NextObjective | null = getNextObjective(
-    contentEngine.getAllCampaigns(),
-    (id) => contentEngine.getMonster(id),
-    monsterProgress
-  );
-
   const [milestone, setMilestone] = useState<Milestone | null>(null);
   const setResultRPE = useAppStore((state) => state.setResultRPE);
   const setResultNotes = useAppStore((state) => state.setResultNotes);
@@ -145,8 +137,8 @@ export function HuntCompleteScreen({ route, navigation }: Props) {
   const [levelUpVisible, setLevelUpVisible] = useState(!!summary?.leveledUp);
 
   // Staged reveal (Sprint 17, extracted to a shared hook in Sprint 18):
-  // Rank → XP → Stats → Next Goal, instead of the whole screen fading in
-  // at once. Four beats, staggered — same content, just sequenced.
+  // Rank → XP → Stats → completion actions, instead of the whole screen
+  // fading in at once. Four beats, staggered — same content, just sequenced.
   const revealStyle = useStaggeredReveal(4);
 
   // Trophy and rank get their own small spring "pop" on top of the beat-0
@@ -490,15 +482,7 @@ export function HuntCompleteScreen({ route, navigation }: Props) {
         </Animated.View>
 
         <Animated.View style={[styles.beatFull, revealStyle(3)]}>
-        {/* Task 10: reordered to a natural athlete workflow — result was
-            already shown above (beats 0-2: rank/XP/stats), so here it's
-            "how did it feel" -> optional training note -> what's next,
-            ending in exactly one Continue action (previously there were
-            two: "Continue Adventure" inside Next Goal *and* a separate
-            plain "Continue" below it, with RPE sandwiched between them).
-            The second one is gone; whichever Next Goal button applies is
-            now the only way off this screen, and it commits the RPE/note
-            that was just entered before navigating. */}
+        {/* Result feedback and journal note remain available before leaving. */}
         <GlassCard style={styles.card}>
           <Text style={styles.sectionLabel}>How did that feel?</Text>
           <View style={styles.rpeRow}>
@@ -530,46 +514,14 @@ export function HuntCompleteScreen({ route, navigation }: Props) {
           />
         </GlassCard>
 
-        {/*
-          Polish pass, fix 1: this used to be "Continue Adventure",
-          which navigated straight into Encounter 2/3's Hunt Overview —
-          i.e. auto-starting the next encounter. That's gone: the player
-          now always lands back on the World Map and chooses when to
-          fight next, exactly like the "every trial conquered" fallback
-          below already did. The card still shows what's next (informational
-          only, not an action) so the context isn't lost — same visual
-          design/layout/card style as before, only the button + its
-          behavior changed.
-        */}
-        {nextObjective ? (
-          <GlassCard style={[styles.card, styles.nextCard]}>
-            <Text style={styles.sectionLabel}>Next Goal</Text>
-            <Text style={styles.nextMonster}>{nextObjective.monster.name}</Text>
-            <Text style={styles.nextHunt}>{nextObjective.hunt.name}</Text>
-            <Text style={styles.nextFlavor}>{flavorTextFor(nextObjective.hunt.id)}</Text>
-            <Button
-              label="Return to Map"
-              onPress={() => {
-                setResultNotes(summary.resultId, noteText.trim() || null);
-                returnToWorldMap(navigation, monsterId);
-              }}
-              style={styles.nextButton}
-            />
-          </GlassCard>
-        ) : (
-          <GlassCard style={[styles.card, styles.nextCard]}>
-            <Text style={styles.sectionLabel}>Next Goal</Text>
-            <Text style={styles.nextFlavor}>Every trial conquered — for now.</Text>
-            <Button
-              label="Return to Map"
-              onPress={() => {
-                setResultNotes(summary.resultId, noteText.trim() || null);
-                returnToWorldMap(navigation, monsterId);
-              }}
-              style={styles.nextButton}
-            />
-          </GlassCard>
-        )}
+        <Button
+          label="Return to Map"
+          onPress={() => {
+            setResultNotes(summary.resultId, noteText.trim() || null);
+            returnToWorldMap(navigation, monsterId);
+          }}
+          style={styles.nextButton}
+        />
         </Animated.View>
       </Animated.ScrollView>
       </SafeAreaView>
@@ -599,29 +551,6 @@ const styles = StyleSheet.create({
   },
   beatFull: {
     width: '100%',
-  },
-  nextCard: {
-    alignItems: 'center',
-  },
-  nextMonster: {
-    fontFamily: fontFamily.displayBold,
-    fontSize: fontSize.lg,
-    color: colors.text.primary,
-    textTransform: 'uppercase',
-  },
-  nextHunt: {
-    fontFamily: fontFamily.bodySemiBold,
-    fontSize: fontSize.base,
-    color: colors.bronze.active,
-    marginTop: 2,
-  },
-  nextFlavor: {
-    fontFamily: fontFamily.bodyRegular,
-    fontSize: fontSize.sm,
-    fontStyle: 'italic',
-    color: colors.text.muted,
-    marginTop: spacing.sm,
-    textAlign: 'center',
   },
   nextButton: {
     width: '100%',

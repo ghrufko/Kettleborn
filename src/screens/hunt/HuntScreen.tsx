@@ -15,7 +15,7 @@ type Props = NativeStackScreenProps<HuntStackParamList, 'Hunt'>;
 
 const STATE_LABEL: Record<string, string> = {
   completed: 'Completed',
-  available: 'Enter Territory',
+  available: 'Available',
   locked: 'Locked',
 };
 

@@ -12,7 +12,7 @@ import { getCampaignMonsterState, isCampaignComplete } from '../../utils/campaig
 import { getCombatPersonality } from '../../utils/bossPersonality';
 import { flavorTextFor } from '../../utils/flavorText';
 import { useAppStore } from '../../store';
-import { colors, fontFamily, fontSize, radii, spacing, glow } from '../../theme';
+import { colors, fontFamily, fontSize, spacing, glow } from '../../theme';
 
 type Props = NativeStackScreenProps<HuntStackParamList, 'WorldMap'>;
 
@@ -24,7 +24,6 @@ interface BossPageEntry {
   monster: Monster;
   isLocked: boolean;
   isDefeated: boolean;
-  isCurrentTarget: boolean;
   isFinalBoss: boolean;
   huntsCompleted: number;
   huntsTotal: number;
@@ -40,8 +39,7 @@ interface BossPageEntry {
  * a presentation-only redesign of what used to be a vertical scroll of
  * MonsterCard rows. The underlying data and logic are unchanged: same
  * `nodes`/`nodeStates` (locked/available/defeated) from
- * campaignState.ts, same final-boss placement, same current-target
- * detection, and every navigation call below still points at the exact
+ * campaignState.ts, same final-boss placement, and every navigation call below still points at the exact
  * same `MonsterDetail` route it always did — only the layout changed.
  * Several monsters have no `portraitAsset` yet; those pages fall back to
  * the same accent-tinted initial-letter treatment MonsterCard already
@@ -83,16 +81,13 @@ export function WorldMapScreen({ route, navigation }: Props) {
   const nodeStates = nodes.map((monster) =>
     getCampaignMonsterState(campaign!, monster.id, monsterProgress)
   );
-  // The current objective: the first monster that's unlocked but not yet
-  // defeated. If every monster is defeated, there is no current target —
-  // the campaign-complete banner takes over instead.
-  const currentTargetIndex = nodeStates.findIndex((state) => state === 'available');
   const campaignComplete = campaign ? isCampaignComplete(campaign, monsterProgress) : false;
   const accentColor = campaign ? TERRITORY_ACCENT[campaign.id] ?? colors.steel : colors.steel;
   const heroSource = campaign ? getTerritoryArt(campaign.heroImageAsset) : undefined;
 
   const { width: windowWidth } = useWindowDimensions();
   const [pageIndex, setPageIndex] = useState(0);
+  const [progressTrackWidth, setProgressTrackWidth] = useState(0);
 
   // Same monster set / same states / same final-boss placement as before —
   // just flattened into one array so it can be paged through instead of
@@ -104,7 +99,6 @@ export function WorldMapScreen({ route, navigation }: Props) {
       monster,
       isLocked: state === 'locked',
       isDefeated: state === 'defeated',
-      isCurrentTarget: index === currentTargetIndex,
       isFinalBoss: false,
       huntsCompleted: progress?.huntsCompleted ?? 0,
       huntsTotal: progress?.huntsTotal ?? monster.hunts.length,
@@ -120,7 +114,6 @@ export function WorldMapScreen({ route, navigation }: Props) {
         monster: boss,
         isLocked: bossState === 'locked',
         isDefeated: bossState === 'defeated',
-        isCurrentTarget: false,
         isFinalBoss: true,
         huntsCompleted: bossProgress?.huntsCompleted ?? 0,
         huntsTotal: bossProgress?.huntsTotal ?? boss.hunts.length,
@@ -214,23 +207,43 @@ export function WorldMapScreen({ route, navigation }: Props) {
               </ScrollView>
 
               {bossPages.length > 1 ? (
-                <View style={styles.dotsRow}>
+                <View
+                  style={styles.progressTrack}
+                  onLayout={(event) => {
+                    const width = event.nativeEvent.layout.width;
+                    setProgressTrackWidth((previous) => previous === width ? previous : width);
+                  }}
+                  accessibilityLabel={`Monster ${pageIndex + 1} of ${bossPages.length}`}
+                  accessibilityRole="progressbar"
+                  accessibilityValue={{ min: 1, max: bossPages.length, now: pageIndex + 1 }}
+                >
+                  <View style={styles.progressTrackLine} />
                   {bossPages.map((entry, index) => (
-                    <Animated.View
+                    <View
                       key={entry.monster.id}
                       style={[
-                        styles.dot,
-                        index === pageIndex && [styles.dotSelected, { backgroundColor: accentColor }],
-                        index === currentTargetIndex && styles.dotCurrentTarget,
-                        index === currentTargetIndex && {
-                          opacity: targetPulse.interpolate({ inputRange: [0, 1], outputRange: [0.78, 1] }),
-                          transform: [
-                            { scale: targetPulse.interpolate({ inputRange: [0, 1], outputRange: [1, 1.14] }) },
-                          ],
+                        styles.progressTick,
+                        {
+                          left:
+                            4 +
+                            (index / (bossPages.length - 1)) * Math.max(0, progressTrackWidth - 12),
                         },
                       ]}
                     />
                   ))}
+                  <Animated.View
+                    style={[
+                      styles.progressMarker,
+                      {
+                        left: progressTrackWidth > 12 && bossPages.length > 1
+                          ? (pageIndex / (bossPages.length - 1)) * (progressTrackWidth - 12)
+                          : 0,
+                        backgroundColor: accentColor,
+                        opacity: targetPulse.interpolate({ inputRange: [0, 1], outputRange: [0.9, 1] }),
+                        transform: [{ scale: targetPulse.interpolate({ inputRange: [0, 1], outputRange: [1, 1.08] }) }],
+                      },
+                    ]}
+                  />
                 </View>
               ) : null}
             </>
@@ -328,7 +341,7 @@ function BossHeroPage({
   accentColor: string;
   onPress: () => void;
 }) {
-  const { monster, isLocked, isDefeated, isCurrentTarget, isFinalBoss, huntsCompleted, huntsTotal } = entry;
+  const { monster, isLocked, isDefeated, isFinalBoss, huntsCompleted, huntsTotal } = entry;
   const portraitSource = isLocked ? undefined : getMonsterPortrait(monster.portraitAsset);
 
   return (
@@ -384,17 +397,9 @@ function BossHeroPage({
             {isLocked ? 'Unknown Creature' : monster.title}
           </Text>
           {!isLocked ? (
-            <View style={styles.heroPageStatusHeader}>
-              <Text style={styles.heroPageFocus}>{getCombatPersonality(monster.personality).label}</Text>
-              {isCurrentTarget ? (
-                <View style={[styles.currentTargetBadge, { borderColor: `${accentColor}88` }]}>
-                  <Ionicons name="locate" size={13} color={colors.ember.base} />
-                  <Text style={styles.currentTargetBadgeText}>Current Target</Text>
-                </View>
-              ) : null}
-            </View>
+            <Text style={styles.heroPageFocus}>{getCombatPersonality(monster.personality).label}</Text>
           ) : null}
-          {isCurrentTarget && !isLocked ? (
+          {!isLocked ? (
             <Text style={styles.heroPageFlavor} numberOfLines={2}>
               {flavorTextFor(monster.id)}
             </Text>
@@ -672,30 +677,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(10, 9, 8, 0.92)',
     borderTopWidth: 1,
   },
-  heroPageStatusHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: spacing.sm,
-    marginTop: spacing.xxs,
-  },
-  currentTargetBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xxs,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 3,
-    borderRadius: radii.pill,
-    borderWidth: 1,
-    backgroundColor: 'rgba(36, 27, 20, 0.9)',
-  },
-  currentTargetBadgeText: {
-    fontFamily: fontFamily.monoBold,
-    fontSize: fontSize.xs,
-    color: colors.ember.base,
-    textTransform: 'uppercase',
-    letterSpacing: 1,
-  },
   heroPageName: {
     fontFamily: fontFamily.displayBold,
     fontSize: fontSize.display,
@@ -734,27 +715,35 @@ const styles = StyleSheet.create({
     color: colors.text.muted,
     marginTop: spacing.xs,
   },
-  dotsRow: {
-    flexDirection: 'row',
+  progressTrack: {
+    height: 24,
+    marginHorizontal: spacing.lg,
     justifyContent: 'center',
-    alignItems: 'center',
-    gap: spacing.xs,
-    paddingVertical: spacing.sm,
+    position: 'relative',
   },
-  dot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
+  progressTrackLine: {
+    position: 'absolute',
+    left: 6,
+    right: 6,
+    height: 2,
     backgroundColor: colors.steel,
+    opacity: 0.7,
   },
-  dotSelected: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
+  progressTick: {
+    position: 'absolute',
+    top: 10,
+    width: 4,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: colors.bronze.base,
   },
-  dotCurrentTarget: {
-    backgroundColor: colors.gold,
-    borderColor: colors.bronze.base,
-    borderWidth: 1,
+  progressMarker: {
+    position: 'absolute',
+    top: 6,
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    borderWidth: 2,
+    borderColor: colors.gold,
   },
 });

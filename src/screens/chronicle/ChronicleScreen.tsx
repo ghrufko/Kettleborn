@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useFocusEffect } from '@react-navigation/native';
+import { NavigationProp, useFocusEffect, useNavigation } from '@react-navigation/native';
 import { Header, GlassCard, AppBackground } from '../../components/core';
 import { useAppStore } from '../../store';
 import { contentEngine } from '../../../engines/content';
@@ -12,6 +12,7 @@ import { ExerciseStats, WeaknessProfile } from '../../utils/exerciseStats';
 import { getLongestSilenceDays, getMostDangerousOpponent } from '../../utils/chronicleStory';
 import { formatWeightPair } from '../../utils/weight';
 import { WorkoutResult, CustomWorkoutResult, StopwatchResult } from '../../models';
+import { ChronicleStackParamList, MainTabsParamList } from '../../navigation/types';
 import { colors, fontFamily, fontSize, spacing } from '../../theme';
 
 function formatElapsed(totalSeconds: number): string {
@@ -30,6 +31,8 @@ const RANK_COLORS: Record<string, string> = {
 };
 
 export function ChronicleScreen() {
+  const navigation = useNavigation<NavigationProp<ChronicleStackParamList>>();
+  const tabNavigation = navigation.getParent<NavigationProp<MainTabsParamList>>();
   const chronicle = useAppStore((state) => state.chronicle);
   const getAllResults = useAppStore((state) => state.getAllResults);
   const getAllExerciseStats = useAppStore((state) => state.getAllExerciseStats);
@@ -178,7 +181,19 @@ export function ChronicleScreen() {
             <Text style={styles.sectionLabel}>Exercise Records</Text>
             {exerciseStats.slice(0, 5).map((stat) => (
               <View key={stat.exerciseId} style={styles.statRow}>
-                <Text style={styles.statLabel}>{stat.exerciseName}</Text>
+                <Pressable
+                  disabled={!contentEngine.getExerciseLibraryEntry(stat.exerciseId)}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Open ${stat.exerciseName} in Exercise Library`}
+                  onPress={() => tabNavigation?.navigate('HuntTab', {
+                    screen: 'ExerciseDetail',
+                    params: { exerciseId: stat.exerciseId },
+                  })}
+                  style={styles.exerciseRecordLink}
+                >
+                  <Text style={styles.exerciseRecordName}>{stat.exerciseName}</Text>
+                  <Ionicons name="open-outline" size={13} color={colors.bronze.active} />
+                </Pressable>
                 <Text style={styles.statValue}>
                   {stat.totalReps > 0
                     ? `${stat.totalReps.toLocaleString()} reps`
@@ -382,6 +397,20 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.bodyRegular,
     fontSize: fontSize.base,
     color: colors.text.secondary,
+  },
+  exerciseRecordLink: {
+    flex: 1,
+    minWidth: 0,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xxs,
+  },
+  exerciseRecordName: {
+    flexShrink: 1,
+    fontFamily: fontFamily.bodyRegular,
+    fontSize: fontSize.base,
+    color: colors.bronze.active,
+    textDecorationLine: 'underline',
   },
   statValue: {
     fontFamily: fontFamily.monoBold,
