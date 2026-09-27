@@ -2,18 +2,26 @@ export type Rarity = 'common' | 'elite' | 'boss' | 'legendary';
 export type DifficultyTier = 1 | 2 | 3 | 4 | 5;
 export type DamageType = 'flat' | 'per_rep' | 'per_second' | 'over_time';
 
+/** A canonical Exercise Library movement included in a presented workout sequence. */
+export interface ExerciseComponent {
+  libraryExerciseId: string;
+  usesGearCount?: 0 | 1 | 2;
+}
+
 export interface Exercise {
   id: string;
   name: string;
+  /** Stable Exercise Library entity for this workout step, when it is one movement. */
+  libraryExerciseId?: string;
+  /** Canonical movements represented by one workout step (for example, a Clean → Jerk sequence). */
+  components?: ExerciseComponent[];
   /**
    * Optional visual-only override for the exercise name shown in the Hunt
-   * flow UI. `name` itself stays the single routing key for Exercise
-   * Library lookup (`getExerciseLibraryEntryByName`) and Journal lifetime
-   * stat aggregation (`exerciseStats.ts`) — never read for either of
-   * those. Lets a workout show a friendlier/shorter label (e.g. Behemoth
-   * Phase I showing "Double Snatch" while still routing to the distinct
-   * `tactical-double-snatch` Library entry via `name`) without splitting
-   * that exercise's Library entry, video, or historical stats in two.
+   * flow UI. `name` remains the fallback catalog lookup for older content;
+   * new or disambiguated definitions should use `libraryExerciseId` for
+   * stable Exercise Library and lifetime-stat identity. This lets a
+   * workout label differ from the canonical movement without changing its
+   * library entry or history.
    */
   displayName?: string;
   targetReps?: number;
@@ -28,8 +36,9 @@ export interface Exercise {
    */
   durationSeconds?: number;
   /**
-   * Kettlebell weight audit: overrides the WORKOUT's own `gearCount` for
-   * THIS exercise's weight/volume calculation only — e.g. Chimera's
+   * Load audit: overrides the WORKOUT's own `gearCount` for THIS
+   * exercise's weight/volume calculation only — 0 for a bodyweight
+   * movement, or e.g. Chimera's
    * "Snatch / Thruster" and "Alternating Swing" are genuinely single-bell
    * movements embedded in an otherwise `gearCount: 2` workout (confirmed
    * against each exercise's own Exercise Library description, not
@@ -38,7 +47,8 @@ export interface Exercise {
    * existed. Never read by Battle Engine/damage resolution — statistics/
    * volume only (see src/utils/exerciseBreakdown.ts).
    */
-  usesGearCount?: 1 | 2;
+  /** 0 marks a bodyweight step; 1/2 select the kettlebell load for this movement. */
+  usesGearCount?: 0 | 1 | 2;
 }
 
 export interface Finisher {

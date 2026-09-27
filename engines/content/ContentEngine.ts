@@ -337,9 +337,23 @@ class ContentEngineImpl {
   /** Derived by scanning all loaded workouts — no stored relation to keep in sync. */
   getWorkoutsContainingExercise(exerciseName: string): Workout[] {
     const normalized = exerciseName.trim().toLowerCase();
-    return Array.from(this.requireIndex().workouts.values()).filter((workout) =>
-      workout.exercises.some((exercise) => exercise.name.toLowerCase() === normalized)
+    const exerciseLibrary = this.requireIndex().exerciseLibrary;
+    const selectedExercise = Array.from(exerciseLibrary.values()).find(
+      (entry) => entry.name.trim().toLowerCase() === normalized
     );
+
+    return Array.from(this.requireIndex().workouts.values()).filter((workout) => {
+      const exercises = workout.sections
+        ? workout.sections.flatMap((section) => section.exercises)
+        : workout.exercises;
+      return exercises.some((exercise) => {
+        if (exercise.name.trim().toLowerCase() === normalized) return true;
+        if (selectedExercise && exercise.libraryExerciseId === selectedExercise.id) return true;
+        return Boolean(selectedExercise && exercise.components?.some(
+          (component) => component.libraryExerciseId === selectedExercise.id
+        ));
+      });
+    });
   }
 }
 

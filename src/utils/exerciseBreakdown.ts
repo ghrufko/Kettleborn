@@ -1,6 +1,7 @@
-import { Exercise, Workout } from '../models';
+import { Exercise, ExerciseLibraryEntry, Workout } from '../models';
 
 export interface ExerciseBreakdownEntry {
+  exerciseId?: string;
   name: string;
   /** First-seen displayName for this exercise name, if any content entry set one — display-only, never used for grouping/routing. */
   displayName?: string;
@@ -31,6 +32,40 @@ export interface ExerciseBreakdownEntry {
   weightBKg: number | null;
 }
 
+export interface ExerciseMovement {
+  libraryExerciseId?: string;
+  name: string;
+  displayName?: string;
+  usesGearCount?: 0 | 1 | 2;
+}
+
+/** Resolve a workout step into its atomic Library movement(s) for statistics. */
+export function getExerciseMovements(
+  exercise: Exercise,
+  getLibraryEntryById?: (id: string) => ExerciseLibraryEntry | undefined
+): ExerciseMovement[] {
+  if (exercise.components?.length) {
+    return exercise.components.map((component) => {
+      const libraryEntry = getLibraryEntryById?.(component.libraryExerciseId);
+      return {
+        libraryExerciseId: component.libraryExerciseId,
+        name: libraryEntry?.name ?? '',
+        usesGearCount: component.usesGearCount ?? exercise.usesGearCount,
+      };
+    });
+  }
+
+  const libraryEntry = exercise.libraryExerciseId
+    ? getLibraryEntryById?.(exercise.libraryExerciseId)
+    : undefined;
+  return [{
+    libraryExerciseId: exercise.libraryExerciseId,
+    name: libraryEntry?.name ?? exercise.name,
+    displayName: exercise.displayName,
+    usesGearCount: exercise.usesGearCount,
+  }];
+}
+
 /**
  * Kettlebell weight audit: the actual weight-per-rep for ONE specific
  * exercise, not the workout as a whole. A workout's `gearCount` is a
@@ -50,6 +85,9 @@ export function resolveExerciseWeightKg(
   weightBKg: number | null
 ): number {
   const effectiveGearCount = exercise.usesGearCount ?? workoutGearCount;
+  if (effectiveGearCount === 0) {
+    return 0;
+  }
   if (effectiveGearCount === 2) {
     return weightAKg + (weightBKg ?? weightAKg);
   }
@@ -84,8 +122,10 @@ export function getExerciseBreakdown(
   totalRounds: number,
   weightAKg: number,
   gearCount: number,
-  weightBKg: number | null = null
+  weightBKg: number | null = null,
+  getLibraryEntryById?: (id: string) => ExerciseLibraryEntry | undefined
 ): ExerciseBreakdownEntry[] {
+  const idByName = new Map<string, string | undefined>();
   const repsByName = new Map<string, number>();
   const volumeByName = new Map<string, number>();
   const distanceByName = new Map<string, number>();
@@ -94,29 +134,48 @@ export function getExerciseBreakdown(
   const weightBByName = new Map<string, number | null>();
   const order: string[] = [];
 
-  function addExercise(exercise: Exercise, repsMultiplier: number) {
-    const name = exercise.name;
-    if (!repsByName.has(name)) {
-      repsByName.set(name, 0);
-      volumeByName.set(name, 0);
-      distanceByName.set(name, 0);
-      displayNameByName.set(name, exercise.displayName);
-      order.push(name);
+  function addMovement(
+    exercise: Exercise,
+    movement: ExerciseMovement,
+    repsMultiplier: number
+  ) {
+    // A missing component reference is invalid content, so omit it rather
+    // than recording a fabricated "combo" exercise with no library entry.
+    if (!movement.name) return;
+    const key = movement.libraryExerciseId ?? movement.name;
+    if (!repsByName.has(key)) {
+      repsByName.set(key, 0);
+      volumeByName.set(key, 0);
+      distanceByName.set(key, 0);
+      displayNameByName.set(key, movement.displayName);
+      idByName.set(key, movement.libraryExerciseId);
+      order.push(key);
 
       // Resolved once per exercise NAME (first occurrence) — every
       // occurrence of the same exercise across rounds/sections uses the
       // same weight configuration, so there's nothing to accumulate here,
       // just record it.
-      const effectiveGearCount = exercise.usesGearCount ?? (gearCount === 2 ? 2 : 1);
-      weightAByName.set(name, weightAKg);
-      weightBByName.set(name, effectiveGearCount === 2 ? weightBKg ?? weightAKg : null);
+      const effectiveGearCount = movement.usesGearCount ?? (gearCount === 2 ? 2 : 1);
+      weightAByName.set(key, effectiveGearCount === 0 ? 0 : weightAKg);
+      weightBByName.set(key, effectiveGearCount === 2 ? weightBKg ?? weightAKg : null);
     }
     const reps = (exercise.targetReps ?? 0) * repsMultiplier;
     const distanceFt = (exercise.targetDistanceFt ?? 0) * repsMultiplier;
-    const weightPerRepKg = resolveExerciseWeightKg(exercise, gearCount === 2 ? 2 : 1, weightAKg, weightBKg);
-    repsByName.set(name, repsByName.get(name)! + reps);
-    volumeByName.set(name, volumeByName.get(name)! + reps * weightPerRepKg);
-    distanceByName.set(name, distanceByName.get(name)! + distanceFt);
+    const weightPerRepKg = resolveExerciseWeightKg(
+      { ...exercise, usesGearCount: movement.usesGearCount },
+      gearCount === 2 ? 2 : 1,
+      weightAKg,
+      weightBKg
+    );
+    repsByName.set(key, repsByName.get(key)! + reps);
+    volumeByName.set(key, volumeByName.get(key)! + reps * weightPerRepKg);
+    distanceByName.set(key, distanceByName.get(key)! + distanceFt);
+  }
+
+  function addExercise(exercise: Exercise, repsMultiplier: number) {
+    getExerciseMovements(exercise, getLibraryEntryById).forEach((movement) => {
+      addMovement(exercise, movement, repsMultiplier);
+    });
   }
 
   if (workout.sections) {
@@ -131,19 +190,22 @@ export function getExerciseBreakdown(
   }
 
   return order
-    .map((name) => {
-      const totalDistanceFt = distanceByName.get(name)!;
+    .map((key) => {
+      const totalDistanceFt = distanceByName.get(key)!;
       return {
-        name,
-        displayName: displayNameByName.get(name),
-        totalReps: repsByName.get(name)!,
-        volumeKg: volumeByName.get(name)!,
+        exerciseId: idByName.get(key),
+        name: getLibraryEntryById && idByName.get(key)
+          ? getLibraryEntryById(idByName.get(key)!)?.name ?? key
+          : key,
+        displayName: displayNameByName.get(key),
+        totalReps: repsByName.get(key)!,
+        volumeKg: volumeByName.get(key)!,
         // A rep-based exercise gets no distance field at all (undefined,
         // not 0) so callers can tell "not distance-based" apart from
         // "distance-based but somehow zero".
         totalDistanceFt: totalDistanceFt > 0 ? totalDistanceFt : undefined,
-        weightAKg: weightAByName.get(name)!,
-        weightBKg: weightBByName.get(name)!,
+        weightAKg: weightAByName.get(key)!,
+        weightBKg: weightBByName.get(key)!,
       };
     })
     // Previously filtered out any distance-only exercise (e.g. Front Rack

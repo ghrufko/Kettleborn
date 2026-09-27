@@ -36,7 +36,8 @@ function volumeForResult(result: WorkoutResult): number {
     workout.rounds,
     result.weightValueA,
     gearCount,
-    result.weightValueB
+    result.weightValueB,
+    (exerciseId) => contentEngine.getExerciseLibraryEntry(exerciseId)
   ).reduce((sum, entry) => sum + entry.volumeKg, 0);
 }
 

@@ -170,8 +170,23 @@ export const createWorkoutSlice: StateCreator<AppStore, [], [], WorkoutSlice> = 
     // (and for them it already equals workout.rounds, so this changes
     // nothing for that case).
     const actualRounds = rungLaps && rungLaps.length > 0 ? rungLaps.length : workout.rounds;
-    const exerciseBreakdown = getExerciseBreakdown(workout, actualRounds, weightKg, gearCount, weightBKg);
-    const workoutTotalReps = exerciseBreakdown.reduce((sum, entry) => sum + entry.totalReps, 0);
+    const exerciseBreakdown = getExerciseBreakdown(
+      workout,
+      actualRounds,
+      weightKg,
+      gearCount,
+      weightBKg,
+      (exerciseId) => contentEngine.getExerciseLibraryEntry(exerciseId)
+    );
+    // XP continues to count completed workout-step reps. A combo step is
+    // one prescribed rep even though its exercise statistics expand it
+    // into one rep for each constituent movement.
+    const workoutTotalReps = workout.sections
+      ? workout.sections.reduce(
+          (sum, section) => sum + section.exercises.reduce((sectionSum, exercise) => sectionSum + (exercise.targetReps ?? 0), 0),
+          0
+        )
+      : workout.exercises.reduce((sum, exercise) => sum + (exercise.targetReps ?? 0), 0) * actualRounds;
     const xp = calculateHuntXP({
       difficulty: workout.difficulty,
       actualWeightKg: weightKg,
@@ -418,7 +433,8 @@ export const createWorkoutSlice: StateCreator<AppStore, [], [], WorkoutSlice> = 
     return computeAllExerciseStats(
       results,
       (workoutId) => contentEngine.getWorkout(workoutId),
-      (exerciseName) => contentEngine.getExerciseLibraryEntryByName(exerciseName)
+      (exerciseName) => contentEngine.getExerciseLibraryEntryByName(exerciseName),
+      (exerciseId) => contentEngine.getExerciseLibraryEntry(exerciseId)
     );
   },
 

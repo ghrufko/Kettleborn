@@ -1,5 +1,5 @@
 import { WorkoutResult, Workout, ExerciseLibraryEntry } from '../models';
-import { resolveExerciseWeightKg } from './exerciseBreakdown';
+import { getExerciseMovements, resolveExerciseWeightKg } from './exerciseBreakdown';
 
 export interface ExerciseStats {
   exerciseId: string;
@@ -41,7 +41,8 @@ type LibraryResolver = (exerciseName: string) => ExerciseLibraryEntry | undefine
 export function getAllExerciseStats(
   results: WorkoutResult[],
   getWorkout: WorkoutResolver,
-  getLibraryEntry: LibraryResolver
+  getLibraryEntry: LibraryResolver,
+  getLibraryEntryById?: (id: string) => ExerciseLibraryEntry | undefined
 ): ExerciseStats[] {
   const statsById = new Map<string, ExerciseStats>();
 
@@ -52,6 +53,7 @@ export function getAllExerciseStats(
     }
     const weightAKg = result.weightValueA;
     const weightBKg = result.weightValueB;
+    const exerciseIdsThisSession = new Set<string>();
 
     // Sections carry a distinct exercise list per round (e.g. Behemoth's
     // three phases) — the same canonical source Hunt Brief, Active Hunt,
@@ -64,20 +66,14 @@ export function getAllExerciseStats(
 
     exerciseGroups.forEach((exerciseList) => {
       exerciseList.forEach((exercise) => {
-        const entry = getLibraryEntry(exercise.name);
-        if (!entry) {
-          return;
-        }
-
         // Sprint 27 (Aggregate Volume fix): a section is already one
         // round's worth of exercises (no multiplier needed), but the flat
         // fallback list is only ever written once in content and repeats
         // every round — same distinction getExerciseBreakdown already
         // makes, kept consistent here rather than reusing that helper
-        // directly, since this function's per-occurrence session-counting
-        // (including 0-rep distance exercises still counting as a
-        // session) is intentionally different from getExerciseBreakdown's
-        // reps-only, zero-filtered output.
+        // directly, since this function counts each movement once per
+        // completed workout (including distance-only exercises) while
+        // breakdown output omits entries with no reps or distance.
         // Task 3 (EMOM): an open-ended workout's actual round count can
         // differ from workout.rounds (a reference value only for those,
         // never a cap) — this result's own rungLaps.length is what
@@ -87,36 +83,43 @@ export function getAllExerciseStats(
         const actualRounds = result.rungLaps?.length ?? workout.rounds;
         const reps = (exercise.targetReps ?? 0) * (workout.sections ? 1 : actualRounds);
         const distanceFt = (exercise.targetDistanceFt ?? 0) * (workout.sections ? 1 : actualRounds);
-        // Kettlebell weight audit: resolveExerciseWeightKg (shared with
-        // getExerciseBreakdown, see that file) — a single-bell exercise
-        // embedded in an otherwise gearCount:2 workout (e.g. Chimera's
-        // "Snatch / Thruster") no longer gets credited with both bells'
-        // combined weight, and two genuinely different bell weights
-        // (16kg + 18kg) are summed exactly, never assumed equal.
-        const weightPerRepKg = resolveExerciseWeightKg(
-          exercise,
-          workout.gearCount,
-          weightAKg,
-          weightBKg
-        );
-        const existing: ExerciseStats = statsById.get(entry.id) ?? {
-          exerciseId: entry.id,
-          exerciseName: entry.name,
-          totalReps: 0,
-          totalVolumeKg: 0,
-          totalSessions: 0,
-          lastPerformedAt: null,
-          totalDistanceFt: 0,
-        };
+        getExerciseMovements(exercise, getLibraryEntryById).forEach((movement) => {
+          const entry = movement.libraryExerciseId
+            ? getLibraryEntryById?.(movement.libraryExerciseId) ?? getLibraryEntry(movement.name)
+            : getLibraryEntry(movement.name);
+          if (!entry) return;
 
-        existing.totalReps += reps;
-        existing.totalVolumeKg += reps * weightPerRepKg;
-        existing.totalDistanceFt += distanceFt;
-        existing.totalSessions += 1;
-        if (!existing.lastPerformedAt || result.completedAt > existing.lastPerformedAt) {
-          existing.lastPerformedAt = result.completedAt;
-        }
-        statsById.set(entry.id, existing);
+          // Each combination component is credited as its own canonical
+          // movement and uses its own kettlebell count. The combo step's
+          // target reps apply once to every constituent movement.
+          const weightPerRepKg = resolveExerciseWeightKg(
+            { ...exercise, usesGearCount: movement.usesGearCount },
+            workout.gearCount,
+            weightAKg,
+            weightBKg
+          );
+          const existing: ExerciseStats = statsById.get(entry.id) ?? {
+            exerciseId: entry.id,
+            exerciseName: entry.name,
+            totalReps: 0,
+            totalVolumeKg: 0,
+            totalSessions: 0,
+            lastPerformedAt: null,
+            totalDistanceFt: 0,
+          };
+
+          existing.totalReps += reps;
+          existing.totalVolumeKg += reps * weightPerRepKg;
+          existing.totalDistanceFt += distanceFt;
+          if (!exerciseIdsThisSession.has(entry.id)) {
+            existing.totalSessions += 1;
+            exerciseIdsThisSession.add(entry.id);
+          }
+          if (!existing.lastPerformedAt || result.completedAt > existing.lastPerformedAt) {
+            existing.lastPerformedAt = result.completedAt;
+          }
+          statsById.set(entry.id, existing);
+        });
       });
     });
   });

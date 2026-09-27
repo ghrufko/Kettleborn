@@ -2140,21 +2140,23 @@
       {
         "id": "leviathan-snatch",
         "name": "Double Snatch",
+        "libraryExerciseId": "double-snatch",
         "damageCoefficient": 16,
         "damageType": "flat",
         "targetReps": 5
       },
       {
         "id": "leviathan-thruster",
-        "name": "Thruster",
+        "name": "Double Thruster",
+        "libraryExerciseId": "double-thruster",
         "damageCoefficient": 16,
         "damageType": "flat",
-        "targetReps": 5,
-        "usesGearCount": 1
+        "targetReps": 5
       },
       {
         "id": "leviathan-row",
-        "name": "Bent-over Row",
+        "name": "Double Row",
+        "libraryExerciseId": "double-row",
         "damageCoefficient": 16,
         "damageType": "flat",
         "targetReps": 5
@@ -2162,6 +2164,7 @@
       {
         "id": "leviathan-clean",
         "name": "Double Clean",
+        "libraryExerciseId": "double-clean",
         "damageCoefficient": 16,
         "damageType": "flat",
         "targetReps": 5
@@ -2169,6 +2172,7 @@
       {
         "id": "leviathan-carry",
         "name": "Front Rack Carry",
+        "libraryExerciseId": "front-rack-carry",
         "damageCoefficient": 3,
         "damageType": "per_second",
         "targetDistanceFt": 100,
@@ -2400,15 +2404,17 @@
     ],
     "exercises": [
       {
-        "id": "hydra-clean",
-        "name": "Double Clean",
-        "damageCoefficient": 14,
+        "id": "hydra-snatch",
+        "name": "Double Snatch",
+        "libraryExerciseId": "double-snatch",
+        "damageCoefficient": 16,
         "damageType": "flat",
         "targetReps": 5
       },
       {
         "id": "hydra-lunge",
         "name": "Reverse Lunge",
+        "libraryExerciseId": "reverse-lunge",
         "damageCoefficient": 10,
         "damageType": "flat",
         "targetReps": 10
@@ -2416,6 +2422,7 @@
       {
         "id": "hydra-push-press",
         "name": "Double Push Press",
+        "libraryExerciseId": "double-push-press",
         "damageCoefficient": 16,
         "damageType": "flat",
         "targetReps": 5
@@ -2423,14 +2430,16 @@
       {
         "id": "hydra-swing",
         "name": "Double Swing",
+        "libraryExerciseId": "double-swing",
         "damageCoefficient": 10,
         "damageType": "flat",
         "targetReps": 10
       },
       {
-        "id": "hydra-snatch",
-        "name": "Double Snatch",
-        "damageCoefficient": 16,
+        "id": "hydra-clean",
+        "name": "Double Clean",
+        "libraryExerciseId": "double-clean",
+        "damageCoefficient": 14,
         "damageType": "flat",
         "targetReps": 5
       }
@@ -5067,7 +5076,7 @@
   "basilisk-confrontation": {
     "id": "basilisk-confrontation",
     "name": "Basilisk Confrontation",
-    "description": "PROVISIONAL PRESCRIPTION — the movement sequence below is locked, but the round count, rest, and overall format (fixed rounds, EMOM, or time-capped) have not been finalized and are pending physical testing. Rounds/rest/roundBonusDamage/targetTimeSeconds here are a reasonable placeholder only — see PROJECT_CONTEXT.md for what to change once a final prescription is set. Burpee, then Clean → Jerk. Deadlift, then Clean → Jerk again. Deep Snatch, then Clean → Jerk a third time. The same confrontation, three times a round, with more fatigue in your hands each time you arrive at it.",
+    "description": "Burpee, Double Clean → Double Jerk. Double Deadlift, then the same clean and jerk. Double Deep Snatch, then face the clean and jerk once more. Each return demands control under greater fatigue.",
     "difficulty": 3,
     "estimatedMinutesRange": [
       12,
@@ -5088,13 +5097,20 @@
       {
         "id": "basilisk-burpee",
         "name": "Burpee",
+        "libraryExerciseId": "burpee",
         "damageCoefficient": 12,
         "damageType": "flat",
-        "targetReps": 4
+        "targetReps": 4,
+        "usesGearCount": 0
       },
       {
         "id": "basilisk-clean-jerk-1",
-        "name": "Clean → Jerk",
+        "name": "Double Clean → Double Jerk",
+        "displayName": "Double Clean → Double Jerk",
+        "components": [
+          { "libraryExerciseId": "double-clean" },
+          { "libraryExerciseId": "double-jerk" }
+        ],
         "damageCoefficient": 16,
         "damageType": "flat",
         "targetReps": 2
@@ -5102,28 +5118,40 @@
       {
         "id": "basilisk-deadlift",
         "name": "Deadlift",
+        "libraryExerciseId": "deadlift",
+        "displayName": "Double Deadlift",
         "damageCoefficient": 12,
         "damageType": "flat",
         "targetReps": 4
       },
       {
         "id": "basilisk-clean-jerk-2",
-        "name": "Clean → Jerk",
+        "name": "Double Clean → Double Jerk",
+        "displayName": "Double Clean → Double Jerk",
+        "components": [
+          { "libraryExerciseId": "double-clean" },
+          { "libraryExerciseId": "double-jerk" }
+        ],
         "damageCoefficient": 16,
         "damageType": "flat",
         "targetReps": 2
       },
       {
         "id": "basilisk-deep-snatch",
-        "name": "Deep Snatch",
+        "name": "Double Deep Snatch",
+        "libraryExerciseId": "double-deep-snatch",
         "damageCoefficient": 16,
         "damageType": "flat",
-        "targetReps": 4,
-        "usesGearCount": 1
+        "targetReps": 4
       },
       {
         "id": "basilisk-clean-jerk-3",
-        "name": "Clean → Jerk",
+        "name": "Double Clean → Double Jerk",
+        "displayName": "Double Clean → Double Jerk",
+        "components": [
+          { "libraryExerciseId": "double-clean" },
+          { "libraryExerciseId": "double-jerk" }
+        ],
         "damageCoefficient": 16,
         "damageType": "flat",
         "targetReps": 2

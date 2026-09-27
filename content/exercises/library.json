@@ -1485,32 +1485,6 @@
     ]
   },
   {
-    "id": "clean-jerk",
-    "name": "Clean → Jerk",
-    "category": "Combo",
-    "description": "Two kettlebells cleaned to the rack and driven overhead in a single jerk, performed as one continuous couplet before resetting for the next rep.",
-    "musclesTrained": [
-      "Legs",
-      "Shoulders",
-      "Core",
-      "Grip"
-    ],
-    "benefits": [
-      "Combines a hip-driven pull with an overhead drive in one couplet",
-      "Trains the rack-to-overhead transition under accumulating fatigue",
-      "Repeats as the workout's recurring technical checkpoint, testing composure as much as output"
-    ],
-    "commonMistakes": [
-      "Muscling the clean instead of using hip drive, arriving out of position for the jerk",
-      "Losing the dip-drive timing on the jerk as fatigue builds",
-      "Catching overhead with the bells drifting forward of the ears"
-    ],
-    "recommendedWeightRangeKg": [
-      12,
-      20
-    ]
-  },
-  {
     "id": "deadlift",
     "name": "Deadlift",
     "category": "Grind",
@@ -1560,6 +1534,33 @@
     "recommendedWeightRangeKg": [
       12,
       20
+    ]
+  },
+  {
+    "id": "double-deep-snatch",
+    "name": "Double Deep Snatch",
+    "category": "Ballistic",
+    "description": "Two kettlebells driven overhead together from a deeper hike position than a standard double snatch, demanding matched timing and control through the longer pull.",
+    "musclesTrained": [
+      "Hamstrings",
+      "Glutes",
+      "Shoulders",
+      "Grip",
+      "Core"
+    ],
+    "benefits": [
+      "Builds bilateral hip power through a longer pulling range",
+      "Demands precise timing between both bells",
+      "Develops grip and shoulder stability under a heavy overhead load"
+    ],
+    "commonMistakes": [
+      "Cutting the deeper hike short as fatigue builds",
+      "Letting one bell arrive ahead of the other",
+      "Catching overhead with the wrists out of alignment"
+    ],
+    "recommendedWeightRangeKg": [
+      10,
+      16
     ]
   },
   {
