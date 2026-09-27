@@ -81,13 +81,17 @@ export function WorldMapScreen({ route, navigation }: Props) {
   const nodeStates = nodes.map((monster) =>
     getCampaignMonsterState(campaign!, monster.id, monsterProgress)
   );
+  // Keep the legacy target accent on its dot, independently from the
+  // active page indicator, which always follows the visible carousel page.
+  const currentTargetIndex = nodeStates.findIndex((state) => state === 'available');
   const campaignComplete = campaign ? isCampaignComplete(campaign, monsterProgress) : false;
   const accentColor = campaign ? TERRITORY_ACCENT[campaign.id] ?? colors.steel : colors.steel;
   const heroSource = campaign ? getTerritoryArt(campaign.heroImageAsset) : undefined;
 
   const { width: windowWidth } = useWindowDimensions();
   const [pageIndex, setPageIndex] = useState(0);
-  const [progressTrackWidth, setProgressTrackWidth] = useState(0);
+  const [pagerWidth, setPagerWidth] = useState(0);
+  const pageWidth = pagerWidth || windowWidth;
 
   // Same monster set / same states / same final-boss placement as before —
   // just flattened into one array so it can be paged through instead of
@@ -120,6 +124,12 @@ export function WorldMapScreen({ route, navigation }: Props) {
       });
     }
   }
+
+  const updatePageIndex = (offsetX: number) => {
+    if (pageWidth <= 0 || bossPages.length === 0) return;
+    const nextIndex = Math.round(offsetX / pageWidth);
+    setPageIndex(Math.max(0, Math.min(nextIndex, bossPages.length - 1)));
+  };
 
   return (
     <AppBackground style={styles.container}>
@@ -189,9 +199,14 @@ export function WorldMapScreen({ route, navigation }: Props) {
                 horizontal
                 pagingEnabled
                 showsHorizontalScrollIndicator={false}
+                scrollEventThrottle={16}
+                onLayout={(event) => {
+                  const width = event.nativeEvent.layout.width;
+                  setPagerWidth((previous) => previous === width ? previous : width);
+                }}
+                onScroll={(event) => updatePageIndex(event.nativeEvent.contentOffset.x)}
                 onMomentumScrollEnd={(event) => {
-                  const nextIndex = Math.round(event.nativeEvent.contentOffset.x / windowWidth);
-                  setPageIndex(Math.max(0, Math.min(nextIndex, bossPages.length - 1)));
+                  updatePageIndex(event.nativeEvent.contentOffset.x);
                 }}
                 style={styles.pager}
               >
@@ -199,7 +214,7 @@ export function WorldMapScreen({ route, navigation }: Props) {
                   <BossHeroPage
                     key={entry.monster.id}
                     entry={entry}
-                    pageWidth={windowWidth}
+                    pageWidth={pageWidth}
                     accentColor={accentColor}
                     onPress={() => navigation.navigate('MonsterDetail', { monsterId: entry.monster.id })}
                   />
@@ -208,42 +223,27 @@ export function WorldMapScreen({ route, navigation }: Props) {
 
               {bossPages.length > 1 ? (
                 <View
-                  style={styles.progressTrack}
-                  onLayout={(event) => {
-                    const width = event.nativeEvent.layout.width;
-                    setProgressTrackWidth((previous) => previous === width ? previous : width);
-                  }}
+                  style={styles.dotsRow}
                   accessibilityLabel={`Monster ${pageIndex + 1} of ${bossPages.length}`}
                   accessibilityRole="progressbar"
                   accessibilityValue={{ min: 1, max: bossPages.length, now: pageIndex + 1 }}
                 >
-                  <View style={styles.progressTrackLine} />
                   {bossPages.map((entry, index) => (
-                    <View
+                    <Animated.View
                       key={entry.monster.id}
                       style={[
-                        styles.progressTick,
-                        {
-                          left:
-                            4 +
-                            (index / (bossPages.length - 1)) * Math.max(0, progressTrackWidth - 12),
+                        styles.dot,
+                        index === pageIndex && [styles.dotActive, { backgroundColor: accentColor }],
+                        index === currentTargetIndex && styles.dotCurrentTarget,
+                        index === currentTargetIndex && {
+                          opacity: targetPulse.interpolate({ inputRange: [0, 1], outputRange: [0.78, 1] }),
+                          transform: [
+                            { scale: targetPulse.interpolate({ inputRange: [0, 1], outputRange: [1, 1.14] }) },
+                          ],
                         },
                       ]}
                     />
                   ))}
-                  <Animated.View
-                    style={[
-                      styles.progressMarker,
-                      {
-                        left: progressTrackWidth > 12 && bossPages.length > 1
-                          ? (pageIndex / (bossPages.length - 1)) * (progressTrackWidth - 12)
-                          : 0,
-                        backgroundColor: accentColor,
-                        opacity: targetPulse.interpolate({ inputRange: [0, 1], outputRange: [0.9, 1] }),
-                        transform: [{ scale: targetPulse.interpolate({ inputRange: [0, 1], outputRange: [1, 1.08] }) }],
-                      },
-                    ]}
-                  />
                 </View>
               ) : null}
             </>
@@ -715,35 +715,27 @@ const styles = StyleSheet.create({
     color: colors.text.muted,
     marginTop: spacing.xs,
   },
-  progressTrack: {
-    height: 24,
-    marginHorizontal: spacing.lg,
+  dotsRow: {
+    flexDirection: 'row',
     justifyContent: 'center',
-    position: 'relative',
+    alignItems: 'center',
+    gap: spacing.xs,
+    paddingVertical: spacing.sm,
   },
-  progressTrackLine: {
-    position: 'absolute',
-    left: 6,
-    right: 6,
-    height: 2,
+  dot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
     backgroundColor: colors.steel,
-    opacity: 0.7,
   },
-  progressTick: {
-    position: 'absolute',
-    top: 10,
-    width: 4,
-    height: 4,
-    borderRadius: 2,
-    backgroundColor: colors.bronze.base,
+  dotActive: {
+    width: 14,
+    height: 14,
+    borderRadius: 7,
   },
-  progressMarker: {
-    position: 'absolute',
-    top: 6,
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    borderWidth: 2,
-    borderColor: colors.gold,
+  dotCurrentTarget: {
+    backgroundColor: colors.gold,
+    borderColor: colors.bronze.base,
+    borderWidth: 1,
   },
 });
