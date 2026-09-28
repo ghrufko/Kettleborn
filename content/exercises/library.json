@@ -417,7 +417,7 @@
   },
   {
     "id": "thruster",
-    "name": "Thruster",
+    "name": "Single Thruster",
     "category": "Combo",
     "description": "The single-bell version of the front squat into overhead press — same continuous demand, with an added anti-rotation challenge from carrying the load on one side.",
     "musclesTrained": [
@@ -992,7 +992,7 @@
   },
   {
     "id": "snatch-floor",
-    "name": "Snatch from the Floor",
+    "name": "Single Dead Snatch",
     "category": "Ballistic",
     "description": "A one-arm kettlebell snatch starting from a dead stop on the floor instead of a hang or backswing, forcing a fresh hip-hinge setup on every single rep.",
     "musclesTrained": [
@@ -1018,7 +1018,7 @@
   },
   {
     "id": "clean-floor",
-    "name": "Clean from the Floor",
+    "name": "Single Dead Clean",
     "category": "Combo",
     "description": "A one-arm kettlebell clean starting from a dead stop on the floor, resetting the hip hinge completely between reps instead of cycling the bell in a continuous swing.",
     "musclesTrained": [
@@ -1040,33 +1040,6 @@
     "recommendedWeightRangeKg": [
       12,
       24
-    ]
-  },
-  {
-    "id": "clean-floor-thruster",
-    "name": "Clean from the Floor / Thruster",
-    "category": "Combo",
-    "description": "A one-arm kettlebell clean starting from a dead stop on the floor, immediately followed by a thruster on the same side before resetting for the next rep.",
-    "musclesTrained": [
-      "Hips",
-      "Quads",
-      "Shoulders",
-      "Core",
-      "Grip"
-    ],
-    "benefits": [
-      "Chains a dead-stop pulling movement directly into a full-body squat-press",
-      "Builds work capacity from the floor up through a full overhead lockout",
-      "Trains the technical reset between a floor pickup and a loaded squat"
-    ],
-    "commonMistakes": [
-      "Rushing the floor pickup to get to the thruster faster",
-      "Letting squat depth collapse once the shoulder starts to fatigue",
-      "Losing the overhead lockout on the thruster's press"
-    ],
-    "recommendedWeightRangeKg": [
-      12,
-      20
     ]
   },
   {

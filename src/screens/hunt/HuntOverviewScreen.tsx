@@ -17,7 +17,7 @@ import {
 } from '../../utils/encounterLock';
 import { useAppStore } from '../../store';
 import { flavorTextFor } from '../../utils/flavorText';
-import { groupWorkoutStructure } from '../../utils/workoutPresentation';
+import { groupWorkoutPresentation, groupWorkoutStructure } from '../../utils/workoutPresentation';
 import { WorkoutResult, CustomHuntPreset } from '../../models';
 import { convertKgToDisplay, convertDisplayToKg, formatWeightPair } from '../../utils/weight';
 import { colors, fontFamily, fontSize, radii, spacing } from '../../theme';
@@ -481,7 +481,9 @@ export function HuntOverviewScreen({ route, navigation }: Props) {
   const repeatingStructureUnitLabel = `${(workout.stepLabel ?? 'Round').toLowerCase()}s`;
   const previewGroups = workout.sections ?? [{ label: null, exercises: workout.exercises }];
   const structuredExercises = isRepeatingStructure ? workout.sections![0].exercises : workout.exercises;
-  const workoutStructure = groupWorkoutStructure(structuredExercises);
+  const workoutStructure = workout.sequenceType === 'chain'
+    ? groupWorkoutPresentation(workout)
+    : groupWorkoutStructure(structuredExercises);
   const hasWorkoutStructure = workoutStructure.length > 0;
   // Polish pass, fix 2 (exercise list density): same shape as
   // ActiveHuntScreen's in-combat `exerciseListDensity` (Task 8) — purely

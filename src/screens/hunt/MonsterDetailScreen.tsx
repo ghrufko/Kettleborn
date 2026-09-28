@@ -13,6 +13,8 @@ import { getBestiaryStats, BestiaryStats } from '../../utils/bestiaryStats';
 import { computeHistoricalRanks } from '../../utils/rankHistory';
 import { groupResultsByDay } from '../../utils/timeline';
 import { getRPELabel } from '../../utils/rpeLabels';
+import { WorkoutStructure } from '../../components/workout/WorkoutStructure';
+import { groupWorkoutPresentation } from '../../utils/workoutPresentation';
 import { HuntRank } from '../../utils/huntRank';
 import { WorkoutResult } from '../../models';
 import { convertKgToDisplay, formatWeightPair } from '../../utils/weight';
@@ -157,6 +159,7 @@ export function MonsterDetailScreen({ route, navigation }: Props) {
   });
   const firstHunt = monster.hunts.find((h) => h.order === 1);
   const firstWorkout = firstHunt?.workoutId ? contentEngine.getWorkout(firstHunt.workoutId) : undefined;
+  const firstWorkoutStructure = firstWorkout ? groupWorkoutPresentation(firstWorkout) : [];
   const huntsCompleted = progress?.huntsCompleted ?? 0;
   const huntsTotal = progress?.huntsTotal ?? monster.hunts.length;
   const huntsRemaining = Math.max(huntsTotal - huntsCompleted, 0);
@@ -201,7 +204,7 @@ export function MonsterDetailScreen({ route, navigation }: Props) {
         </View>
 
         <Text style={styles.name}>{monster.name}</Text>
-        <Text style={styles.title}>{monster.title}</Text>
+        {monster.title !== monster.name ? <Text style={styles.title}>{monster.title}</Text> : null}
         <View style={[styles.personalityPill, { borderColor: personality.accentColor }]}>
           <Text style={[styles.personalityText, { color: personality.accentColor }]}>
             {personality.label}
@@ -237,6 +240,8 @@ export function MonsterDetailScreen({ route, navigation }: Props) {
                 A {firstWorkout.rounds}-{firstWorkout.stepLabel.toLowerCase()} ladder on{' '}
                 {Array.from(new Set(firstWorkout.exercises.map((e) => e.displayName ?? e.name))).join(' and ')}.
               </Text>
+            ) : firstWorkoutStructure.length ? (
+              <WorkoutStructure groups={firstWorkoutStructure} compact />
             ) : (
               firstWorkout.exercises.map((exercise) => (
                 <View key={exercise.id} style={styles.statRow}>

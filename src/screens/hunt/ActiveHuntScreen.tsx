@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, Animated, BackHandler, Pressable } from 'react-native';
+import { View, Text, StyleSheet, Image, Animated, BackHandler, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useFocusEffect } from '@react-navigation/native';
@@ -42,26 +42,24 @@ function formatClock(totalSeconds: number) {
   return { minutes, seconds };
 }
 
-/**
- * Chain + Complex workouts (The Risen, The Rite, ...) repeat the same
- * exercise several times as separate "Chain N/M" entries — content marks
- * this with a `(Chain N/M)` suffix on displayName (see e.g. iron-descent,
- * the-rite in workout.json). Parsed here purely for display grouping —
- * never used for routing/completion logic, and works for any workout
- * that uses this displayName convention, not just one monster by name.
- */
-function chainPassNumber(displayName: string | undefined): number | null {
-  const match = displayName?.match(/\(Chain (\d+)\/\d+\)/);
-  return match ? parseInt(match[1], 10) : null;
-}
-
 function exerciseDisplayName(exercise: Workout['exercises'][number]): string {
   return (exercise.displayName ?? exercise.name)
     .replace(/\s*\((?:Chain \d+\/\d+|Complex\s*[×x]\s*\d+)\)\s*$/i, '')
     .trim();
 }
 
-function exerciseStepLabel(exercises: Workout['exercises'], index: number): string {
+function sequenceMovementName(exercise: Workout['exercises'][number]): string {
+  const name = exerciseDisplayName(exercise);
+  return exercise.sequenceGroup
+    ? name.replace(new RegExp(`^${exercise.sequenceGroup}\\s*[·:-]\\s*`, 'i'), '').trim()
+    : name;
+}
+
+function exerciseStepLabel(
+  exercises: Workout['exercises'],
+  index: number,
+  sequenceType?: Workout['sequenceType']
+): string {
   const exercise = exercises[index];
   if (!exercise) return '';
   const chain = exercise.displayName?.match(/\(Chain (\d+)\/(\d+)\)/i);
@@ -92,6 +90,16 @@ function exerciseStepLabel(exercises: Workout['exercises'], index: number): stri
   }
   const position = index - start + 1;
   const total = end - start + 1;
+  if (exercise.sequenceGroup) {
+    let groupStart = index;
+    let groupEnd = index;
+    while (groupStart > 0 && exercises[groupStart - 1].sequenceGroup === exercise.sequenceGroup) groupStart -= 1;
+    while (groupEnd < exercises.length - 1 && exercises[groupEnd + 1].sequenceGroup === exercise.sequenceGroup) groupEnd += 1;
+    return `Chain / ${exercise.sequenceGroup}  ·  Movement ${index - groupStart + 1} / ${groupEnd - groupStart + 1}`;
+  }
+  if (sequenceType === 'chain' && !chain && !complex) {
+    return `Chain  ·  Movement ${index + 1} / ${exercises.length}`;
+  }
   return chain
     ? `Chain ${chain[1]} / ${chain[2]}  ·  Exercise ${position} / ${total}`
     : complex
@@ -470,11 +478,16 @@ function ActiveHuntSession({
     workout.sections?.[session.currentRound - 1]?.exercises ?? workout.exercises
   ).length;
   const currentRoundExercises = workout.sections?.[session.currentRound - 1]?.exercises ?? workout.exercises;
-  const currentRoundStructure = groupWorkoutStructure(currentRoundExercises);
+  const currentRoundStructure = groupWorkoutStructure(currentRoundExercises, workout.sequenceType);
   const [activeSequencePosition, setActiveSequencePosition] = useState({ round: 1, index: 0 });
   const activeExerciseIndex = activeSequencePosition.round === session.currentRound ? activeSequencePosition.index : 0;
   const activeExercise = currentRoundExercises[activeExerciseIndex];
   const nextExercise = currentRoundExercises[activeExerciseIndex + 1];
+  const compactSequencePreview = currentRoundExercises
+    .slice(0, 5)
+    .map(sequenceMovementName)
+    .join('  ·  ');
+  const sequencePreviewRemainder = Math.max(0, currentRoundExercises.length - 5);
   const exerciseListDensity: 'normal' | 'compact' | 'dense' =
     currentRoundExerciseCount >= 8 ? 'dense' : currentRoundExerciseCount >= 5 ? 'compact' : 'normal';
   const hpFraction = battle.maxHP > 0 ? battle.currentHP / battle.maxHP : 0;
@@ -723,7 +736,7 @@ function ActiveHuntSession({
         </Animated.View>
       ) : null}
 
-      <ScrollView style={styles.scrollArea} contentContainerStyle={styles.content}>
+      <View style={[styles.trainingHud, styles.content]}>
         {/* Boss */}
         {/* Boss portrait and status. */}
         <View style={styles.portraitContainer}>
@@ -806,9 +819,9 @@ function ActiveHuntSession({
             on for pass/fail at Finish Hunt above this component) — no new
             calculation. null whenever that card wouldn't show one either
             (Encounter 1, or the previous encounter has no result yet), so
-            this simply renders nothing then. Sits directly under HP/above
-            the scrollable exercise content so it never competes with the
-            portrait, the fixed-zone round timer, or the exercise list for
+            this simply renders nothing then. Sits directly under HP and
+            above the compact exercise HUD so it never competes with the
+            portrait, fixed-zone round timer, or current exercise for
             space, and stays in place across exercise/round changes and
             rest, since it depends on none of that state. */}
         {workout.emomSeconds ? (
@@ -947,6 +960,16 @@ function ActiveHuntSession({
             <Text style={styles.sectionLabel}>Get Ready</Text>
             <Text style={styles.countdownNumber}>{session.countdownRemaining}</Text>
             <Text style={styles.roundLabel}>{stepLabel} 1 begins shortly</Text>
+            <View style={styles.sequencePreviewBlock}>
+              <Text style={styles.sequencePreviewLabel}>NEXT SEQUENCE</Text>
+              {currentRoundStructure.length ? (
+                <WorkoutStructure groups={currentRoundStructure} compact />
+              ) : (
+                <Text style={styles.sequencePreviewText} numberOfLines={3}>
+                  {compactSequencePreview}{sequencePreviewRemainder ? `  ·  +${sequencePreviewRemainder} more` : ''}
+                </Text>
+              )}
+            </View>
             {/* Task 9: kept visually secondary (small, muted, no card/glow
                 of its own) so it doesn't compete with the countdown
                 number above it — reuses Button's existing "secondary"
@@ -987,70 +1010,59 @@ function ActiveHuntSession({
                       {formatClock(roundStats.previousRoundSeconds).seconds.toString().padStart(2, '0')}
                     </Text>
                   ) : null}
+                  <View style={styles.sequencePreviewBlock}>
+                    <Text style={styles.sequencePreviewLabel}>NEXT SEQUENCE</Text>
+                    {currentRoundStructure.length ? (
+                      <WorkoutStructure groups={currentRoundStructure} compact />
+                    ) : (
+                      <Text style={styles.sequencePreviewText} numberOfLines={3}>
+                        {compactSequencePreview}{sequencePreviewRemainder ? `  ·  +${sequencePreviewRemainder} more` : ''}
+                      </Text>
+                    )}
+                  </View>
                 </>
               ) : (
                 <>
                   <Text style={styles.sectionLabel}>
                     {workout.sections?.[session.currentRound - 1]?.label ?? `This ${stepLabel}`}
                   </Text>
-                  {currentRoundStructure.length ? (
+                  {activeExercise ? (
                     <>
                       <View style={styles.activeExerciseFocus}>
                         <Text style={styles.activeExerciseLabel}>CURRENT EXERCISE</Text>
                         <Text style={styles.activeExerciseName} numberOfLines={2}>
-                          {exerciseDisplayName(activeExercise)}
+                          {sequenceMovementName(activeExercise)}
+                        </Text>
+                        <Text style={styles.activeExerciseTarget}>
+                          {activeExercise.targetReps
+                            ? `${activeExercise.targetReps} rep${activeExercise.targetReps === 1 ? '' : 's'}${activeExercise.targetReps > 1 ? ' · complete the set to advance' : ''}`
+                            : activeExercise.targetDistanceFt
+                              ? `${activeExercise.targetDistanceFt} ft`
+                              : 'Complete this movement'}
                         </Text>
                         <Text style={styles.activeExerciseProgress}>
-                          {exerciseStepLabel(currentRoundExercises, activeExerciseIndex)}
+                          {exerciseStepLabel(currentRoundExercises, activeExerciseIndex, workout.sequenceType)}
                         </Text>
                         <View style={styles.nextExerciseRow}>
                           <Text style={styles.nextExerciseLabel}>NEXT</Text>
                           <Text style={styles.nextExerciseName} numberOfLines={1}>
-                            {nextExercise ? exerciseDisplayName(nextExercise) : 'Complete the round'}
+                            {nextExercise ? sequenceMovementName(nextExercise) : 'Complete the round'}
                           </Text>
                         </View>
                         {nextExercise ? (
                           <Pressable
                             accessibilityRole="button"
-                            accessibilityLabel={`Mark ${exerciseDisplayName(activeExercise)} complete and show ${exerciseDisplayName(nextExercise)}`}
+                            accessibilityLabel={`Mark ${sequenceMovementName(activeExercise)} complete and show ${sequenceMovementName(nextExercise)}`}
                             style={styles.nextExerciseButton}
                             onPress={() => setActiveSequencePosition({ round: session.currentRound, index: activeExerciseIndex + 1 })}
                           >
-                            <Text style={styles.nextExerciseButtonText}>Next Exercise</Text>
+                            <Text style={styles.nextExerciseButtonText}>Movement Complete</Text>
                           </Pressable>
                         ) : null}
                       </View>
-                      <WorkoutStructure groups={currentRoundStructure} compact />
                     </>
-                  ) : currentRoundExercises.map(
-                    (exercise) => {
-                      const passNumber = chainPassNumber(exercise.displayName);
-                      // Odd/even alternation by Chain pass number — a
-                      // simple, subtle way to break up "Floor Deadlift
-                      // (Chain 1/2)" / "Floor Deadlift (Chain 2/2)" reading
-                      // as identical lines, without any new color and
-                      // without tracking live per-exercise completion
-                      // (this list has never tracked that — it's the
-                      // round's prescription at a glance, not a checklist).
-                      const isAlternatePass = passNumber !== null && passNumber % 2 === 0;
-                      return (
-                        <Text
-                          key={exercise.id}
-                          style={[
-                            styles.roundExerciseLine,
-                            exerciseListDensity === 'compact' && styles.roundExerciseLineCompact,
-                            exerciseListDensity === 'dense' && styles.roundExerciseLineDense,
-                            isAlternatePass && styles.roundExerciseLineChainAlt,
-                          ]}
-                        >
-                          {exercise.targetReps
-                            ? `${exercise.targetReps} × ${exercise.displayName ?? exercise.name}`
-                            : exercise.targetDistanceFt
-                            ? `${exercise.targetDistanceFt} ft ${exercise.displayName ?? exercise.name}`
-                            : exercise.displayName ?? exercise.name}
-                        </Text>
-                      );
-                    }
+                  ) : (
+                    <Text style={styles.activeExerciseName}>No movement is configured for this round.</Text>
                   )}
                 </>
               )}
@@ -1069,21 +1081,9 @@ function ActiveHuntSession({
             </GlassCard>
           </>
         )}
-      </ScrollView>
+      </View>
 
-      {/* Task 10 (Arachne / Active Hunt fixed controls): timer, Complete
-          Round, Pause/Quit/Finish Hunt moved out of the ScrollView into a
-          fixed zone below it. Previously all of this lived inside the
-          same scrollable column as the exercise list — a long exercise
-          list (Arachne) could push these controls below the fold,
-          requiring a scroll to reach them mid-workout. The exercise
-          list/portrait/HP bar above remain scrollable (variable height by
-          design, fine to scroll); this bottom zone's own height is fixed
-          content, not flex-grown, so it always sits at a stable position
-          just above the safe-area bottom inset, regardless of device
-          height or how long any given monster's exercise list is. No
-          combat/timing/round logic changed — same components, same
-          conditions, only their position in the tree moved. */}
+      {/* Fixed controls stay visible below the compact, non-scrollable training HUD. */}
       <View style={styles.fixedControls}>
         {session.phase !== 'complete' && session.phase !== 'countdown' ? (
           /* Real-device follow-up: the timer and the round button used to
@@ -1135,7 +1135,7 @@ function ActiveHuntSession({
                 <Button
                   label={`Complete ${stepLabel}`}
                   onPress={session.completeRound}
-                  disabled={session.status !== 'active'}
+                  disabled={session.status !== 'active' || activeExerciseIndex < currentRoundExercises.length - 1}
                   style={styles.actionButton}
                 />
               )}
@@ -1218,13 +1218,14 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.lg,
     gap: spacing.xs,
   },
-  scrollArea: {
+  trainingHud: {
     flex: 1,
+    minHeight: 0,
   },
   content: {
     alignItems: 'center',
-    padding: spacing.lg,
-    gap: spacing.xs,
+    padding: spacing.md,
+    gap: spacing.xxs,
   },
   missingState: {
     flex: 1,
@@ -1473,6 +1474,31 @@ const styles = StyleSheet.create({
     marginTop: 2,
     textAlign: 'center',
   },
+  activeExerciseTarget: {
+    fontFamily: fontFamily.monoRegular,
+    fontSize: fontSize.sm,
+    color: colors.text.secondary,
+    marginTop: spacing.xxs,
+    textAlign: 'center',
+  },
+  sequencePreviewBlock: {
+    width: '100%',
+    marginTop: spacing.xs,
+  },
+  sequencePreviewLabel: {
+    fontFamily: fontFamily.monoBold,
+    fontSize: 9,
+    color: colors.text.muted,
+    letterSpacing: 1.2,
+    marginBottom: spacing.xxs,
+  },
+  sequencePreviewText: {
+    fontFamily: fontFamily.bodySemiBold,
+    fontSize: fontSize.sm,
+    color: colors.text.secondary,
+    lineHeight: 19,
+    textAlign: 'center',
+  },
   nextExerciseRow: {
     width: '100%',
     flexDirection: 'row',
@@ -1534,8 +1560,8 @@ const styles = StyleSheet.create({
   exerciseCard: {
     width: '100%',
     alignItems: 'center',
-    marginTop: spacing.sm,
-    paddingVertical: spacing.lg,
+    marginTop: spacing.xxs,
+    paddingVertical: spacing.sm,
   },
   // Task 8 (dynamic exercise list density): only paddingVertical shrinks
   // here — the card's width/marginTop/border/glow are untouched, so this
@@ -1589,34 +1615,6 @@ const styles = StyleSheet.create({
     color: colors.bronze.base,
     marginTop: spacing.xs,
     textAlign: 'center',
-  },
-  roundExerciseLine: {
-    fontFamily: fontFamily.displayBold,
-    fontSize: fontSize.xl,
-    color: colors.text.primary,
-    textTransform: 'uppercase',
-    textAlign: 'center',
-    marginTop: spacing.xxs,
-  },
-  // Task 8: two steps down from fontSize.xl (28) — still comfortably
-  // readable, just not fighting for space against 5-7 siblings.
-  roundExerciseLineCompact: {
-    fontSize: fontSize.lg,
-    marginTop: 2,
-  },
-  // For 8+ rows (e.g. The Two-Faced's 10-item round) — one step further
-  // down again, matching the button label's own fontSize.base so it
-  // never reads smaller than the app's own UI text.
-  roundExerciseLineDense: {
-    fontSize: fontSize.base,
-    marginTop: 1,
-  },
-  // Chain + Complex readability fix: alternate Chain passes (Chain 2/2,
-  // 4/4, ...) drop to text.secondary instead of text.primary — same font,
-  // same size, just one shade quieter, so consecutive repeats of the same
-  // exercise name read as distinct lines instead of identical ones.
-  roundExerciseLineChainAlt: {
-    color: colors.text.secondary,
   },
   roundLabel: {
     fontFamily: fontFamily.monoRegular,

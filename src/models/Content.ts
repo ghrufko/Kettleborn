@@ -13,6 +13,8 @@ export interface Exercise {
   name: string;
   /** Stable Exercise Library entity for this workout step, when it is one movement. */
   libraryExerciseId?: string;
+  /** Presentation grouping for a named subsequence, such as The Wraith's Left Hand chain. */
+  sequenceGroup?: string;
   /** Canonical movements represented by one workout step (for example, a Clean → Jerk sequence). */
   components?: ExerciseComponent[];
   /**
@@ -96,6 +98,8 @@ export interface Workout {
    * behaving exactly as before.
    */
   sections?: { label: string; exercises: Exercise[] }[];
+  /** Authored movement order is a continuous chain rather than a set of independent exercises. */
+  sequenceType?: 'chain';
   /**
    * When present, this workout is open-ended EMOM-style: each round must
    * be completed within this many seconds, immediately followed by the

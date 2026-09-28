@@ -24,7 +24,7 @@ export function WorkoutStructure({ groups, compact = false, onExercisePress }: P
             ) : null}
           </View>
           <Text style={styles.summary}>
-            {group.kind === 'chain' ? `${group.label.split(' ')[1]} passes · ` : ''}
+            {group.kind === 'chain' && /^Chain \d+$/i.test(group.label) ? `${group.label.split(' ')[1]} passes · ` : ''}
             {group.exercises.length} {group.exercises.length === 1 ? 'exercise' : 'exercises'}
             {group.repsEach !== null ? ` · ${group.repsEach} rep${group.repsEach === 1 ? '' : 's'} each` : ''}
           </Text>

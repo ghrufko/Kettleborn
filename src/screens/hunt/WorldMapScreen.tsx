@@ -303,7 +303,9 @@ export function WorldMapScreen({ route, navigation }: Props) {
                 </View>
                 {defeated ? (
                   <>
-                    <Text style={styles.trophyName}>{monster.title}</Text>
+                    {monster.title !== monster.name ? (
+                      <Text style={styles.trophyName}>{monster.title}</Text>
+                    ) : null}
                     <Text style={styles.trophyDescription}>{monster.description}</Text>
                   </>
                 ) : (
@@ -393,9 +395,11 @@ function BossHeroPage({
         </View>
 
         <View style={[styles.heroPageDetails, { borderTopColor: `${accentColor}66` }]}>
-          <Text style={styles.heroPageTitle} numberOfLines={2}>
-            {isLocked ? 'Unknown Creature' : monster.title}
-          </Text>
+          {isLocked || monster.title !== monster.name ? (
+            <Text style={styles.heroPageTitle} numberOfLines={2}>
+              {isLocked ? 'Unknown Creature' : monster.title}
+            </Text>
+          ) : null}
           {!isLocked ? (
             <Text style={styles.heroPageFocus}>{getCombatPersonality(monster.personality).label}</Text>
           ) : null}

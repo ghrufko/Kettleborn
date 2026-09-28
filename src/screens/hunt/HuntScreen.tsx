@@ -80,7 +80,7 @@ export function HuntScreen({ navigation }: Props) {
                   <View style={styles.heroScrim} />
                   <View style={styles.heroTextWrap}>
                     <Text style={[styles.territoryName, isLocked && styles.dimmed]}>{campaign.name}</Text>
-                    {!isLocked ? <Text style={styles.tagline}>{campaign.tagline}</Text> : null}
+                    {!isLocked ? <Text style={styles.tagline} numberOfLines={2}>{campaign.tagline}</Text> : null}
                   </View>
                   {isLocked ? (
                     <View style={styles.lockBadge}>
@@ -97,9 +97,11 @@ export function HuntScreen({ navigation }: Props) {
                         <Ionicons name="arrow-forward" size={15} color={accentColor} />
                       </View>
                       <View style={styles.progressBlock}>
-                        <Text style={[styles.stateLabel, { color: accentColor }]}>
-                          {STATE_LABEL[state]}
-                        </Text>
+                        {state === 'completed' ? (
+                          <Text style={[styles.stateLabel, { color: accentColor }]}>
+                            {STATE_LABEL[state]}
+                          </Text>
+                        ) : null}
                         <ProgressBar
                           progress={totalCount > 0 ? defeatedCount / totalCount : 0}
                           fillColor={colors.gold}
@@ -186,8 +188,12 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(10, 9, 8, 0.78)',
   },
   heroTextWrap: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
+    position: 'absolute',
+    left: spacing.md,
+    right: spacing.md,
+    bottom: spacing.sm,
+    height: 64,
+    justifyContent: 'flex-end',
   },
   lockBadge: {
     position: 'absolute',
@@ -225,6 +231,12 @@ const styles = StyleSheet.create({
     gap: 0,
   },
   territoryName: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 28,
+    lineHeight: 28,
     fontFamily: fontFamily.displayBold,
     fontSize: fontSize.xl,
     color: colors.text.primary,
@@ -235,6 +247,12 @@ const styles = StyleSheet.create({
     color: colors.steel,
   },
   tagline: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: 32,
+    lineHeight: 16,
     fontFamily: fontFamily.bodyRegular,
     fontSize: fontSize.sm,
     fontStyle: 'italic',

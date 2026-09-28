@@ -1,7 +1,8 @@
 {
   "the-twisted": {
     "id": "the-twisted",
-    "name": "The Twisted",
+    "name": "The Crooked",
+    "sequenceType": "chain",
     "description": "Suitcase Deadlift, Single-Leg Romanian Deadlift, Romanian Deadlift, Single-Arm Clean, Single-Arm Press, Single-Arm Thruster — three reps each, the same six-step twist every round. Five rounds, ninety seconds between each.",
     "difficulty": 1,
     "estimatedMinutesRange": [
@@ -64,7 +65,7 @@
       }
     ],
     "finisher": {
-      "name": "The Twisted Line",
+      "name": "The Crooked Line",
       "scheme": "5 Rounds"
     }
   },
@@ -3781,24 +3782,27 @@
     "exercises": [
       {
         "id": "agony-r1-left-snatch-floor",
-        "name": "Snatch from the Floor",
+        "name": "Single Dead Snatch",
         "damageCoefficient": 8,
         "damageType": "per_rep",
-        "targetReps": 3
+        "targetReps": 3,
+        "libraryExerciseId": "snatch-floor"
       },
       {
         "id": "agony-r1-left-clean-floor",
-        "name": "Clean from the Floor",
+        "name": "Single Dead Clean",
         "damageCoefficient": 8,
         "damageType": "per_rep",
-        "targetReps": 3
+        "targetReps": 3,
+        "libraryExerciseId": "clean-floor"
       },
       {
         "id": "agony-r1-left-clean-thruster",
-        "name": "Clean from the Floor / Thruster",
+        "name": "Single Thruster",
         "damageCoefficient": 10,
         "damageType": "per_rep",
-        "targetReps": 3
+        "targetReps": 3,
+        "libraryExerciseId": "thruster"
       }
     ],
     "sections": [
@@ -3807,24 +3811,27 @@
         "exercises": [
           {
             "id": "agony-r1-left-snatch-floor",
-            "name": "Snatch from the Floor",
+            "name": "Single Dead Snatch",
             "damageCoefficient": 8,
             "damageType": "per_rep",
-            "targetReps": 3
+            "targetReps": 3,
+            "libraryExerciseId": "snatch-floor"
           },
           {
             "id": "agony-r1-left-clean-floor",
-            "name": "Clean from the Floor",
+            "name": "Single Dead Clean",
             "damageCoefficient": 8,
             "damageType": "per_rep",
-            "targetReps": 3
+            "targetReps": 3,
+            "libraryExerciseId": "clean-floor"
           },
           {
             "id": "agony-r1-left-clean-thruster",
-            "name": "Clean from the Floor / Thruster",
+            "name": "Single Thruster",
             "damageCoefficient": 10,
             "damageType": "per_rep",
-            "targetReps": 3
+            "targetReps": 3,
+            "libraryExerciseId": "thruster"
           }
         ]
       },
@@ -3833,24 +3840,27 @@
         "exercises": [
           {
             "id": "agony-r1-right-snatch-floor",
-            "name": "Snatch from the Floor",
+            "name": "Single Dead Snatch",
             "damageCoefficient": 8,
             "damageType": "per_rep",
-            "targetReps": 3
+            "targetReps": 3,
+            "libraryExerciseId": "snatch-floor"
           },
           {
             "id": "agony-r1-right-clean-floor",
-            "name": "Clean from the Floor",
+            "name": "Single Dead Clean",
             "damageCoefficient": 8,
             "damageType": "per_rep",
-            "targetReps": 3
+            "targetReps": 3,
+            "libraryExerciseId": "clean-floor"
           },
           {
             "id": "agony-r1-right-clean-thruster",
-            "name": "Clean from the Floor / Thruster",
+            "name": "Single Thruster",
             "damageCoefficient": 10,
             "damageType": "per_rep",
-            "targetReps": 3
+            "targetReps": 3,
+            "libraryExerciseId": "thruster"
           }
         ]
       },
@@ -3859,24 +3869,27 @@
         "exercises": [
           {
             "id": "agony-r2-left-snatch-floor",
-            "name": "Snatch from the Floor",
+            "name": "Single Dead Snatch",
             "damageCoefficient": 8,
             "damageType": "per_rep",
-            "targetReps": 3
+            "targetReps": 3,
+            "libraryExerciseId": "snatch-floor"
           },
           {
             "id": "agony-r2-left-clean-floor",
-            "name": "Clean from the Floor",
+            "name": "Single Dead Clean",
             "damageCoefficient": 8,
             "damageType": "per_rep",
-            "targetReps": 3
+            "targetReps": 3,
+            "libraryExerciseId": "clean-floor"
           },
           {
             "id": "agony-r2-left-clean-thruster",
-            "name": "Clean from the Floor / Thruster",
+            "name": "Single Thruster",
             "damageCoefficient": 10,
             "damageType": "per_rep",
-            "targetReps": 3
+            "targetReps": 3,
+            "libraryExerciseId": "thruster"
           }
         ]
       },
@@ -3885,24 +3898,27 @@
         "exercises": [
           {
             "id": "agony-r2-right-snatch-floor",
-            "name": "Snatch from the Floor",
+            "name": "Single Dead Snatch",
             "damageCoefficient": 8,
             "damageType": "per_rep",
-            "targetReps": 3
+            "targetReps": 3,
+            "libraryExerciseId": "snatch-floor"
           },
           {
             "id": "agony-r2-right-clean-floor",
-            "name": "Clean from the Floor",
+            "name": "Single Dead Clean",
             "damageCoefficient": 8,
             "damageType": "per_rep",
-            "targetReps": 3
+            "targetReps": 3,
+            "libraryExerciseId": "clean-floor"
           },
           {
             "id": "agony-r2-right-clean-thruster",
-            "name": "Clean from the Floor / Thruster",
+            "name": "Single Thruster",
             "damageCoefficient": 10,
             "damageType": "per_rep",
-            "targetReps": 3
+            "targetReps": 3,
+            "libraryExerciseId": "thruster"
           }
         ]
       },
@@ -3911,24 +3927,27 @@
         "exercises": [
           {
             "id": "agony-r3-left-snatch-floor",
-            "name": "Snatch from the Floor",
+            "name": "Single Dead Snatch",
             "damageCoefficient": 8,
             "damageType": "per_rep",
-            "targetReps": 3
+            "targetReps": 3,
+            "libraryExerciseId": "snatch-floor"
           },
           {
             "id": "agony-r3-left-clean-floor",
-            "name": "Clean from the Floor",
+            "name": "Single Dead Clean",
             "damageCoefficient": 8,
             "damageType": "per_rep",
-            "targetReps": 3
+            "targetReps": 3,
+            "libraryExerciseId": "clean-floor"
           },
           {
             "id": "agony-r3-left-clean-thruster",
-            "name": "Clean from the Floor / Thruster",
+            "name": "Single Thruster",
             "damageCoefficient": 10,
             "damageType": "per_rep",
-            "targetReps": 3
+            "targetReps": 3,
+            "libraryExerciseId": "thruster"
           }
         ]
       },
@@ -3937,24 +3956,27 @@
         "exercises": [
           {
             "id": "agony-r3-right-snatch-floor",
-            "name": "Snatch from the Floor",
+            "name": "Single Dead Snatch",
             "damageCoefficient": 8,
             "damageType": "per_rep",
-            "targetReps": 3
+            "targetReps": 3,
+            "libraryExerciseId": "snatch-floor"
           },
           {
             "id": "agony-r3-right-clean-floor",
-            "name": "Clean from the Floor",
+            "name": "Single Dead Clean",
             "damageCoefficient": 8,
             "damageType": "per_rep",
-            "targetReps": 3
+            "targetReps": 3,
+            "libraryExerciseId": "clean-floor"
           },
           {
             "id": "agony-r3-right-clean-thruster",
-            "name": "Clean from the Floor / Thruster",
+            "name": "Single Thruster",
             "damageCoefficient": 10,
             "damageType": "per_rep",
-            "targetReps": 3
+            "targetReps": 3,
+            "libraryExerciseId": "thruster"
           }
         ]
       },
@@ -3963,24 +3985,27 @@
         "exercises": [
           {
             "id": "agony-r4-left-snatch-floor",
-            "name": "Snatch from the Floor",
+            "name": "Single Dead Snatch",
             "damageCoefficient": 8,
             "damageType": "per_rep",
-            "targetReps": 3
+            "targetReps": 3,
+            "libraryExerciseId": "snatch-floor"
           },
           {
             "id": "agony-r4-left-clean-floor",
-            "name": "Clean from the Floor",
+            "name": "Single Dead Clean",
             "damageCoefficient": 8,
             "damageType": "per_rep",
-            "targetReps": 3
+            "targetReps": 3,
+            "libraryExerciseId": "clean-floor"
           },
           {
             "id": "agony-r4-left-clean-thruster",
-            "name": "Clean from the Floor / Thruster",
+            "name": "Single Thruster",
             "damageCoefficient": 10,
             "damageType": "per_rep",
-            "targetReps": 3
+            "targetReps": 3,
+            "libraryExerciseId": "thruster"
           }
         ]
       },
@@ -3989,24 +4014,27 @@
         "exercises": [
           {
             "id": "agony-r4-right-snatch-floor",
-            "name": "Snatch from the Floor",
+            "name": "Single Dead Snatch",
             "damageCoefficient": 8,
             "damageType": "per_rep",
-            "targetReps": 3
+            "targetReps": 3,
+            "libraryExerciseId": "snatch-floor"
           },
           {
             "id": "agony-r4-right-clean-floor",
-            "name": "Clean from the Floor",
+            "name": "Single Dead Clean",
             "damageCoefficient": 8,
             "damageType": "per_rep",
-            "targetReps": 3
+            "targetReps": 3,
+            "libraryExerciseId": "clean-floor"
           },
           {
             "id": "agony-r4-right-clean-thruster",
-            "name": "Clean from the Floor / Thruster",
+            "name": "Single Thruster",
             "damageCoefficient": 10,
             "damageType": "per_rep",
-            "targetReps": 3
+            "targetReps": 3,
+            "libraryExerciseId": "thruster"
           }
         ]
       },
@@ -4015,24 +4043,27 @@
         "exercises": [
           {
             "id": "agony-r5-left-snatch-floor",
-            "name": "Snatch from the Floor",
+            "name": "Single Dead Snatch",
             "damageCoefficient": 8,
             "damageType": "per_rep",
-            "targetReps": 3
+            "targetReps": 3,
+            "libraryExerciseId": "snatch-floor"
           },
           {
             "id": "agony-r5-left-clean-floor",
-            "name": "Clean from the Floor",
+            "name": "Single Dead Clean",
             "damageCoefficient": 8,
             "damageType": "per_rep",
-            "targetReps": 3
+            "targetReps": 3,
+            "libraryExerciseId": "clean-floor"
           },
           {
             "id": "agony-r5-left-clean-thruster",
-            "name": "Clean from the Floor / Thruster",
+            "name": "Single Thruster",
             "damageCoefficient": 10,
             "damageType": "per_rep",
-            "targetReps": 3
+            "targetReps": 3,
+            "libraryExerciseId": "thruster"
           }
         ]
       },
@@ -4041,24 +4072,27 @@
         "exercises": [
           {
             "id": "agony-r5-right-snatch-floor",
-            "name": "Snatch from the Floor",
+            "name": "Single Dead Snatch",
             "damageCoefficient": 8,
             "damageType": "per_rep",
-            "targetReps": 3
+            "targetReps": 3,
+            "libraryExerciseId": "snatch-floor"
           },
           {
             "id": "agony-r5-right-clean-floor",
-            "name": "Clean from the Floor",
+            "name": "Single Dead Clean",
             "damageCoefficient": 8,
             "damageType": "per_rep",
-            "targetReps": 3
+            "targetReps": 3,
+            "libraryExerciseId": "clean-floor"
           },
           {
             "id": "agony-r5-right-clean-thruster",
-            "name": "Clean from the Floor / Thruster",
+            "name": "Single Thruster",
             "damageCoefficient": 10,
             "damageType": "per_rep",
-            "targetReps": 3
+            "targetReps": 3,
+            "libraryExerciseId": "thruster"
           }
         ]
       }
@@ -4169,6 +4203,7 @@
   "living-current": {
     "id": "living-current",
     "name": "The Unbroken Chain",
+    "sequenceType": "chain",
     "description": "Left hand runs the full chain — swing, clean, lunge, jerk, thruster, snatch — five times without setting the bell down. Then the right hand takes on the same chain, five times more. Five rounds, both hands, no gap anywhere inside the chain itself.",
     "difficulty": 3,
     "estimatedMinutesRange": [
@@ -4762,11 +4797,12 @@
       },
       {
         "id": "moloch-chain1-snatch",
-        "name": "Snatch from the Floor",
-        "displayName": "Snatch from the Floor (Chain 1/2)",
+        "name": "Single Dead Snatch",
+        "displayName": "Single Dead Snatch (Chain 1/2)",
         "damageCoefficient": 16,
         "damageType": "per_rep",
-        "targetReps": 1
+        "targetReps": 1,
+        "libraryExerciseId": "snatch-floor"
       },
       {
         "id": "moloch-chain2-deadlift",
@@ -4802,11 +4838,12 @@
       },
       {
         "id": "moloch-chain2-snatch",
-        "name": "Snatch from the Floor",
-        "displayName": "Snatch from the Floor (Chain 2/2)",
+        "name": "Single Dead Snatch",
+        "displayName": "Single Dead Snatch (Chain 2/2)",
         "damageCoefficient": 16,
         "damageType": "per_rep",
-        "targetReps": 1
+        "targetReps": 1,
+        "libraryExerciseId": "snatch-floor"
       },
       {
         "id": "moloch-complex-deadlift",
@@ -4842,11 +4879,12 @@
       },
       {
         "id": "moloch-complex-snatch",
-        "name": "Snatch from the Floor",
-        "displayName": "Snatch from the Floor (Complex ×2)",
+        "name": "Single Dead Snatch",
+        "displayName": "Single Dead Snatch (Complex ×2)",
         "damageCoefficient": 16,
         "damageType": "per_rep",
-        "targetReps": 2
+        "targetReps": 2,
+        "libraryExerciseId": "snatch-floor"
       }
     ],
     "finisher": {
@@ -4906,6 +4944,7 @@
   "endless-spiral": {
     "id": "endless-spiral",
     "name": "The Wraith",
+    "sequenceType": "chain",
     "description": "Snatch, overhead lunge, jerk, windmill, swing — one hand completes the full chain, then the other answers for the same current. The danger was never one movement. It's losing the chain in the moment it changes hands.",
     "difficulty": 3,
     "estimatedMinutesRange": [
@@ -4927,6 +4966,7 @@
       {
         "id": "aether-left-snatch",
         "name": "Snatch",
+        "sequenceGroup": "Left Hand",
         "displayName": "Left Hand · Snatch",
         "damageCoefficient": 16,
         "damageType": "flat",
@@ -4935,6 +4975,7 @@
       {
         "id": "aether-left-overhead-lunge",
         "name": "Overhead Lunge",
+        "sequenceGroup": "Left Hand",
         "displayName": "Left Hand · Overhead Lunge",
         "damageCoefficient": 12,
         "damageType": "flat",
@@ -4943,6 +4984,7 @@
       {
         "id": "aether-left-jerk",
         "name": "Jerk",
+        "sequenceGroup": "Left Hand",
         "displayName": "Left Hand · Jerk",
         "damageCoefficient": 16,
         "damageType": "flat",
@@ -4951,6 +4993,7 @@
       {
         "id": "aether-left-windmill",
         "name": "Windmill",
+        "sequenceGroup": "Left Hand",
         "displayName": "Left Hand · Windmill",
         "damageCoefficient": 10,
         "damageType": "flat",
@@ -4959,6 +5002,7 @@
       {
         "id": "aether-left-swing",
         "name": "Swing",
+        "sequenceGroup": "Left Hand",
         "displayName": "Left Hand · Swing",
         "damageCoefficient": 10,
         "damageType": "flat",
@@ -4967,6 +5011,7 @@
       {
         "id": "aether-right-snatch",
         "name": "Snatch",
+        "sequenceGroup": "Right Hand",
         "displayName": "Right Hand · Snatch",
         "damageCoefficient": 16,
         "damageType": "flat",
@@ -4975,6 +5020,7 @@
       {
         "id": "aether-right-overhead-lunge",
         "name": "Overhead Lunge",
+        "sequenceGroup": "Right Hand",
         "displayName": "Right Hand · Overhead Lunge",
         "damageCoefficient": 12,
         "damageType": "flat",
@@ -4983,6 +5029,7 @@
       {
         "id": "aether-right-jerk",
         "name": "Jerk",
+        "sequenceGroup": "Right Hand",
         "displayName": "Right Hand · Jerk",
         "damageCoefficient": 16,
         "damageType": "flat",
@@ -4991,6 +5038,7 @@
       {
         "id": "aether-right-windmill",
         "name": "Windmill",
+        "sequenceGroup": "Right Hand",
         "displayName": "Right Hand · Windmill",
         "damageCoefficient": 10,
         "damageType": "flat",
@@ -4999,6 +5047,7 @@
       {
         "id": "aether-right-swing",
         "name": "Swing",
+        "sequenceGroup": "Right Hand",
         "displayName": "Right Hand · Swing",
         "damageCoefficient": 10,
         "damageType": "flat",
