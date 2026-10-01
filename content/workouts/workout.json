@@ -2176,8 +2176,8 @@
         "libraryExerciseId": "front-rack-carry",
         "damageCoefficient": 3,
         "damageType": "per_second",
-        "targetDistanceFt": 100,
-        "durationSeconds": 30
+        "durationSeconds": 30,
+        "targetSteps": 50
       }
     ],
     "finisher": {
@@ -2188,13 +2188,13 @@
   "iron-ascent": {
     "id": "iron-ascent",
     "name": "The Iron Ascent",
-    "description": "Three phases, three different demands — double-bell volume, then single-arm control, then double-bell precision. The Behemoth respects control, not speed.",
+    "description": "Two-minute rests separate three phases: a tactical single-side ladder, a single-kettlebell sequence from the left side to the right, and a two-bell finish.",
     "difficulty": 5,
     "estimatedMinutesRange": [
       22,
       28
     ],
-    "gearWeightKg": 16,
+    "gearWeightKg": 20,
     "gearCount": 2,
     "rounds": 3,
     "restSeconds": 120,
@@ -2208,172 +2208,216 @@
     "exercises": [
       {
         "id": "behemoth-p1-snatch-a",
-        "name": "Tactical Double Snatch",
-        "displayName": "Double Snatch",
+        "name": "Tactical Snatch",
         "damageCoefficient": 6,
         "damageType": "per_rep",
-        "targetReps": 60
+        "targetReps": 20,
+        "libraryExerciseId": "tactical-snatch",
+        "usesGearCount": 1
       },
       {
         "id": "behemoth-p1-squat",
-        "name": "Tactical Double Front Squat",
-        "displayName": "Double Front Squat",
+        "name": "Tactical Squat",
+        "displayName": "Tactical Squat",
         "damageCoefficient": 6,
         "damageType": "per_rep",
-        "targetReps": 48
+        "targetReps": 16,
+        "libraryExerciseId": "front-squat",
+        "usesGearCount": 1
       },
       {
         "id": "behemoth-p1-press",
-        "name": "Tactical Double Press",
-        "displayName": "Double Press",
+        "name": "Tactical Press",
+        "displayName": "Tactical Press",
         "damageCoefficient": 6,
         "damageType": "per_rep",
-        "targetReps": 36
+        "targetReps": 12,
+        "libraryExerciseId": "press",
+        "usesGearCount": 1
       },
       {
         "id": "behemoth-p1-clean",
-        "name": "Tactical Double Clean",
-        "displayName": "Double Clean",
+        "name": "Tactical Clean",
+        "displayName": "Tactical Clean",
         "damageCoefficient": 6,
         "damageType": "per_rep",
-        "targetReps": 24
+        "targetReps": 8,
+        "libraryExerciseId": "clean",
+        "usesGearCount": 1
       },
       {
         "id": "behemoth-p1-snatch-b",
-        "name": "Tactical Double Snatch",
-        "displayName": "Double Snatch",
+        "name": "Alternative Swing",
+        "displayName": "Alternative Swing",
         "damageCoefficient": 6,
         "damageType": "per_rep",
-        "targetReps": 12
+        "targetReps": 4,
+        "libraryExerciseId": "alternating-swing",
+        "usesGearCount": 1
       }
     ],
     "sections": [
       {
-        "label": "Phase I — The Colossus",
+        "label": "Phase I — Tactical / Single-Side Ladder",
         "exercises": [
           {
             "id": "behemoth-p1-snatch-a",
-            "name": "Tactical Double Snatch",
-            "displayName": "Double Snatch",
-            "damageCoefficient": 6,
-            "damageType": "per_rep",
-            "targetReps": 60
-          },
-          {
-            "id": "behemoth-p1-squat",
-            "name": "Tactical Double Front Squat",
-            "displayName": "Double Front Squat",
-            "damageCoefficient": 6,
-            "damageType": "per_rep",
-            "targetReps": 48
-          },
-          {
-            "id": "behemoth-p1-press",
-            "name": "Tactical Double Press",
-            "displayName": "Double Press",
-            "damageCoefficient": 6,
-            "damageType": "per_rep",
-            "targetReps": 36
-          },
-          {
-            "id": "behemoth-p1-clean",
-            "name": "Tactical Double Clean",
-            "displayName": "Double Clean",
-            "damageCoefficient": 6,
-            "damageType": "per_rep",
-            "targetReps": 24
-          },
-          {
-            "id": "behemoth-p1-snatch-b",
-            "name": "Tactical Double Snatch",
-            "displayName": "Double Snatch",
-            "damageCoefficient": 6,
-            "damageType": "per_rep",
-            "targetReps": 12
-          }
-        ]
-      },
-      {
-        "label": "Phase II — The Climb",
-        "exercises": [
-          {
-            "id": "behemoth-p2-snatch",
-            "name": "Snatch",
+            "name": "Tactical Snatch",
             "damageCoefficient": 6,
             "damageType": "per_rep",
             "targetReps": 20,
+            "libraryExerciseId": "tactical-snatch",
             "usesGearCount": 1
           },
           {
-            "id": "behemoth-p2-squat",
-            "name": "Front Squat",
+            "id": "behemoth-p1-squat",
+            "name": "Tactical Squat",
+            "displayName": "Tactical Squat",
             "damageCoefficient": 6,
             "damageType": "per_rep",
-            "targetReps": 16
+            "targetReps": 16,
+            "libraryExerciseId": "front-squat",
+            "usesGearCount": 1
           },
           {
-            "id": "behemoth-p2-press",
-            "name": "Press",
+            "id": "behemoth-p1-press",
+            "name": "Tactical Press",
+            "displayName": "Tactical Press",
             "damageCoefficient": 6,
             "damageType": "per_rep",
             "targetReps": 12,
+            "libraryExerciseId": "press",
             "usesGearCount": 1
           },
           {
-            "id": "behemoth-p2-clean",
-            "name": "Clean",
+            "id": "behemoth-p1-clean",
+            "name": "Tactical Clean",
+            "displayName": "Tactical Clean",
             "damageCoefficient": 6,
             "damageType": "per_rep",
             "targetReps": 8,
+            "libraryExerciseId": "clean",
             "usesGearCount": 1
           },
           {
-            "id": "behemoth-p2-snatch-2",
-            "name": "Snatch",
+            "id": "behemoth-p1-snatch-b",
+            "name": "Alternative Swing",
+            "displayName": "Alternative Swing",
             "damageCoefficient": 6,
             "damageType": "per_rep",
             "targetReps": 4,
+            "libraryExerciseId": "alternating-swing",
             "usesGearCount": 1
           }
         ]
       },
       {
-        "label": "Phase III — The Summit",
+        "label": "Phase II — Single Kettlebell · Left Side, Then Right Hand",
+        "exercises": [
+          {
+            "id": "behemoth-p2-snatch",
+            "name": "Single Snatch",
+            "damageCoefficient": 6,
+            "damageType": "per_rep",
+            "targetReps": 10,
+            "usesGearCount": 1,
+            "displayName": "Single Snatch",
+            "libraryExerciseId": "snatch"
+          },
+          {
+            "id": "behemoth-p2-squat",
+            "name": "Single KB Squat",
+            "damageCoefficient": 6,
+            "damageType": "per_rep",
+            "targetReps": 8,
+            "displayName": "Single KB Squat",
+            "libraryExerciseId": "front-squat",
+            "usesGearCount": 1
+          },
+          {
+            "id": "behemoth-p2-press",
+            "name": "Single Press",
+            "damageCoefficient": 6,
+            "damageType": "per_rep",
+            "targetReps": 6,
+            "usesGearCount": 1,
+            "displayName": "Single Press",
+            "libraryExerciseId": "press"
+          },
+          {
+            "id": "behemoth-p2-clean",
+            "name": "Single Clean",
+            "damageCoefficient": 6,
+            "damageType": "per_rep",
+            "targetReps": 4,
+            "usesGearCount": 1,
+            "displayName": "Single Clean",
+            "libraryExerciseId": "clean"
+          },
+          {
+            "id": "behemoth-p2-snatch-2",
+            "name": "Single Swing",
+            "damageCoefficient": 6,
+            "damageType": "per_rep",
+            "targetReps": 2,
+            "usesGearCount": 1,
+            "displayName": "Single Swing",
+            "libraryExerciseId": "swing"
+          }
+        ]
+      },
+      {
+        "label": "Phase III — Two Kettlebells · 2 × 20 kg",
         "exercises": [
           {
             "id": "behemoth-p3-snatch",
             "name": "Double Half Snatch",
             "damageCoefficient": 7,
             "damageType": "per_rep",
-            "targetReps": 10
+            "targetReps": 10,
+            "displayName": "Double Half Snatch",
+            "libraryExerciseId": "double-half-snatch",
+            "usesGearCount": 2
           },
           {
             "id": "behemoth-p3-squat",
-            "name": "Double Front Squat",
+            "name": "Double Squat",
             "damageCoefficient": 7,
             "damageType": "per_rep",
-            "targetReps": 8
+            "targetReps": 8,
+            "displayName": "Double Squat",
+            "libraryExerciseId": "double-front-squat",
+            "usesGearCount": 2
           },
           {
             "id": "behemoth-p3-press",
             "name": "Double Press",
             "damageCoefficient": 7,
             "damageType": "per_rep",
-            "targetReps": 6
+            "targetReps": 6,
+            "displayName": "Double Press",
+            "libraryExerciseId": "double-press",
+            "usesGearCount": 2
           },
           {
             "id": "behemoth-p3-clean",
             "name": "Double Clean",
             "damageCoefficient": 7,
             "damageType": "per_rep",
-            "targetReps": 4
+            "targetReps": 4,
+            "displayName": "Double Clean",
+            "libraryExerciseId": "double-clean",
+            "usesGearCount": 2
           },
           {
             "id": "behemoth-p3-snatch-2",
-            "name": "Double Half Snatch",
+            "name": "Double Swing",
             "damageCoefficient": 7,
             "damageType": "per_rep",
-            "targetReps": 2
+            "targetReps": 2,
+            "displayName": "Double Swing",
+            "libraryExerciseId": "double-swing",
+            "usesGearCount": 2
           }
         ]
       }
@@ -3124,8 +3168,8 @@
         "name": "Farmer Carry",
         "damageCoefficient": 3,
         "damageType": "per_second",
-        "targetDistanceFt": 100,
-        "durationSeconds": 30
+        "durationSeconds": 30,
+        "targetSteps": 50
       }
     ],
     "sections": [
@@ -3165,8 +3209,8 @@
             "name": "Farmer Carry",
             "damageCoefficient": 3,
             "damageType": "per_second",
-            "targetDistanceFt": 100,
-            "durationSeconds": 30
+            "durationSeconds": 30,
+            "targetSteps": 50
           }
         ]
       },
@@ -3206,8 +3250,8 @@
             "name": "Farmer Carry",
             "damageCoefficient": 3,
             "damageType": "per_second",
-            "targetDistanceFt": 100,
-            "durationSeconds": 30
+            "durationSeconds": 30,
+            "targetSteps": 50
           }
         ]
       },
@@ -5082,32 +5126,41 @@
     "exercises": [
       {
         "id": "mammoth-burpee-kb",
-        "name": "Burpee → Kettlebell",
-        "damageCoefficient": 3,
-        "damageType": "per_second",
-        "durationSeconds": 36
-      },
-      {
-        "id": "mammoth-long-hike-snatch",
-        "name": "Long-Hike Snatch",
-        "damageCoefficient": 3,
-        "damageType": "per_second",
-        "durationSeconds": 36
-      },
-      {
-        "id": "mammoth-thruster",
-        "name": "Thruster",
+        "name": "Burpee — Double KB",
         "damageCoefficient": 3,
         "damageType": "per_second",
         "durationSeconds": 36,
-        "usesGearCount": 1
+        "libraryExerciseId": "burpee-kettlebell",
+        "displayName": "Burpee — Double KB"
+      },
+      {
+        "id": "mammoth-long-hike-snatch",
+        "name": "Double Long-Hike Snatch",
+        "damageCoefficient": 3,
+        "damageType": "per_second",
+        "durationSeconds": 36,
+        "libraryExerciseId": "long-hike-snatch",
+        "displayName": "Double Long-Hike Snatch",
+        "usesGearCount": 2
+      },
+      {
+        "id": "mammoth-thruster",
+        "name": "Double Long-Hike Thruster",
+        "damageCoefficient": 3,
+        "damageType": "per_second",
+        "durationSeconds": 36,
+        "libraryExerciseId": "double-long-hike-thruster",
+        "displayName": "Double Long-Hike Thruster"
       },
       {
         "id": "mammoth-long-hike-clean",
-        "name": "Long-Hike Clean",
+        "name": "Double Long-Hike Clean",
         "damageCoefficient": 3,
         "damageType": "per_second",
-        "durationSeconds": 36
+        "durationSeconds": 36,
+        "libraryExerciseId": "long-hike-clean",
+        "displayName": "Double Long-Hike Clean",
+        "usesGearCount": 2
       },
       {
         "id": "mammoth-gorilla-row",
@@ -5209,6 +5262,7 @@
     "finisher": {
       "name": "The Return",
       "scheme": "5 Rounds — TBD"
-    }
+    },
+    "sequenceType": "chain"
   }
 }

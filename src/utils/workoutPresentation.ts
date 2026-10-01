@@ -10,6 +10,11 @@ export interface WorkoutPresentationGroup {
   repsEach: number | null;
 }
 
+export interface ExerciseRange {
+  start: number;
+  end: number;
+}
+
 const CHAIN_SUFFIX = /\s*\(Chain (\d+)\/(\d+)\)\s*$/i;
 const COMPLEX_SUFFIX = /\s*\(Complex\s*[×x]\s*(\d+)\)\s*$/i;
 
@@ -31,6 +36,27 @@ function movementName(exercise: Exercise): string {
   return exercise.sequenceGroup
     ? name.replace(new RegExp(`^${exercise.sequenceGroup}\\s*[·:-]\\s*`, 'i'), '').trim()
     : name;
+}
+
+/** Find the continuous chain that contains the given authored exercise step. */
+export function getContinuousChainRange(
+  exercises: Exercise[],
+  index: number,
+  sequenceType?: Workout['sequenceType']
+): ExerciseRange | null {
+  const current = exercises[index];
+  if (!current) return null;
+
+  const chainPattern = /\(Chain \d+\/\d+\)/i;
+  if (chainPattern.test(current.displayName ?? '')) {
+    let start = index;
+    let end = index;
+    while (start > 0 && chainPattern.test(exercises[start - 1].displayName ?? '')) start -= 1;
+    while (end < exercises.length - 1 && chainPattern.test(exercises[end + 1].displayName ?? '')) end += 1;
+    return { start, end };
+  }
+
+  return sequenceType === 'chain' ? { start: 0, end: exercises.length - 1 } : null;
 }
 
 function sameMovements(a: Exercise[], b: Exercise[]): boolean {

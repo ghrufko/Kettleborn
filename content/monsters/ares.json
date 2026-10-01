@@ -30,7 +30,8 @@
       "name": "First Encounter",
       "locked": false,
       "workoutId": "war-engine",
-      "restSecondsOverride": 30
+      "restSecondsOverride": 30,
+      "minimumRoundsToComplete": 15
     },
     {
       "id": "ares-second-encounter",

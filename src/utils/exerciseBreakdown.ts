@@ -12,12 +12,11 @@ export interface ExerciseBreakdownEntry {
    * summed the same way totalReps is (once per section, or × totalRounds
    * for the flat/repeating list) — `undefined` for a normal rep-based
    * exercise, never 0-as-a-stand-in for "not applicable". Same unit
-   * `Exercise.targetDistanceFt` already uses everywhere else in the app
-   * (MonsterDetailScreen/HuntOverviewScreen/ActiveHuntScreen all display
-   * it as "X ft") — kept consistent here rather than inventing a new
-   * "steps" unit.
+   * `Exercise.targetDistanceFt` displays in feet; step-based carries use
+   * `totalSteps` as a separate unit.
    */
   totalDistanceFt?: number;
+  totalSteps?: number;
   /**
    * The actual weight(s) used for THIS exercise specifically — not
    * necessarily both of the hunt's bells. Resolved via the same
@@ -104,10 +103,10 @@ export function resolveExerciseWeightKg(
  * times within one round/section) is summed together under that one
  * name, in first-seen order.
  *
- * Distance/duration-based exercises (no targetReps — e.g. a carry) are
- * now included via `totalDistanceFt` instead of being silently dropped;
+ * Distance- and step-based exercises (no targetReps — e.g. a carry) are
+ * now included via their respective unit fields instead of being dropped;
  * their `totalReps` stays a genuine 0 (never fabricated), and only an
- * exercise with neither real reps nor real distance is left out.
+ * exercise with neither reps nor real distance/steps is left out.
  *
  * Kettlebell weight audit: `weightAKg`/`weightBKg` are the two bells'
  * REAL, independently-set weights (e.g. 16kg + 18kg) — each exercise's
@@ -129,6 +128,7 @@ export function getExerciseBreakdown(
   const repsByName = new Map<string, number>();
   const volumeByName = new Map<string, number>();
   const distanceByName = new Map<string, number>();
+  const stepsByName = new Map<string, number>();
   const displayNameByName = new Map<string, string | undefined>();
   const weightAByName = new Map<string, number>();
   const weightBByName = new Map<string, number | null>();
@@ -147,6 +147,7 @@ export function getExerciseBreakdown(
       repsByName.set(key, 0);
       volumeByName.set(key, 0);
       distanceByName.set(key, 0);
+      stepsByName.set(key, 0);
       displayNameByName.set(key, movement.displayName);
       idByName.set(key, movement.libraryExerciseId);
       order.push(key);
@@ -161,6 +162,7 @@ export function getExerciseBreakdown(
     }
     const reps = (exercise.targetReps ?? 0) * repsMultiplier;
     const distanceFt = (exercise.targetDistanceFt ?? 0) * repsMultiplier;
+    const steps = (exercise.targetSteps ?? 0) * repsMultiplier;
     const weightPerRepKg = resolveExerciseWeightKg(
       { ...exercise, usesGearCount: movement.usesGearCount },
       gearCount === 2 ? 2 : 1,
@@ -170,6 +172,7 @@ export function getExerciseBreakdown(
     repsByName.set(key, repsByName.get(key)! + reps);
     volumeByName.set(key, volumeByName.get(key)! + reps * weightPerRepKg);
     distanceByName.set(key, distanceByName.get(key)! + distanceFt);
+    stepsByName.set(key, stepsByName.get(key)! + steps);
   }
 
   function addExercise(exercise: Exercise, repsMultiplier: number) {
@@ -192,6 +195,7 @@ export function getExerciseBreakdown(
   return order
     .map((key) => {
       const totalDistanceFt = distanceByName.get(key)!;
+      const totalSteps = stepsByName.get(key)!;
       return {
         exerciseId: idByName.get(key),
         name: getLibraryEntryById && idByName.get(key)
@@ -204,6 +208,7 @@ export function getExerciseBreakdown(
         // not 0) so callers can tell "not distance-based" apart from
         // "distance-based but somehow zero".
         totalDistanceFt: totalDistanceFt > 0 ? totalDistanceFt : undefined,
+        totalSteps: totalSteps > 0 ? totalSteps : undefined,
         weightAKg: weightAByName.get(key)!,
         weightBKg: weightBByName.get(key)!,
       };
@@ -211,7 +216,7 @@ export function getExerciseBreakdown(
     // Previously filtered out any distance-only exercise (e.g. Front Rack
     // Carry has no targetReps) entirely, rather than show a fabricated
     // "0 reps" line — that hid it completely instead. Now kept whenever
-    // it has real reps OR real distance; only a genuinely empty entry
-    // (neither) is dropped.
-    .filter((entry) => entry.totalReps > 0 || (entry.totalDistanceFt ?? 0) > 0);
+    // it has real reps, distance, or steps; only a genuinely empty entry
+    // (none) is dropped.
+    .filter((entry) => entry.totalReps > 0 || (entry.totalDistanceFt ?? 0) > 0 || (entry.totalSteps ?? 0) > 0);
 }

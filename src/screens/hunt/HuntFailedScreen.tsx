@@ -20,8 +20,10 @@ export function HuntFailedScreen({ route, navigation }: Props) {
     route.params;
   const monster = contentEngine.getMonster(monsterId);
   const workout = contentEngine.getWorkout(workoutId);
+  const huntDefinition = monster?.hunts.find((hunt) => hunt.id === huntId);
   const isNotFaster = reason === 'not_faster';
   const isFewerRounds = reason === 'fewer_rounds';
+  const isBelowMinimumRounds = huntDefinition?.minimumRoundsToComplete != null;
 
   const formatMMSS = (totalSeconds: number) => {
     const m = Math.floor(totalSeconds / 60);
@@ -87,12 +89,20 @@ export function HuntFailedScreen({ route, navigation }: Props) {
         </View>
 
         <Text style={styles.title}>
-          {isNotFaster ? 'Not Fast Enough' : isFewerRounds ? 'Fewer Rounds Than Last Time' : 'Hunt Failed'}
+          {isNotFaster
+            ? 'Not Fast Enough'
+            : isBelowMinimumRounds
+              ? 'Minimum Rounds Not Met'
+              : isFewerRounds
+                ? 'Fewer Rounds Than Last Time'
+                : 'Hunt Failed'}
         </Text>
         <Text style={styles.subtitle}>
           {isNotFaster
             ? `${monster?.name ?? 'The boss'} fell, but not quickly enough`
-            : isFewerRounds
+            : isBelowMinimumRounds
+              ? `Complete at least ${huntDefinition?.minimumRoundsToComplete} rounds to clear this encounter`
+              : isFewerRounds
             ? `${monster?.name ?? 'The boss'} outlasted you this time`
             : `${monster?.name ?? 'The boss'} was not defeated`}
         </Text>
@@ -114,7 +124,11 @@ export function HuntFailedScreen({ route, navigation }: Props) {
                 {roundsCompleted != null ? `Your rounds: ${roundsCompleted}` : 'Encounter not beaten'}
               </Text>
               <Text style={styles.infoLine}>
-                {targetRounds != null ? `Needed to beat: ${targetRounds} rounds` : ''}
+                {targetRounds != null
+                  ? isBelowMinimumRounds
+                    ? `Required: ${targetRounds} rounds`
+                    : `Needed to beat: ${targetRounds} rounds`
+                  : ''}
               </Text>
               <Text style={styles.infoLine}>This encounter does not count — try again</Text>
             </>

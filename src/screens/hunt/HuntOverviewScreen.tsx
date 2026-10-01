@@ -465,14 +465,20 @@ export function HuntOverviewScreen({ route, navigation }: Props) {
     );
   const repeatingStructurePreview = isRepeatingStructure
     ? (() => {
-        const byName = new Map<string, { id: string; name: string; reps: number[] }>();
+        const byName = new Map<string, { id: string; name: string; reps: number[]; libraryExerciseId?: string }>();
         for (const section of workout.sections!) {
           for (const exercise of section.exercises) {
-            const entry = byName.get(exercise.name) ?? { id: exercise.id, name: exercise.name, reps: [] };
+            const key = exercise.libraryExerciseId ?? exercise.name;
+            const entry = byName.get(key) ?? {
+              id: exercise.id,
+              name: exercise.displayName ?? exercise.name,
+              reps: [],
+              libraryExerciseId: exercise.libraryExerciseId,
+            };
             if (exercise.targetReps) {
               entry.reps.push(exercise.targetReps);
             }
-            byName.set(exercise.name, entry);
+            byName.set(key, entry);
           }
         }
         return Array.from(byName.values());
@@ -549,9 +555,11 @@ export function HuntOverviewScreen({ route, navigation }: Props) {
           ) : isRepeatingStructure ? (
             <View style={styles.exerciseList}>
               {repeatingStructurePreview.map((exercise, index) => {
-                const libraryEntry = contentEngine.getExerciseLibraryEntryByName(exercise.name);
-                const low = exercise.reps.length ? Math.min(...exercise.reps) : null;
-                const high = exercise.reps.length ? Math.max(...exercise.reps) : null;
+                const libraryEntry = exercise.libraryExerciseId
+                  ? contentEngine.getExerciseLibraryEntry(exercise.libraryExerciseId)
+                  : contentEngine.getExerciseLibraryEntryByName(exercise.name);
+                const first = exercise.reps.length ? exercise.reps[0] : null;
+                const last = exercise.reps.length ? exercise.reps[exercise.reps.length - 1] : null;
                 return (
                   <Pressable
                     key={exercise.id}
@@ -589,7 +597,7 @@ export function HuntOverviewScreen({ route, navigation }: Props) {
                         exercisePreviewDensity !== 'normal' && styles.exerciseTargetCompact,
                       ]}
                     >
-                      {low !== null && high !== null ? (low === high ? `${low}` : `${low}–${high}`) : ''}
+                      {first !== null && last !== null ? (first === last ? `${first}` : `${first} → ${last}`) : ''}
                     </Text>
                     {libraryEntry ? (
                       <Ionicons name="information-circle-outline" size={16} color={colors.text.muted} />
@@ -607,7 +615,9 @@ export function HuntOverviewScreen({ route, navigation }: Props) {
                 {group.label ? <Text style={styles.exerciseGroupLabel}>{group.label}</Text> : null}
                 <View style={styles.exerciseList}>
                   {group.exercises.map((exercise, index) => {
-                    const libraryEntry = contentEngine.getExerciseLibraryEntryByName(exercise.name);
+                    const libraryEntry = exercise.libraryExerciseId
+                      ? contentEngine.getExerciseLibraryEntry(exercise.libraryExerciseId)
+                      : contentEngine.getExerciseLibraryEntryByName(exercise.name);
                     return (
                       <Pressable
                         key={exercise.id}
@@ -647,6 +657,8 @@ export function HuntOverviewScreen({ route, navigation }: Props) {
                         >
                           {exercise.targetReps
                             ? exercise.targetReps
+                            : exercise.targetSteps
+                            ? `${exercise.targetSteps} steps`
                             : exercise.targetDistanceFt
                             ? `${exercise.targetDistanceFt} ft`
                             : ''}

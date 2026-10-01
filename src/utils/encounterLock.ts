@@ -236,6 +236,12 @@ export function isEmomEncounterAttemptSuccessful(
   roundsCompleted: number,
   targetRounds: number | null
 ): boolean {
+  if (
+    hunt.minimumRoundsToComplete !== undefined &&
+    roundsCompleted < hunt.minimumRoundsToComplete
+  ) {
+    return false;
+  }
   if (hunt.order === 1) {
     return true;
   }

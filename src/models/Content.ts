@@ -28,6 +28,7 @@ export interface Exercise {
   displayName?: string;
   targetReps?: number;
   targetDistanceFt?: number;
+  targetSteps?: number;
   damageCoefficient: number;
   damageType: DamageType;
   /**
@@ -138,6 +139,8 @@ export interface Hunt {
    * clearly-labeled fixed estimate rather than a fabricated "real" target.
    */
   targetTimeIsEstimate?: boolean;
+  /** Minimum rounds required for a content-specific first-encounter clear. */
+  minimumRoundsToComplete?: number;
 }
 
 export interface PerformanceBonusConfig {

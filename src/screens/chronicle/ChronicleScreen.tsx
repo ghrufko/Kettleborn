@@ -197,7 +197,9 @@ export function ChronicleScreen() {
                 <Text style={styles.statValue}>
                   {stat.totalReps > 0
                     ? `${stat.totalReps.toLocaleString()} reps`
-                    : `${stat.totalDistanceFt.toLocaleString()} ft`}
+                    : stat.totalDistanceFt > 0
+                      ? `${stat.totalDistanceFt.toLocaleString()} ft`
+                      : `${stat.totalSteps.toLocaleString()} steps`}
                 </Text>
               </View>
             ))}
@@ -410,7 +412,6 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.bodyRegular,
     fontSize: fontSize.base,
     color: colors.bronze.active,
-    textDecorationLine: 'underline',
   },
   statValue: {
     fontFamily: fontFamily.monoBold,

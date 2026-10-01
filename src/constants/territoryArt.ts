@@ -6,9 +6,9 @@ import { ImageSourcePropType } from 'react-native';
  * their themed fallback when a key has no artwork yet.
  */
 export const TERRITORY_ART: Record<string, ImageSourcePropType> = {
-  'territory-wilds': require('../../assets/images/territories/territory-wilds.jpg'),
+  'territory-wilds': require('../../assets/images/The Wilds.png'),
   'territory-ruins': require('../../assets/images/territories/The Ruins.png'),
-  'territory-abyss': require('../../assets/images/territories/territory-abyss.jpg'),
+  'territory-abyss': require('../../assets/images/territories/The Abyss.png'),
 };
 
 export function getTerritoryArt(heroImageAsset?: string): ImageSourcePropType | undefined {

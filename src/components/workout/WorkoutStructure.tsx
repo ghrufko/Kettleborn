@@ -30,12 +30,13 @@ export function WorkoutStructure({ groups, compact = false, onExercisePress }: P
           </Text>
           <View style={styles.exerciseRow}>
             {group.exercises.map((exercise, exerciseIndex) => {
+              const repsVary = group.repsEach === null;
               const name = (exercise.displayName ?? exercise.name)
                 .replace(/\s*\((?:Chain \d+\/\d+|Complex\s*[×x]\s*\d+)\)\s*$/i, '')
                 .trim();
               const content = (
                 <Text style={[styles.exerciseName, compact && styles.exerciseNameCompact]}>
-                  {name}{exerciseIndex < group.exercises.length - 1 ? '  ·  ' : ''}
+                  {name}{repsVary && exercise.targetReps ? ` × ${exercise.targetReps}` : ''}{exerciseIndex < group.exercises.length - 1 ? '  ·  ' : ''}
                 </Text>
               );
               return onExercisePress ? (

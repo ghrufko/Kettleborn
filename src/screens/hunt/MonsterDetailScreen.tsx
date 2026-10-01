@@ -227,7 +227,7 @@ export function MonsterDetailScreen({ route, navigation }: Props) {
           choosing Canonical or Custom Hunt on Hunt Overview. A ladder
           workout (stepLabel 'Rung') gets a structural summary instead of
           a per-exercise reps list — its reps vary by rung, and
-          HuntOverviewScreen already has the real low–high ladder preview
+          HuntOverviewScreen already has the real ordered ladder preview
           for that; this card is deliberately a lighter glance, not a
           duplicate of that screen.
         */}
@@ -249,6 +249,8 @@ export function MonsterDetailScreen({ route, navigation }: Props) {
                   <Text style={styles.statValue}>
                     {exercise.targetReps
                       ? `${exercise.targetReps} reps`
+                      : exercise.targetSteps
+                        ? `${exercise.targetSteps} steps`
                       : exercise.targetDistanceFt
                         ? `${exercise.targetDistanceFt} ft`
                         : ''}

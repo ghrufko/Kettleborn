@@ -27,7 +27,7 @@ import { useConditionalKeepAwake } from '../../utils/useConditionalKeepAwake';
 import { getCombatPersonality, getAtmosphericColor } from '../../utils/bossPersonality';
 import { restFlavorFor } from '../../utils/huntAtmosphere';
 import { getRoundStats } from '../../utils/roundStats';
-import { groupWorkoutStructure } from '../../utils/workoutPresentation';
+import { getContinuousChainRange, groupWorkoutStructure } from '../../utils/workoutPresentation';
 import { triggerHaptic } from '../../utils/haptics';
 import { audioEngine } from '../../../engines/audio/AudioEngine';
 import * as Haptics from 'expo-haptics';
@@ -266,7 +266,7 @@ export function ActiveHuntScreen({ route, navigation }: Props) {
           // as quitting mid-hunt, different copy) instead of completeHunt.
           // Encounter 1 (or an unlocked Hunt) has no target and always
           // succeeds here, exactly as completion worked before this rule.
-          if (hunt && isLocked) {
+          if (hunt && (isLocked || hunt.minimumRoundsToComplete !== undefined)) {
             const succeeded = workout.emomSeconds
               ? isEmomEncounterAttemptSuccessful(hunt, rungLaps?.length ?? 0, lockState.targetRounds)
               : isEncounterAttemptSuccessful(hunt, elapsedSeconds, lockState.targetSeconds);
@@ -279,7 +279,7 @@ export function ActiveHuntScreen({ route, navigation }: Props) {
                 targetSeconds: lockState.targetSeconds ?? undefined,
                 elapsedSeconds,
                 roundsCompleted: rungLaps?.length,
-                targetRounds: lockState.targetRounds ?? undefined,
+                targetRounds: lockState.targetRounds ?? hunt.minimumRoundsToComplete,
               });
               return;
             }
@@ -482,7 +482,15 @@ function ActiveHuntSession({
   const [activeSequencePosition, setActiveSequencePosition] = useState({ round: 1, index: 0 });
   const activeExerciseIndex = activeSequencePosition.round === session.currentRound ? activeSequencePosition.index : 0;
   const activeExercise = currentRoundExercises[activeExerciseIndex];
-  const nextExercise = currentRoundExercises[activeExerciseIndex + 1];
+  const activeChainRange = getContinuousChainRange(currentRoundExercises, activeExerciseIndex, workout.sequenceType);
+  const activeUnitEnd = activeChainRange?.end ?? activeExerciseIndex;
+  const nextExercise = currentRoundExercises[activeUnitEnd + 1];
+  const activeChainStructure = activeChainRange
+    ? groupWorkoutStructure(
+        currentRoundExercises.slice(activeChainRange.start, activeChainRange.end + 1),
+        workout.sequenceType
+      )
+    : [];
   const compactSequencePreview = currentRoundExercises
     .slice(0, 5)
     .map(sequenceMovementName)
@@ -490,6 +498,13 @@ function ActiveHuntSession({
   const sequencePreviewRemainder = Math.max(0, currentRoundExercises.length - 5);
   const exerciseListDensity: 'normal' | 'compact' | 'dense' =
     currentRoundExerciseCount >= 8 ? 'dense' : currentRoundExerciseCount >= 5 ? 'compact' : 'normal';
+  const completeActiveUnit = () => {
+    if (activeChainRange && activeChainRange.end < currentRoundExercises.length - 1) {
+      setActiveSequencePosition({ round: session.currentRound, index: activeChainRange.end + 1 });
+    } else {
+      session.completeRound();
+    }
+  };
   const hpFraction = battle.maxHP > 0 ? battle.currentHP / battle.maxHP : 0;
   const wasCriticalHit = !!battle.lastDamage && battle.lastBonuses.length > 0;
 
@@ -988,7 +1003,7 @@ function ActiveHuntSession({
           </GlassCard>
         ) : (
           <>
-            {/* Display-only cursor and compact grouped prescription for structured workouts. */}
+            {/* Complex movement cursor and complete-chain presentation. */}
             <GlassCard
               style={[
                 styles.exerciseCard,
@@ -1026,7 +1041,20 @@ function ActiveHuntSession({
                   <Text style={styles.sectionLabel}>
                     {workout.sections?.[session.currentRound - 1]?.label ?? `This ${stepLabel}`}
                   </Text>
-                  {activeExercise ? (
+                  {activeExercise && activeChainRange ? (
+                    <View style={styles.activeExerciseFocus}>
+                      <Text style={styles.activeExerciseLabel}>CURRENT CHAIN</Text>
+                      <WorkoutStructure groups={activeChainStructure} compact />
+                      <View style={styles.nextExerciseRow}>
+                        <Text style={styles.nextExerciseLabel}>NEXT</Text>
+                        <Text style={styles.nextExerciseName} numberOfLines={1}>
+                          {nextExercise
+                            ? `${nextExercise.sequenceGroup ? `${nextExercise.sequenceGroup} · ` : ''}${sequenceMovementName(nextExercise)}`
+                            : `Complete ${stepLabel.toLowerCase()}`}
+                        </Text>
+                      </View>
+                    </View>
+                  ) : activeExercise ? (
                     <>
                       <View style={styles.activeExerciseFocus}>
                         <Text style={styles.activeExerciseLabel}>CURRENT EXERCISE</Text>
@@ -1036,6 +1064,8 @@ function ActiveHuntSession({
                         <Text style={styles.activeExerciseTarget}>
                           {activeExercise.targetReps
                             ? `${activeExercise.targetReps} rep${activeExercise.targetReps === 1 ? '' : 's'}${activeExercise.targetReps > 1 ? ' · complete the set to advance' : ''}`
+                            : activeExercise.targetSteps
+                              ? `${activeExercise.targetSteps} steps`
                             : activeExercise.targetDistanceFt
                               ? `${activeExercise.targetDistanceFt} ft`
                               : 'Complete this movement'}
@@ -1128,6 +1158,13 @@ function ActiveHuntSession({
                 <Button
                   label={`Next ${stepLabel}`}
                   onPress={session.startNextRoundEarly}
+                  disabled={session.status !== 'active'}
+                  style={styles.actionButton}
+                />
+              ) : activeChainRange ? (
+                <Button
+                  label="Complete Chain"
+                  onPress={completeActiveUnit}
                   disabled={session.status !== 'active'}
                   style={styles.actionButton}
                 />

@@ -16,6 +16,7 @@ export interface ExerciseStats {
    * distance-based one — neither is fabricated for the other's type.
    */
   totalDistanceFt: number;
+  totalSteps: number;
 }
 
 type WorkoutResolver = (workoutId: string) => Workout | undefined;
@@ -28,10 +29,8 @@ type LibraryResolver = (exerciseName: string) => ExerciseLibraryEntry | undefine
  * always means the workout's exact prescribed exercises/reps were
  * finished (Sprint 6: victory is bound to finishing the prescribed
  * workout, not partial credit), so this reconstruction is exact, not an
- * estimate. Distance-based exercises (e.g. Farmer Carry) contribute 0
- * reps/volume but a real totalDistanceFt, and still count as a session —
- * no reps are fabricated for them, and no distance is fabricated for a
- * rep-based exercise either.
+ * estimate. Distance- and step-based carries preserve their real unit
+ * totals without fabricating reps or volume.
  *
  * Resolvers are passed in rather than importing the Content Engine
  * directly, keeping this util pure/testable like huntState.ts and
@@ -83,6 +82,7 @@ export function getAllExerciseStats(
         const actualRounds = result.rungLaps?.length ?? workout.rounds;
         const reps = (exercise.targetReps ?? 0) * (workout.sections ? 1 : actualRounds);
         const distanceFt = (exercise.targetDistanceFt ?? 0) * (workout.sections ? 1 : actualRounds);
+        const steps = (exercise.targetSteps ?? 0) * (workout.sections ? 1 : actualRounds);
         getExerciseMovements(exercise, getLibraryEntryById).forEach((movement) => {
           const entry = movement.libraryExerciseId
             ? getLibraryEntryById?.(movement.libraryExerciseId) ?? getLibraryEntry(movement.name)
@@ -106,11 +106,13 @@ export function getAllExerciseStats(
             totalSessions: 0,
             lastPerformedAt: null,
             totalDistanceFt: 0,
+            totalSteps: 0,
           };
 
           existing.totalReps += reps;
           existing.totalVolumeKg += reps * weightPerRepKg;
           existing.totalDistanceFt += distanceFt;
+          existing.totalSteps += steps;
           if (!exerciseIdsThisSession.has(entry.id)) {
             existing.totalSessions += 1;
             exerciseIdsThisSession.add(entry.id);

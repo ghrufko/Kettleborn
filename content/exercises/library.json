@@ -834,7 +834,7 @@
   },
   {
     "id": "alternating-swing",
-    "name": "Alternating Swing",
+    "name": "Alternative Swing",
     "category": "Ballistic",
     "description": "A single-kettlebell two-hand-style swing performed one arm at a time, passing or switching the bell between hands at the top of each rep instead of staying on one side.",
     "musclesTrained": [
@@ -1356,7 +1356,7 @@
   },
   {
     "id": "burpee-kettlebell",
-    "name": "Burpee → Kettlebell",
+    "name": "Burpee — Double KB",
     "category": "Combo",
     "description": "A standard burpee finishing by driving up to grip and clean two kettlebells to the rack, chaining a bodyweight movement directly into the loaded work that follows.",
     "musclesTrained": [
@@ -1382,7 +1382,7 @@
   },
   {
     "id": "long-hike-snatch",
-    "name": "Long-Hike Snatch",
+    "name": "Double Long-Hike Snatch",
     "category": "Ballistic",
     "description": "A double kettlebell snatch that starts from an exaggerated hike pass well behind the hips before driving both bells overhead in one motion.",
     "musclesTrained": [
@@ -1408,7 +1408,7 @@
   },
   {
     "id": "long-hike-clean",
-    "name": "Long-Hike Clean",
+    "name": "Double Long-Hike Clean",
     "category": "Combo",
     "description": "A double kettlebell clean that starts from the same exaggerated hike pass as the Long-Hike Snatch, driving both bells to the rack instead of overhead.",
     "musclesTrained": [
@@ -1459,7 +1459,7 @@
   },
   {
     "id": "deadlift",
-    "name": "Deadlift",
+    "name": "Double Deadlift",
     "category": "Grind",
     "description": "A standard two-kettlebell deadlift — hinge to grip, drive through the floor to lockout, control back down. The baseline hinge pattern, distinct from the Floor Deadlift's dead-stop reset and Deadlift Side's offset stance.",
     "musclesTrained": [
@@ -1771,6 +1771,32 @@
     "recommendedWeightRangeKg": [
       14,
       24
+    ]
+  },
+  {
+    "id": "double-long-hike-thruster",
+    "name": "Double Long-Hike Thruster",
+    "category": "Combo",
+    "description": "A double-bell thruster begun from an extended hike pass, moving through a front squat into a powerful overhead drive.",
+    "musclesTrained": [
+      "Quads",
+      "Shoulders",
+      "Core",
+      "Glutes"
+    ],
+    "benefits": [
+      "Combines a squat and a press into one continuous effort",
+      "Builds leg drive that carries directly into the press",
+      "Elevates heart rate quickly — a full-body conditioning tool"
+    ],
+    "commonMistakes": [
+      "Pausing at the top of the squat before pressing",
+      "Losing rack position on the way down",
+      "Pressing with the arms alone instead of riding the leg drive"
+    ],
+    "recommendedWeightRangeKg": [
+      10,
+      16
     ]
   }
 ]
