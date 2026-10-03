@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet, Image, Animated, BackHandler, Pressable } from 'react-native';
+import { View, Text, StyleSheet, Image, Animated, BackHandler, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useFocusEffect } from '@react-navigation/native';
@@ -27,7 +27,7 @@ import { useConditionalKeepAwake } from '../../utils/useConditionalKeepAwake';
 import { getCombatPersonality, getAtmosphericColor } from '../../utils/bossPersonality';
 import { restFlavorFor } from '../../utils/huntAtmosphere';
 import { getRoundStats } from '../../utils/roundStats';
-import { getContinuousChainRange, groupWorkoutStructure } from '../../utils/workoutPresentation';
+import { groupWorkoutStructure } from '../../utils/workoutPresentation';
 import { triggerHaptic } from '../../utils/haptics';
 import { audioEngine } from '../../../engines/audio/AudioEngine';
 import * as Haptics from 'expo-haptics';
@@ -55,56 +55,62 @@ function sequenceMovementName(exercise: Workout['exercises'][number]): string {
     : name;
 }
 
-function exerciseStepLabel(
-  exercises: Workout['exercises'],
-  index: number,
-  sequenceType?: Workout['sequenceType']
-): string {
-  const exercise = exercises[index];
-  if (!exercise) return '';
-  const chain = exercise.displayName?.match(/\(Chain (\d+)\/(\d+)\)/i);
-  const complex = exercise.displayName?.match(/\(Complex\s*[×x]\s*(\d+)\)/i);
-  const marker = chain ? `chain-${chain[1]}-${chain[2]}` : complex ? `complex-${complex[1]}` : null;
-  let start = index;
-  let end = index;
-  if (marker) {
-    while (start > 0) {
-      const previous = exercises[start - 1].displayName ?? '';
-      const previousMarker = previous.match(/\(Chain (\d+)\/(\d+)\)/i);
-      const previousComplex = previous.match(/\(Complex\s*[×x]\s*(\d+)\)/i);
-      const key = previousMarker ? `chain-${previousMarker[1]}-${previousMarker[2]}` : previousComplex ? `complex-${previousComplex[1]}` : null;
-      if (key !== marker) break;
-      start -= 1;
-    }
-    while (end < exercises.length - 1) {
-      const next = exercises[end + 1].displayName ?? '';
-      const nextMarker = next.match(/\(Chain (\d+)\/(\d+)\)/i);
-      const nextComplex = next.match(/\(Complex\s*[×x]\s*(\d+)\)/i);
-      const key = nextMarker ? `chain-${nextMarker[1]}-${nextMarker[2]}` : nextComplex ? `complex-${nextComplex[1]}` : null;
-      if (key !== marker) break;
-      end += 1;
-    }
-  } else {
-    start = 0;
-    end = exercises.length - 1;
-  }
-  const position = index - start + 1;
-  const total = end - start + 1;
-  if (exercise.sequenceGroup) {
-    let groupStart = index;
-    let groupEnd = index;
-    while (groupStart > 0 && exercises[groupStart - 1].sequenceGroup === exercise.sequenceGroup) groupStart -= 1;
-    while (groupEnd < exercises.length - 1 && exercises[groupEnd + 1].sequenceGroup === exercise.sequenceGroup) groupEnd += 1;
-    return `Chain / ${exercise.sequenceGroup}  ·  Movement ${index - groupStart + 1} / ${groupEnd - groupStart + 1}`;
-  }
-  if (sequenceType === 'chain' && !chain && !complex) {
-    return `Chain  ·  Movement ${index + 1} / ${exercises.length}`;
-  }
-  return chain
-    ? `Chain ${chain[1]} / ${chain[2]}  ·  Exercise ${position} / ${total}`
-    : complex
-      ? `Complex ${complex[1]}  ·  Exercise ${position} / ${total}`
-      : `Exercise ${index + 1} / ${exercises.length}`;
+function exerciseTargetLabel(exercise: Workout['exercises'][number]): string {
+  if (exercise.targetReps) return `×${exercise.targetReps}`;
+  if (exercise.targetSteps) return `${exercise.targetSteps} steps`;
+  if (exercise.targetDistanceFt) return `${exercise.targetDistanceFt} ft`;
+  if (exercise.durationSeconds) return `${exercise.durationSeconds}s`;
+  return '';
+}
+
+function RoundExerciseList({
+  exercises,
+  compact = false,
+}: {
+  exercises: Workout['exercises'];
+  compact?: boolean;
+}) {
+  return (
+    <View style={[styles.roundExerciseList, compact && styles.roundExerciseListCompact]}>
+      {exercises.map((exercise, index) => (
+        (() => {
+          const rawName = sequenceMovementName(exercise);
+          const isLongCycle = rawName.endsWith(' (Long Cycle)');
+          const name = isLongCycle ? rawName.slice(0, -13) : rawName;
+          return (
+            <View key={`${exercise.id}-${index}`} style={styles.roundExerciseRow}>
+              <Text style={[styles.roundExerciseIndex, compact && styles.roundExerciseTextCompact]}>{index + 1}.</Text>
+              <Text
+                style={[
+                  styles.roundExerciseName,
+                  isLongCycle && styles.roundExerciseNameInline,
+                  compact && styles.roundExerciseTextCompact,
+                ]}
+              >
+                {name}
+              </Text>
+              {exerciseTargetLabel(exercise) ? (
+                <Text
+                  style={[
+                    styles.roundExerciseTarget,
+                    isLongCycle && styles.roundExerciseTargetInline,
+                    compact && styles.roundExerciseTextCompact,
+                  ]}
+                >
+                  {exerciseTargetLabel(exercise)}
+                </Text>
+              ) : null}
+              {isLongCycle ? (
+                <Text style={[styles.roundExerciseSuffix, compact && styles.roundExerciseTextCompact]}>
+                  (Long Cycle)
+                </Text>
+              ) : null}
+            </View>
+          );
+        })()
+      ))}
+    </View>
+  );
 }
 
 const BONUS_LABELS: Record<string, string> = {
@@ -214,12 +220,6 @@ export function ActiveHuntScreen({ route, navigation }: Props) {
   // HuntOverviewScreen) — this is the actual enforcement point, not just
   // a UI nicety. Encounter 1 (or an unlocked Hunt) is completely
   // untouched from how Custom Hunt worked before this feature existed.
-  const restSecondsOverride = lockedConfig
-    ? lockedConfig.restSeconds
-    : isCustomHunt
-      ? customRestSeconds
-      : hunt?.restSecondsOverride;
-
   // Task 2: when a structural control was changed, customWorkout is a
   // fully-built, self-consistent Workout (see buildCustomWorkout) —
   // useWorkoutSession/useBattleEngine below take it exactly as they'd
@@ -251,7 +251,6 @@ export function ActiveHuntScreen({ route, navigation }: Props) {
     <ActiveHuntSession
       monster={effectiveMonster}
       workout={effectiveWorkout}
-      restSecondsOverride={restSecondsOverride}
       previousBestSeconds={previousBestSeconds}
       targetSeconds={isLocked ? lockState.targetSeconds : null}
       targetRounds={isLocked ? lockState.targetRounds : null}
@@ -354,13 +353,6 @@ export function ActiveHuntScreen({ route, navigation }: Props) {
 interface ActiveHuntSessionProps {
   monster: Monster;
   workout: Workout;
-  /**
-   * Resolved by the caller: canonical Hunt.restSecondsOverride, or the
-   * player's Custom Hunt rest value when running in Custom mode.
-   * Undefined falls back to workout.restSeconds, same as before this was
-   * wired up.
-   */
-  restSecondsOverride: number | undefined;
   previousBestSeconds: number | null;
   /**
    * Target-to-beat HUD chip: the exact same lockState.targetSeconds
@@ -384,7 +376,6 @@ interface ActiveHuntSessionProps {
 function ActiveHuntSession({
   monster,
   workout,
-  restSecondsOverride,
   previousBestSeconds,
   targetSeconds,
   targetRounds,
@@ -424,7 +415,7 @@ function ActiveHuntSession({
         previousBestSeconds,
       });
     },
-  }, restSecondsOverride);
+  });
 
   // QA audit finding: `gestureEnabled: false` (set on this route in
   // HuntStack.tsx) only disables iOS's swipe-back gesture — confirmed
@@ -454,7 +445,8 @@ function ActiveHuntSession({
   );
 
   const elapsedClock = formatClock(session.elapsedSeconds);
-  const restClock = formatClock(session.restRemainingSeconds);
+  const restClock = formatClock(session.restElapsedSeconds);
+  const transitionClock = formatClock(session.transitionRemainingSeconds);
   const roundClock = formatClock(session.currentRoundElapsedSeconds);
   const emomClock = formatClock(session.emomRemainingSeconds ?? 0);
   const roundStats = getRoundStats(session.laps, session.restLaps);
@@ -479,18 +471,6 @@ function ActiveHuntSession({
   ).length;
   const currentRoundExercises = workout.sections?.[session.currentRound - 1]?.exercises ?? workout.exercises;
   const currentRoundStructure = groupWorkoutStructure(currentRoundExercises, workout.sequenceType);
-  const [activeSequencePosition, setActiveSequencePosition] = useState({ round: 1, index: 0 });
-  const activeExerciseIndex = activeSequencePosition.round === session.currentRound ? activeSequencePosition.index : 0;
-  const activeExercise = currentRoundExercises[activeExerciseIndex];
-  const activeChainRange = getContinuousChainRange(currentRoundExercises, activeExerciseIndex, workout.sequenceType);
-  const activeUnitEnd = activeChainRange?.end ?? activeExerciseIndex;
-  const nextExercise = currentRoundExercises[activeUnitEnd + 1];
-  const activeChainStructure = activeChainRange
-    ? groupWorkoutStructure(
-        currentRoundExercises.slice(activeChainRange.start, activeChainRange.end + 1),
-        workout.sequenceType
-      )
-    : [];
   const compactSequencePreview = currentRoundExercises
     .slice(0, 5)
     .map(sequenceMovementName)
@@ -498,13 +478,6 @@ function ActiveHuntSession({
   const sequencePreviewRemainder = Math.max(0, currentRoundExercises.length - 5);
   const exerciseListDensity: 'normal' | 'compact' | 'dense' =
     currentRoundExerciseCount >= 8 ? 'dense' : currentRoundExerciseCount >= 5 ? 'compact' : 'normal';
-  const completeActiveUnit = () => {
-    if (activeChainRange && activeChainRange.end < currentRoundExercises.length - 1) {
-      setActiveSequencePosition({ round: session.currentRound, index: activeChainRange.end + 1 });
-    } else {
-      session.completeRound();
-    }
-  };
   const hpFraction = battle.maxHP > 0 ? battle.currentHP / battle.maxHP : 0;
   const wasCriticalHit = !!battle.lastDamage && battle.lastBonuses.length > 0;
 
@@ -669,34 +642,16 @@ function ActiveHuntSession({
     previousSessionPhaseRef.current = session.phase;
   }, [session.phase]);
 
-  const previousIsRestingRef = useRef(session.isResting);
-  const restEntryRemainingRef = useRef<number | null>(null);
+  const previousAudioPhaseRef = useRef(session.phase);
   useEffect(() => {
-    if (session.isResting !== previousIsRestingRef.current) {
-      audioEngine.playSound(session.isResting ? 'rest' : 'nextRound');
-      previousIsRestingRef.current = session.isResting;
-      // Remember the exact "just entered" remaining-seconds value so the
-      // countdown-tick effect below never fires in the same instant as
-      // this entry sound, even if a rest period happens to be exactly
-      // 10s (or short enough to start inside the urgent window).
-      restEntryRemainingRef.current = session.isResting ? session.restRemainingSeconds : null;
+    const previous = previousAudioPhaseRef.current;
+    if (previous === 'round' && session.phase === 'resting') {
+      audioEngine.playSound('rest');
+    } else if (previous === 'transition' && session.phase === 'round') {
+      audioEngine.playSound('nextRound');
     }
-  }, [session.isResting, session.restRemainingSeconds]);
-
-  useEffect(() => {
-    if (!session.isResting || session.status !== 'active') {
-      return;
-    }
-    const remaining = session.restRemainingSeconds;
-    if (remaining === restEntryRemainingRef.current) {
-      return; // this tick is the rest-entry render itself, not an elapsed second
-    }
-    if (remaining === 10) {
-      audioEngine.playSound('countdown');
-    } else if (remaining > 0 && remaining <= 3) {
-      audioEngine.playSound('countdownUrgent');
-    }
-  }, [session.isResting, session.restRemainingSeconds, session.status]);
+    previousAudioPhaseRef.current = session.phase;
+  }, [session.phase]);
 
   const hasPlayedFinishRef = useRef(false);
   const [showDefeatOverlay, setShowDefeatOverlay] = useState(false);
@@ -736,7 +691,7 @@ function ActiveHuntSession({
       style={styles.container}
       atmosphericColor={getAtmosphericColor(monster.personality, monster.accentColor)}
     >
-      <SafeAreaView style={styles.safeArea} edges={['top']}>
+      <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
       {showDefeatOverlay ? (
         // The transient defeat title does not block the finishing controls.
         <Animated.View pointerEvents="none" style={[styles.defeatOverlay, { opacity: defeatBackdropAnim }]}>
@@ -860,7 +815,13 @@ function ActiveHuntSession({
         ) : null}
 
         {!session.isComplete ? (
-          <View style={styles.feedbackAnchor} pointerEvents="none">
+          <View
+            style={[
+              styles.feedbackAnchor,
+              (session.phase === 'resting' || session.phase === 'transition') && styles.feedbackAnchorHidden,
+            ]}
+            pointerEvents="none"
+          >
             <Animated.View
               style={[
                 styles.damageFeedback,
@@ -1003,97 +964,66 @@ function ActiveHuntSession({
           </GlassCard>
         ) : (
           <>
-            {/* Complex movement cursor and complete-chain presentation. */}
+            {/* Complete round sequence. */}
             <GlassCard
               style={[
-                styles.exerciseCard,
+              styles.exerciseCard,
+                (session.phase === 'resting' || session.phase === 'transition') && styles.recoveryCard,
                 exerciseListDensity === 'compact' && styles.exerciseCardCompact,
                 exerciseListDensity === 'dense' && styles.exerciseCardDense,
               ]}
               glow="md"
             >
-              {session.isResting ? (
+              {session.phase === 'resting' || session.phase === 'transition' ? (
                 <>
-                  <Text style={styles.sectionLabel}>Resting</Text>
-                  <Text style={styles.exerciseName}>Recover</Text>
-                  <Text style={styles.restFlavor}>
-                    {restFlavorFor(`${workout.id}-${session.currentRound}`)}
+                  <Text style={styles.sectionLabel}>
+                    {session.phase === 'resting' ? 'RECOVER' : 'GET READY'}
                   </Text>
+                  <Text style={session.phase === 'resting' ? styles.exerciseName : styles.transitionTitle}>
+                    {session.phase === 'resting' ? 'Recover' : 'Round ' + session.currentRound + ' starts in ' + session.transitionRemainingSeconds}
+                  </Text>
+                  {session.phase === 'resting' ? (
+                    <Text style={styles.restFlavor}>
+                      {restFlavorFor(workout.id + '-' + session.currentRound)}
+                    </Text>
+                  ) : (
+                    <Text style={styles.restFlavor}>Return to the bells and get into position.</Text>
+                  )}
                   {roundStats.previousRoundSeconds !== null ? (
                     <Text style={styles.nextLabel}>
                       Previous {stepLabel.toLowerCase()}: {formatClock(roundStats.previousRoundSeconds).minutes}:
                       {formatClock(roundStats.previousRoundSeconds).seconds.toString().padStart(2, '0')}
                     </Text>
                   ) : null}
+                  {roundStats.averageRestSeconds !== null ? (
+                    <Text style={styles.nextLabel}>
+                      Recovery so far: {formatClock(roundStats.totalRestSeconds).minutes}:
+                      {formatClock(roundStats.totalRestSeconds).seconds.toString().padStart(2, '0')} total
+                      {' · '}avg {formatClock(roundStats.averageRestSeconds).minutes}:
+                      {formatClock(roundStats.averageRestSeconds).seconds.toString().padStart(2, '0')}
+                    </Text>
+                  ) : null}
                   <View style={styles.sequencePreviewBlock}>
-                    <Text style={styles.sequencePreviewLabel}>NEXT SEQUENCE</Text>
-                    {currentRoundStructure.length ? (
-                      <WorkoutStructure groups={currentRoundStructure} compact />
-                    ) : (
-                      <Text style={styles.sequencePreviewText} numberOfLines={3}>
-                        {compactSequencePreview}{sequencePreviewRemainder ? `  ·  +${sequencePreviewRemainder} more` : ''}
-                      </Text>
-                    )}
+                    <Text style={styles.sequencePreviewLabel}>NEXT {stepLabel.toUpperCase()}</Text>
+                    <Text style={styles.recoveryRoundLabel}>
+                      {stepLabel} {session.currentRound} / {session.totalRounds}
+                    </Text>
+                    <ScrollView
+                      style={styles.recoverySequenceScroll}
+                      contentContainerStyle={styles.recoverySequenceContent}
+                      nestedScrollEnabled
+                      showsVerticalScrollIndicator
+                    >
+                      <RoundExerciseList exercises={currentRoundExercises} compact />
+                    </ScrollView>
                   </View>
                 </>
               ) : (
                 <>
                   <Text style={styles.sectionLabel}>
-                    {workout.sections?.[session.currentRound - 1]?.label ?? `This ${stepLabel}`}
+                    {workout.sections?.[session.currentRound - 1]?.label ?? stepLabel + ' ' + session.currentRound}
                   </Text>
-                  {activeExercise && activeChainRange ? (
-                    <View style={styles.activeExerciseFocus}>
-                      <Text style={styles.activeExerciseLabel}>CURRENT CHAIN</Text>
-                      <WorkoutStructure groups={activeChainStructure} compact />
-                      <View style={styles.nextExerciseRow}>
-                        <Text style={styles.nextExerciseLabel}>NEXT</Text>
-                        <Text style={styles.nextExerciseName} numberOfLines={1}>
-                          {nextExercise
-                            ? `${nextExercise.sequenceGroup ? `${nextExercise.sequenceGroup} · ` : ''}${sequenceMovementName(nextExercise)}`
-                            : `Complete ${stepLabel.toLowerCase()}`}
-                        </Text>
-                      </View>
-                    </View>
-                  ) : activeExercise ? (
-                    <>
-                      <View style={styles.activeExerciseFocus}>
-                        <Text style={styles.activeExerciseLabel}>CURRENT EXERCISE</Text>
-                        <Text style={styles.activeExerciseName} numberOfLines={2}>
-                          {sequenceMovementName(activeExercise)}
-                        </Text>
-                        <Text style={styles.activeExerciseTarget}>
-                          {activeExercise.targetReps
-                            ? `${activeExercise.targetReps} rep${activeExercise.targetReps === 1 ? '' : 's'}${activeExercise.targetReps > 1 ? ' · complete the set to advance' : ''}`
-                            : activeExercise.targetSteps
-                              ? `${activeExercise.targetSteps} steps`
-                            : activeExercise.targetDistanceFt
-                              ? `${activeExercise.targetDistanceFt} ft`
-                              : 'Complete this movement'}
-                        </Text>
-                        <Text style={styles.activeExerciseProgress}>
-                          {exerciseStepLabel(currentRoundExercises, activeExerciseIndex, workout.sequenceType)}
-                        </Text>
-                        <View style={styles.nextExerciseRow}>
-                          <Text style={styles.nextExerciseLabel}>NEXT</Text>
-                          <Text style={styles.nextExerciseName} numberOfLines={1}>
-                            {nextExercise ? sequenceMovementName(nextExercise) : 'Complete the round'}
-                          </Text>
-                        </View>
-                        {nextExercise ? (
-                          <Pressable
-                            accessibilityRole="button"
-                            accessibilityLabel={`Mark ${sequenceMovementName(activeExercise)} complete and show ${sequenceMovementName(nextExercise)}`}
-                            style={styles.nextExerciseButton}
-                            onPress={() => setActiveSequencePosition({ round: session.currentRound, index: activeExerciseIndex + 1 })}
-                          >
-                            <Text style={styles.nextExerciseButtonText}>Movement Complete</Text>
-                          </Pressable>
-                        ) : null}
-                      </View>
-                    </>
-                  ) : (
-                    <Text style={styles.activeExerciseName}>No movement is configured for this round.</Text>
-                  )}
+                  <RoundExerciseList exercises={currentRoundExercises} />
                 </>
               )}
               <Text
@@ -1142,6 +1072,14 @@ function ActiveHuntSession({
                   isRunning={session.status === 'active'}
                   gridCell
                 />
+              ) : session.phase === 'transition' ? (
+                <TimerWidget
+                  label="Next Round"
+                  minutes={transitionClock.minutes}
+                  seconds={transitionClock.seconds}
+                  isRunning={session.status === 'active'}
+                  gridCell
+                />
               ) : (
                 <TimerWidget
                   label={workout.emomSeconds ? 'Window' : stepLabel}
@@ -1156,23 +1094,23 @@ function ActiveHuntSession({
             <View style={styles.actionButtonWrap}>
               {session.isResting ? (
                 <Button
-                  label={`Next ${stepLabel}`}
-                  onPress={session.startNextRoundEarly}
+                  label="Continue"
+                  onPress={session.continueAfterRest}
                   disabled={session.status !== 'active'}
                   style={styles.actionButton}
                 />
-              ) : activeChainRange ? (
+              ) : session.phase === 'transition' ? (
                 <Button
-                  label="Complete Chain"
-                  onPress={completeActiveUnit}
-                  disabled={session.status !== 'active'}
+                  label={`Starting in ${session.transitionRemainingSeconds}`}
+                  onPress={session.continueAfterRest}
+                  disabled
                   style={styles.actionButton}
                 />
               ) : (
                 <Button
-                  label={`Complete ${stepLabel}`}
+                  label="ROUND COMPLETE"
                   onPress={session.completeRound}
-                  disabled={session.status !== 'active' || activeExerciseIndex < currentRoundExercises.length - 1}
+                  disabled={session.status !== 'active'}
                   style={styles.actionButton}
                 />
               )}
@@ -1322,8 +1260,11 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   portraitImage: {
-    width: '100%',
-    height: '100%',
+    position: 'absolute',
+    left: '-4%',
+    top: '-4%',
+    width: '108%',
+    height: '108%',
   },
   portraitInitial: {
     fontFamily: fontFamily.displayBold,
@@ -1417,6 +1358,10 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     justifyContent: 'flex-start',
+  },
+  feedbackAnchorHidden: {
+    height: 0,
+    overflow: 'hidden',
   },
   damageFeedback: {
     flexDirection: 'row',
@@ -1522,6 +1467,71 @@ const styles = StyleSheet.create({
     width: '100%',
     marginTop: spacing.xs,
   },
+  roundExerciseList: {
+    width: '100%',
+    marginTop: spacing.xs,
+    gap: spacing.xxs,
+  },
+  roundExerciseListCompact: {
+    marginTop: spacing.xxs,
+    gap: 2,
+  },
+  roundExerciseRow: {
+    width: '100%',
+    minHeight: 22,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xxs,
+  },
+  roundExerciseIndex: {
+    width: 22,
+    fontFamily: fontFamily.monoRegular,
+    fontSize: fontSize.sm,
+    color: colors.text.muted,
+  },
+  roundExerciseName: {
+    flex: 1,
+    flexShrink: 1,
+    fontFamily: fontFamily.bodySemiBold,
+    fontSize: fontSize.base,
+    lineHeight: 20,
+    color: colors.text.primary,
+  },
+  roundExerciseNameInline: {
+    flex: 0,
+  },
+  roundExerciseTarget: {
+    marginLeft: 'auto',
+    fontFamily: fontFamily.monoBold,
+    fontSize: fontSize.sm,
+    color: colors.bronze.active,
+  },
+  roundExerciseTargetInline: {
+    marginLeft: spacing.xxs,
+  },
+  roundExerciseSuffix: {
+    fontFamily: fontFamily.bodyRegular,
+    fontSize: fontSize.sm,
+    color: colors.text.secondary,
+  },
+  roundExerciseTextCompact: {
+    fontSize: 13,
+    lineHeight: 18,
+  },
+  recoveryRoundLabel: {
+    marginTop: spacing.xxs,
+    fontFamily: fontFamily.monoBold,
+    fontSize: fontSize.sm,
+    color: colors.bronze.active,
+  },
+  recoverySequenceScroll: {
+    width: '100%',
+    maxHeight: 180,
+    flexShrink: 1,
+  },
+  recoverySequenceContent: {
+    paddingBottom: spacing.xxs,
+  },
   sequencePreviewLabel: {
     fontFamily: fontFamily.monoBold,
     fontSize: 9,
@@ -1600,6 +1610,10 @@ const styles = StyleSheet.create({
     marginTop: spacing.xxs,
     paddingVertical: spacing.sm,
   },
+  recoveryCard: {
+    flexShrink: 1,
+    minHeight: 0,
+  },
   // Task 8 (dynamic exercise list density): only paddingVertical shrinks
   // here — the card's width/marginTop/border/glow are untouched, so this
   // never looks like a different component, just a tighter one.
@@ -1622,6 +1636,13 @@ const styles = StyleSheet.create({
     color: colors.text.primary,
     textTransform: 'uppercase',
     marginTop: spacing.xs,
+    textAlign: 'center',
+  },
+  transitionTitle: {
+    marginTop: spacing.xs,
+    fontFamily: fontFamily.monoBold,
+    fontSize: fontSize.base,
+    color: colors.gold,
     textAlign: 'center',
   },
   countdownNumber: {
@@ -1711,5 +1732,6 @@ const styles = StyleSheet.create({
   },
   actionButton: {
     width: '100%',
+    paddingHorizontal: spacing.xs,
   },
 });

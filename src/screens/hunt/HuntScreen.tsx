@@ -80,7 +80,9 @@ export function HuntScreen({ navigation }: Props) {
                   <View style={styles.heroScrim} />
                   <View style={styles.heroTextWrap}>
                     <Text style={[styles.territoryName, isLocked && styles.dimmed]}>{campaign.name}</Text>
-                    {!isLocked ? <Text style={styles.tagline} numberOfLines={2}>{campaign.tagline}</Text> : null}
+                    {!isLocked && campaign.id !== 'main-campaign' ? (
+                      <Text style={styles.tagline} numberOfLines={2}>{campaign.tagline}</Text>
+                    ) : null}
                   </View>
                   {isLocked ? (
                     <View style={styles.lockBadge}>
@@ -111,7 +113,7 @@ export function HuntScreen({ navigation }: Props) {
                           {defeatedCount} / {totalCount} Monsters Defeated
                         </Text>
                       </View>
-                      {isCampaignComplete(campaign, monsterProgress) ? (
+                      {isCampaignComplete(campaign, monsterProgress) && campaign.id !== 'main-campaign' ? (
                         <Text style={styles.completionMessage}>{campaign.completionText}</Text>
                       ) : null}
                     </>

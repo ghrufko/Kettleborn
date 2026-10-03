@@ -582,8 +582,11 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   badgeImage: {
-    width: '100%',
-    height: '100%',
+    position: 'absolute',
+    left: '-4%',
+    top: '-4%',
+    width: '108%',
+    height: '108%',
   },
   badgeTrophy: {
     position: 'absolute',

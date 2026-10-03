@@ -139,8 +139,13 @@ export function CustomWorkoutSessionScreen({ route, navigation }: Props) {
           </GlassCard>
         ) : session.isResting ? (
           <GlassCard style={styles.card}>
-            <Text style={styles.sectionLabel}>Resting</Text>
-            <Text style={styles.restClock}>{formatClock(session.restRemainingSeconds)}</Text>
+            <Text style={styles.sectionLabel}>Recover — Continue When Ready</Text>
+            <Text style={styles.restClock}>{formatClock(session.restElapsedSeconds)}</Text>
+          </GlassCard>
+        ) : session.phase === 'transition' ? (
+          <GlassCard style={styles.card}>
+            <Text style={styles.sectionLabel}>Next Round Starts In</Text>
+            <Text style={styles.restClock}>{formatClock(session.transitionRemainingSeconds)}</Text>
           </GlassCard>
         ) : (
           <GlassCard style={styles.card}>
@@ -162,9 +167,16 @@ export function CustomWorkoutSessionScreen({ route, navigation }: Props) {
           <View style={styles.controlsRow}>
             {session.isResting ? (
               <Button
-                label="Start Next Round"
-                onPress={session.startNextRoundEarly}
+                label="Continue"
+                onPress={session.continueAfterRest}
                 disabled={session.status !== 'active'}
+                style={styles.controlButton}
+              />
+            ) : session.phase === 'transition' ? (
+              <Button
+                label={`Starting in ${session.transitionRemainingSeconds}`}
+                onPress={session.continueAfterRest}
+                disabled
                 style={styles.controlButton}
               />
             ) : (

@@ -109,7 +109,7 @@ export function WorldMapScreen({ route, navigation }: Props) {
     };
   });
 
-  if (campaign?.finalBossId) {
+  if (campaign?.finalBossId && campaign.id !== 'main-campaign') {
     const boss = contentEngine.getMonster(campaign.finalBossId);
     if (boss) {
       const bossState = getCampaignMonsterState(campaign, boss.id, monsterProgress);
@@ -150,7 +150,9 @@ export function WorldMapScreen({ route, navigation }: Props) {
         <View style={styles.heroScrim} />
         <View style={styles.heroTextWrap}>
           <Text style={styles.territoryName}>{campaign?.name ?? 'Territory'}</Text>
-          {campaign ? <Text style={styles.tagline}>{campaign.tagline}</Text> : null}
+          {campaign && campaign.id !== 'main-campaign' ? (
+            <Text style={styles.tagline}>{campaign.tagline}</Text>
+          ) : null}
         </View>
       </View>
 
@@ -180,7 +182,11 @@ export function WorldMapScreen({ route, navigation }: Props) {
               <GlassCard style={[styles.completeBanner, glow.md]}>
                 <Ionicons name="trophy" size={28} color={colors.gold} />
                 <Text style={styles.completeTitle}>Territory Cleared</Text>
-                <Text style={styles.completeSubtitle}>{campaign?.completionText}</Text>
+                <Text style={styles.completeSubtitle}>
+                  {campaign?.id === 'main-campaign'
+                    ? 'The Wilds are clear. Choose your next territory.'
+                    : campaign?.completionText}
+                </Text>
                 <Button
                   label="Return to Territories"
                   onPress={() => navigation.navigate('Hunt')}
@@ -253,7 +259,9 @@ export function WorldMapScreen({ route, navigation }: Props) {
 
       {tab === 'lore' ? (
         <ScrollView contentContainerStyle={styles.list}>
-          {campaign?.introText ? <Text style={styles.campaignIntro}>{campaign.introText}</Text> : null}
+          {campaign?.introText && campaign.id !== 'main-campaign' ? (
+            <Text style={styles.campaignIntro}>{campaign.introText}</Text>
+          ) : null}
           {campaign?.territoryLore ? (
             <>
               <GlassCard style={styles.loreCard}>

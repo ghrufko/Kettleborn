@@ -3,10 +3,11 @@ import { Exercise, Workout } from '../../src/models';
 import { useIntervalClock } from '../timer/useIntervalClock';
 
 export type SessionStatus = 'active' | 'paused' | 'complete';
-export type SessionPhase = 'countdown' | 'round' | 'resting' | 'complete';
+export type SessionPhase = 'countdown' | 'round' | 'resting' | 'transition' | 'complete';
 
 /** Fixed pre-round-1 countdown, per the Sprint 21 spec. Not content-driven — a short, universal beat before every Hunt starts, same for every workout. */
 export const PRE_ROUND_COUNTDOWN_SECONDS = 10;
+export const ROUND_TRANSITION_SECONDS = 3;
 
 export interface RoundLap {
   round: number;
@@ -16,7 +17,7 @@ export interface RoundLap {
 export interface RestLap {
   /** The round that just finished — this rest happens after it. */
   round: number;
-  /** Actual rest taken, which may be less than workout.restSeconds if started early. */
+  /** Actual time from round completion to Continue, plus the fixed transition. */
   durationSeconds: number;
 }
 
@@ -26,11 +27,13 @@ export interface WorkoutSessionState {
   currentRound: number;
   totalRounds: number;
   countdownRemaining: number;
+  transitionRemainingSeconds: number;
   /** Total workout clock — ticks continuously from the moment Round 1 begins, through every round AND every rest, pausing only on explicit Pause. Never reset, mirrors a stopwatch, not a per-step timer. */
   elapsedSeconds: number;
   /** The current round's own "lap" time — resets to 0 at the start of every round, ticks only while phase is 'round'. */
   currentRoundElapsedSeconds: number;
-  restRemainingSeconds: number;
+  /** Actual athlete-selected recovery elapsed since the completed round. */
+  restElapsedSeconds: number;
   /**
    * Countdown for the current round's EMOM window, ticking down from
    * `workout.emomSeconds` — `null` for a workout that isn't EMOM-style
@@ -48,7 +51,7 @@ export interface WorkoutSessionState {
 
 export interface WorkoutSessionActions {
   completeRound: () => void;
-  startNextRoundEarly: () => void;
+  continueAfterRest: () => void;
   skipCountdown: () => void;
   pause: () => void;
   resume: () => void;
@@ -89,16 +92,16 @@ function isBareHandLabel(label: string | undefined, hand: 'Left' | 'Right'): boo
 
 export function useWorkoutSession(
   workout: Workout,
-  callbacks: WorkoutSessionCallbacks = {},
-  restSecondsOverride?: number
+  callbacks: WorkoutSessionCallbacks = {}
 ): WorkoutSessionState & WorkoutSessionActions {
   const [status, setStatus] = useState<SessionStatus>('active');
   const [phase, setPhase] = useState<SessionPhase>('countdown');
   const [currentRound, setCurrentRound] = useState(1);
   const [countdownRemaining, setCountdownRemaining] = useState(PRE_ROUND_COUNTDOWN_SECONDS);
+  const [transitionRemainingSeconds, setTransitionRemainingSeconds] = useState(0);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [currentRoundElapsedSeconds, setCurrentRoundElapsedSeconds] = useState(0);
-  const [restRemainingSeconds, setRestRemainingSeconds] = useState(0);
+  const [restElapsedSeconds, setRestElapsedSeconds] = useState(0);
   const [emomRemainingSeconds, setEmomRemainingSeconds] = useState<number | null>(
     workout.emomSeconds ?? null
   );
@@ -114,6 +117,7 @@ export function useWorkoutSession(
   // starting the next round early (or letting rest finish naturally)
   // records the true rest duration taken — not always workout.restSeconds.
   const restTakenRef = useRef(0);
+  const transitionRecordedRef = useRef(false);
 
   // One tick handler, one clock — every phase's per-second behavior lives
   // here so there's a single source of truth for what "a second passing"
@@ -161,18 +165,29 @@ export function useWorkoutSession(
     if (phase === 'resting') {
       setElapsedSeconds((s) => s + 1);
       restTakenRef.current += 1;
-      setRestRemainingSeconds((remaining) => {
-        const next = remaining - 1;
-        if (next <= 0) {
-          setRestLaps((prev) => [...prev, { round: currentRound - 1, durationSeconds: restTakenRef.current }]);
-          setPhase('round');
-          setCurrentRoundElapsedSeconds(0);
-          return 0;
-        }
-        return next;
-      });
+      setRestElapsedSeconds((elapsed) => elapsed + 1);
+      return;
+    }
+
+    if (phase === 'transition') {
+      setElapsedSeconds((s) => s + 1);
+      setTransitionRemainingSeconds((remaining) => Math.max(remaining - 1, 0));
     }
   });
+
+  useEffect(() => {
+    if (status !== 'active' || phase !== 'transition' || transitionRemainingSeconds !== 0) {
+      return;
+    }
+    if (transitionRecordedRef.current) return;
+    transitionRecordedRef.current = true;
+    setRestLaps((prev) => [
+      ...prev,
+      { round: currentRound - 1, durationSeconds: restTakenRef.current + ROUND_TRANSITION_SECONDS },
+    ]);
+    setPhase('round');
+    setCurrentRoundElapsedSeconds(0);
+  }, [status, phase, transitionRemainingSeconds, currentRound]);
 
   const completeRound = useCallback(() => {
     if (status !== 'active' || phase !== 'round') {
@@ -227,29 +242,22 @@ export function useWorkoutSession(
     }
 
     restTakenRef.current = 0;
-    setRestRemainingSeconds(restSecondsOverride ?? workout.restSeconds);
+    setRestElapsedSeconds(0);
     setCurrentRound(round + 1);
     setPhase('resting');
-  }, [status, phase, currentRound, currentRoundElapsedSeconds, workout, elapsedSeconds, restSecondsOverride]);
+  }, [status, phase, currentRound, currentRoundElapsedSeconds, workout, elapsedSeconds]);
 
-  const startNextRoundEarly = useCallback(() => {
+  const continueAfterRest = useCallback(() => {
     if (status !== 'active' || phase !== 'resting') {
       return;
     }
-    setRestLaps((prev) => [...prev, { round: currentRound - 1, durationSeconds: restTakenRef.current }]);
-    setPhase('round');
-    setCurrentRoundElapsedSeconds(0);
-  }, [status, phase, currentRound]);
+    transitionRecordedRef.current = false;
+    setTransitionRemainingSeconds(ROUND_TRANSITION_SECONDS);
+    setPhase('transition');
+  }, [status, phase]);
 
-  // Task 9: mirrors startNextRoundEarly exactly, one phase earlier —
-  // same shape (guard on status+phase, transition phase, reset the round
-  // clock), no new state machine. elapsedSeconds is never incremented
-  // during 'countdown' (see the tick handler above — only 'round' and
-  // 'resting' call setElapsedSeconds), so skipping vs. waiting out the
-  // countdown produces identical downstream state either way: nothing
-  // for this to accidentally affect in scoring/rank/XP, because the
-  // countdown was never counted as elapsed/round time in the first
-  // place.
+  // The pre-workout countdown stays skippable; recovery has its own fixed transition.
+
   const skipCountdown = useCallback(() => {
     if (status !== 'active' || phase !== 'countdown') {
       return;
@@ -273,16 +281,17 @@ export function useWorkoutSession(
     currentRound,
     totalRounds: workout.rounds,
     countdownRemaining,
+    transitionRemainingSeconds,
     elapsedSeconds,
     currentRoundElapsedSeconds,
-    restRemainingSeconds,
+    restElapsedSeconds,
     emomRemainingSeconds,
     laps,
     restLaps,
     isResting: phase === 'resting',
     isComplete: status === 'complete',
     completeRound,
-    startNextRoundEarly,
+    continueAfterRest,
     skipCountdown,
     pause,
     resume,
