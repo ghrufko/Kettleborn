@@ -583,10 +583,10 @@ const styles = StyleSheet.create({
   },
   badgeImage: {
     position: 'absolute',
-    left: '-4%',
-    top: '-4%',
-    width: '108%',
-    height: '108%',
+    left: 0,
+    top: 0,
+    width: '100%',
+    height: '100%',
   },
   badgeTrophy: {
     position: 'absolute',

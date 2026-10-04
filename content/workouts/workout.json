@@ -24,6 +24,7 @@
       {
         "id": "crooked-suitcase-deadlift",
         "name": "Suitcase Deadlift",
+        "libraryExerciseId": "single-side-deadlift",
         "damageCoefficient": 10,
         "damageType": "flat",
         "targetReps": 3
@@ -31,6 +32,7 @@
       {
         "id": "crooked-single-leg-rdl",
         "name": "Single-Leg Romanian Deadlift",
+        "libraryExerciseId": "single-leg-romanian-deadlift",
         "damageCoefficient": 10,
         "damageType": "flat",
         "targetReps": 3
@@ -38,6 +40,8 @@
       {
         "id": "crooked-rdl",
         "name": "Romanian Deadlift",
+        "displayName": "Romanian Deadlift →",
+        "libraryExerciseId": "romanian-deadlift",
         "damageCoefficient": 10,
         "damageType": "flat",
         "targetReps": 3
@@ -45,6 +49,7 @@
       {
         "id": "crooked-single-arm-clean",
         "name": "Single-Arm Clean",
+        "libraryExerciseId": "single-arm-clean",
         "damageCoefficient": 10,
         "damageType": "flat",
         "targetReps": 3
@@ -52,6 +57,7 @@
       {
         "id": "crooked-single-arm-press",
         "name": "Single-Arm Press",
+        "libraryExerciseId": "single-arm-press",
         "damageCoefficient": 10,
         "damageType": "flat",
         "targetReps": 3
@@ -59,6 +65,7 @@
       {
         "id": "crooked-single-arm-thruster",
         "name": "Single-Arm Thruster",
+        "libraryExerciseId": "single-arm-thruster",
         "damageCoefficient": 10,
         "damageType": "flat",
         "targetReps": 3
@@ -2850,7 +2857,7 @@
   "atlas-chain": {
     "id": "atlas-chain",
     "name": "The Sovereign's Chain",
-    "description": "The full chain first — squat, press, clean, push press, row, one rep each — five times through without a break. Then every movement answers alone, five reps at a time, with nothing left to carry it.",
+    "description": "Five rounds through the established sequence, with every exercise performed for three repetitions.",
     "difficulty": 4,
     "estimatedMinutesRange": [
       16,
@@ -2858,7 +2865,7 @@
     ],
     "gearWeightKg": 16,
     "gearCount": 2,
-    "rounds": 1,
+    "rounds": 5,
     "restSeconds": 150,
     "roundBonusDamage": 430,
     "targetTimeSeconds": 1125,
@@ -2874,7 +2881,7 @@
         "displayName": "Double Front Squat (Chain 1/5)",
         "damageCoefficient": 14,
         "damageType": "flat",
-        "targetReps": 1
+        "targetReps": 3
       },
       {
         "id": "atlas-chain1-press",
@@ -2882,7 +2889,7 @@
         "displayName": "Double Press (Chain 1/5)",
         "damageCoefficient": 14,
         "damageType": "flat",
-        "targetReps": 1
+        "targetReps": 3
       },
       {
         "id": "atlas-chain1-clean",
@@ -2890,7 +2897,7 @@
         "displayName": "Double Clean (Chain 1/5)",
         "damageCoefficient": 14,
         "damageType": "flat",
-        "targetReps": 1
+        "targetReps": 3
       },
       {
         "id": "atlas-chain1-push-press",
@@ -2898,7 +2905,7 @@
         "displayName": "Double Push Press (Chain 1/5)",
         "damageCoefficient": 16,
         "damageType": "flat",
-        "targetReps": 1
+        "targetReps": 3
       },
       {
         "id": "atlas-chain1-row",
@@ -2906,7 +2913,7 @@
         "displayName": "Double Row (Chain 1/5)",
         "damageCoefficient": 12,
         "damageType": "flat",
-        "targetReps": 1
+        "targetReps": 3
       },
       {
         "id": "atlas-chain2-squat",
@@ -2914,7 +2921,7 @@
         "displayName": "Double Front Squat (Chain 2/5)",
         "damageCoefficient": 14,
         "damageType": "flat",
-        "targetReps": 1
+        "targetReps": 3
       },
       {
         "id": "atlas-chain2-press",
@@ -2922,7 +2929,7 @@
         "displayName": "Double Press (Chain 2/5)",
         "damageCoefficient": 14,
         "damageType": "flat",
-        "targetReps": 1
+        "targetReps": 3
       },
       {
         "id": "atlas-chain2-clean",
@@ -2930,7 +2937,7 @@
         "displayName": "Double Clean (Chain 2/5)",
         "damageCoefficient": 14,
         "damageType": "flat",
-        "targetReps": 1
+        "targetReps": 3
       },
       {
         "id": "atlas-chain2-push-press",
@@ -2938,7 +2945,7 @@
         "displayName": "Double Push Press (Chain 2/5)",
         "damageCoefficient": 16,
         "damageType": "flat",
-        "targetReps": 1
+        "targetReps": 3
       },
       {
         "id": "atlas-chain2-row",
@@ -2946,7 +2953,7 @@
         "displayName": "Double Row (Chain 2/5)",
         "damageCoefficient": 12,
         "damageType": "flat",
-        "targetReps": 1
+        "targetReps": 3
       },
       {
         "id": "atlas-chain3-squat",
@@ -2954,7 +2961,7 @@
         "displayName": "Double Front Squat (Chain 3/5)",
         "damageCoefficient": 14,
         "damageType": "flat",
-        "targetReps": 1
+        "targetReps": 3
       },
       {
         "id": "atlas-chain3-press",
@@ -2962,7 +2969,7 @@
         "displayName": "Double Press (Chain 3/5)",
         "damageCoefficient": 14,
         "damageType": "flat",
-        "targetReps": 1
+        "targetReps": 3
       },
       {
         "id": "atlas-chain3-clean",
@@ -2970,7 +2977,7 @@
         "displayName": "Double Clean (Chain 3/5)",
         "damageCoefficient": 14,
         "damageType": "flat",
-        "targetReps": 1
+        "targetReps": 3
       },
       {
         "id": "atlas-chain3-push-press",
@@ -2978,7 +2985,7 @@
         "displayName": "Double Push Press (Chain 3/5)",
         "damageCoefficient": 16,
         "damageType": "flat",
-        "targetReps": 1
+        "targetReps": 3
       },
       {
         "id": "atlas-chain3-row",
@@ -2986,7 +2993,7 @@
         "displayName": "Double Row (Chain 3/5)",
         "damageCoefficient": 12,
         "damageType": "flat",
-        "targetReps": 1
+        "targetReps": 3
       },
       {
         "id": "atlas-chain4-squat",
@@ -2994,7 +3001,7 @@
         "displayName": "Double Front Squat (Chain 4/5)",
         "damageCoefficient": 14,
         "damageType": "flat",
-        "targetReps": 1
+        "targetReps": 3
       },
       {
         "id": "atlas-chain4-press",
@@ -3002,7 +3009,7 @@
         "displayName": "Double Press (Chain 4/5)",
         "damageCoefficient": 14,
         "damageType": "flat",
-        "targetReps": 1
+        "targetReps": 3
       },
       {
         "id": "atlas-chain4-clean",
@@ -3010,7 +3017,7 @@
         "displayName": "Double Clean (Chain 4/5)",
         "damageCoefficient": 14,
         "damageType": "flat",
-        "targetReps": 1
+        "targetReps": 3
       },
       {
         "id": "atlas-chain4-push-press",
@@ -3018,7 +3025,7 @@
         "displayName": "Double Push Press (Chain 4/5)",
         "damageCoefficient": 16,
         "damageType": "flat",
-        "targetReps": 1
+        "targetReps": 3
       },
       {
         "id": "atlas-chain4-row",
@@ -3026,7 +3033,7 @@
         "displayName": "Double Row (Chain 4/5)",
         "damageCoefficient": 12,
         "damageType": "flat",
-        "targetReps": 1
+        "targetReps": 3
       },
       {
         "id": "atlas-chain5-squat",
@@ -3034,7 +3041,7 @@
         "displayName": "Double Front Squat (Chain 5/5)",
         "damageCoefficient": 14,
         "damageType": "flat",
-        "targetReps": 1
+        "targetReps": 3
       },
       {
         "id": "atlas-chain5-press",
@@ -3042,7 +3049,7 @@
         "displayName": "Double Press (Chain 5/5)",
         "damageCoefficient": 14,
         "damageType": "flat",
-        "targetReps": 1
+        "targetReps": 3
       },
       {
         "id": "atlas-chain5-clean",
@@ -3050,7 +3057,7 @@
         "displayName": "Double Clean (Chain 5/5)",
         "damageCoefficient": 14,
         "damageType": "flat",
-        "targetReps": 1
+        "targetReps": 3
       },
       {
         "id": "atlas-chain5-push-press",
@@ -3058,7 +3065,7 @@
         "displayName": "Double Push Press (Chain 5/5)",
         "damageCoefficient": 16,
         "damageType": "flat",
-        "targetReps": 1
+        "targetReps": 3
       },
       {
         "id": "atlas-chain5-row",
@@ -3066,7 +3073,7 @@
         "displayName": "Double Row (Chain 5/5)",
         "damageCoefficient": 12,
         "damageType": "flat",
-        "targetReps": 1
+        "targetReps": 3
       },
       {
         "id": "atlas-complex-squat",
@@ -3074,7 +3081,7 @@
         "displayName": "Double Front Squat (Complex ×5)",
         "damageCoefficient": 14,
         "damageType": "flat",
-        "targetReps": 5
+        "targetReps": 3
       },
       {
         "id": "atlas-complex-press",
@@ -3082,7 +3089,7 @@
         "displayName": "Double Press (Complex ×5)",
         "damageCoefficient": 14,
         "damageType": "flat",
-        "targetReps": 5
+        "targetReps": 3
       },
       {
         "id": "atlas-complex-clean",
@@ -3090,7 +3097,7 @@
         "displayName": "Double Clean (Complex ×5)",
         "damageCoefficient": 14,
         "damageType": "flat",
-        "targetReps": 5
+        "targetReps": 3
       },
       {
         "id": "atlas-complex-push-press",
@@ -3098,7 +3105,7 @@
         "displayName": "Double Push Press (Complex ×5)",
         "damageCoefficient": 16,
         "damageType": "flat",
-        "targetReps": 5
+        "targetReps": 3
       },
       {
         "id": "atlas-complex-row",
@@ -3106,7 +3113,7 @@
         "displayName": "Double Row (Complex ×5)",
         "damageCoefficient": 12,
         "damageType": "flat",
-        "targetReps": 5
+        "targetReps": 3
       }
     ],
     "finisher": {
@@ -3117,14 +3124,14 @@
   "ember-trial": {
     "id": "ember-trial",
     "name": "The Ember Trial",
-    "description": "Two rounds through the fire, then thirty reps with nothing left in the tank. The carry is the easy part.",
+    "description": "Three rounds with two kettlebells: Double Snatch, Double Press, Double Clean, Double Front Squat, Double Swing, Double Deadlift Side, and a 50-step Double Farmer Carry.",
     "difficulty": 4,
     "estimatedMinutesRange": [
       12,
       17
     ],
     "gearWeightKg": 18,
-    "gearCount": 1,
+    "gearCount": 2,
     "rounds": 3,
     "restSeconds": 90,
     "roundBonusDamage": 60,
@@ -3136,141 +3143,73 @@
     ],
     "exercises": [
       {
-        "id": "ifrit-r1-snatch-press",
-        "name": "Snatch / Press",
-        "damageCoefficient": 16,
+        "id": "ifrit-r1-snatch",
+        "name": "Double Snatch",
+        "damageCoefficient": 8,
         "damageType": "flat",
-        "targetReps": 5
+        "targetReps": 5,
+        "libraryExerciseId": "double-snatch",
+        "usesGearCount": 2
       },
       {
-        "id": "ifrit-r1-clean-squat",
-        "name": "Clean / Squat",
-        "damageCoefficient": 16,
+        "id": "ifrit-r1-press",
+        "name": "Double Press",
+        "damageCoefficient": 8,
         "damageType": "flat",
-        "targetReps": 5
+        "targetReps": 5,
+        "libraryExerciseId": "double-press",
+        "usesGearCount": 2
+      },
+      {
+        "id": "ifrit-r1-clean",
+        "name": "Double Clean",
+        "damageCoefficient": 8,
+        "damageType": "flat",
+        "targetReps": 5,
+        "libraryExerciseId": "double-clean",
+        "usesGearCount": 2
+      },
+      {
+        "id": "ifrit-r1-squat",
+        "name": "Double Front Squat",
+        "damageCoefficient": 8,
+        "damageType": "flat",
+        "targetReps": 5,
+        "libraryExerciseId": "double-front-squat",
+        "usesGearCount": 2
       },
       {
         "id": "ifrit-r1-swing",
-        "name": "Swing",
+        "name": "Double Swing",
         "damageCoefficient": 10,
         "damageType": "flat",
-        "targetReps": 5
+        "targetReps": 5,
+        "libraryExerciseId": "double-swing",
+        "usesGearCount": 2
       },
       {
         "id": "ifrit-r1-deadlift-side",
-        "name": "Deadlift Side",
+        "name": "Double Deadlift Side",
         "damageCoefficient": 12,
         "damageType": "flat",
-        "targetReps": 5
+        "targetReps": 5,
+        "libraryExerciseId": "double-deadlift-side",
+        "usesGearCount": 2
       },
       {
         "id": "ifrit-r1-farmer-carry",
-        "name": "Farmer Carry",
+        "name": "Double Farmer Carry",
         "damageCoefficient": 3,
         "damageType": "per_second",
         "durationSeconds": 30,
-        "targetSteps": 50
-      }
-    ],
-    "sections": [
-      {
-        "label": "Round I — The Coals",
-        "exercises": [
-          {
-            "id": "ifrit-r1-snatch-press",
-            "name": "Snatch / Press",
-            "damageCoefficient": 16,
-            "damageType": "flat",
-            "targetReps": 5
-          },
-          {
-            "id": "ifrit-r1-clean-squat",
-            "name": "Clean / Squat",
-            "damageCoefficient": 16,
-            "damageType": "flat",
-            "targetReps": 5
-          },
-          {
-            "id": "ifrit-r1-swing",
-            "name": "Swing",
-            "damageCoefficient": 10,
-            "damageType": "flat",
-            "targetReps": 5
-          },
-          {
-            "id": "ifrit-r1-deadlift-side",
-            "name": "Deadlift Side",
-            "damageCoefficient": 12,
-            "damageType": "flat",
-            "targetReps": 5
-          },
-          {
-            "id": "ifrit-r1-farmer-carry",
-            "name": "Farmer Carry",
-            "damageCoefficient": 3,
-            "damageType": "per_second",
-            "durationSeconds": 30,
-            "targetSteps": 50
-          }
-        ]
-      },
-      {
-        "label": "Round II — The Blaze",
-        "exercises": [
-          {
-            "id": "ifrit-r2-snatch-press",
-            "name": "Snatch / Press",
-            "damageCoefficient": 16,
-            "damageType": "flat",
-            "targetReps": 5
-          },
-          {
-            "id": "ifrit-r2-clean-squat",
-            "name": "Clean / Squat",
-            "damageCoefficient": 16,
-            "damageType": "flat",
-            "targetReps": 5
-          },
-          {
-            "id": "ifrit-r2-swing",
-            "name": "Swing",
-            "damageCoefficient": 10,
-            "damageType": "flat",
-            "targetReps": 5
-          },
-          {
-            "id": "ifrit-r2-deadlift-side",
-            "name": "Deadlift Side",
-            "damageCoefficient": 12,
-            "damageType": "flat",
-            "targetReps": 5
-          },
-          {
-            "id": "ifrit-r2-farmer-carry",
-            "name": "Farmer Carry",
-            "damageCoefficient": 3,
-            "damageType": "per_second",
-            "durationSeconds": 30,
-            "targetSteps": 50
-          }
-        ]
-      },
-      {
-        "label": "Round III — The Reckoning",
-        "exercises": [
-          {
-            "id": "ifrit-finisher-snatch-thruster",
-            "name": "Snatch / Thruster",
-            "damageCoefficient": 6,
-            "damageType": "per_rep",
-            "targetReps": 30
-          }
-        ]
+        "targetSteps": 50,
+        "libraryExerciseId": "double-farmer-carry",
+        "usesGearCount": 2
       }
     ],
     "finisher": {
-      "name": "The Reckoning",
-      "scheme": "30 Reps AFAP"
+      "name": "The Colossus",
+      "scheme": "3 Rounds"
     }
   },
   "endless-grind": {
@@ -4235,8 +4174,8 @@
         "name": "Front Rack Carry",
         "damageCoefficient": 3,
         "damageType": "per_second",
-        "targetDistanceFt": 100,
-        "durationSeconds": 60
+        "durationSeconds": 60,
+        "targetSteps": 50
       }
     ],
     "finisher": {
@@ -4248,7 +4187,7 @@
     "id": "living-current",
     "name": "The Unbroken Chain",
     "sequenceType": "chain",
-    "description": "Left hand runs the full chain — swing, clean, lunge, jerk, thruster, snatch — five times without setting the bell down. Then the right hand takes on the same chain, five times more. Five rounds, both hands, no gap anywhere inside the chain itself.",
+    "description": "One continuous chain with hands alternating movement by movement. Each movement is one rep; five rounds give each hand five reps of every exercise.",
     "difficulty": 3,
     "estimatedMinutesRange": [
       16,
@@ -4256,7 +4195,7 @@
     ],
     "gearWeightKg": 18,
     "gearCount": 1,
-    "rounds": 10,
+    "rounds": 5,
     "restSeconds": 150,
     "roundBonusDamage": 50,
     "targetTimeSeconds": 1098,
@@ -4271,512 +4210,673 @@
         "name": "Swing",
         "damageCoefficient": 10,
         "damageType": "flat",
-        "targetReps": 5
+        "targetReps": 1,
+        "libraryExerciseId": "swing",
+        "displayName": "LEFT · Swing"
+      },
+      {
+        "id": "fluid-r1-right-swing",
+        "name": "Swing",
+        "damageCoefficient": 10,
+        "damageType": "flat",
+        "targetReps": 1,
+        "libraryExerciseId": "swing",
+        "displayName": "RIGHT · Swing"
       },
       {
         "id": "fluid-r1-left-clean",
         "name": "Clean",
         "damageCoefficient": 14,
         "damageType": "flat",
-        "targetReps": 5
+        "targetReps": 1,
+        "libraryExerciseId": "clean",
+        "displayName": "LEFT · Clean"
+      },
+      {
+        "id": "fluid-r1-right-clean",
+        "name": "Clean",
+        "damageCoefficient": 14,
+        "damageType": "flat",
+        "targetReps": 1,
+        "libraryExerciseId": "clean",
+        "displayName": "RIGHT · Clean"
       },
       {
         "id": "fluid-r1-left-lunge",
         "name": "Reverse Lunge",
         "damageCoefficient": 10,
         "damageType": "flat",
-        "targetReps": 5
+        "targetReps": 1,
+        "libraryExerciseId": "reverse-lunge",
+        "displayName": "LEFT · Reverse Lunge"
+      },
+      {
+        "id": "fluid-r1-right-lunge",
+        "name": "Reverse Lunge",
+        "damageCoefficient": 10,
+        "damageType": "flat",
+        "targetReps": 1,
+        "libraryExerciseId": "reverse-lunge",
+        "displayName": "RIGHT · Reverse Lunge"
       },
       {
         "id": "fluid-r1-left-jerk",
         "name": "Jerk",
         "damageCoefficient": 16,
         "damageType": "flat",
-        "targetReps": 5
+        "targetReps": 1,
+        "libraryExerciseId": "jerk",
+        "displayName": "LEFT · Jerk"
+      },
+      {
+        "id": "fluid-r1-right-jerk",
+        "name": "Jerk",
+        "damageCoefficient": 16,
+        "damageType": "flat",
+        "targetReps": 1,
+        "libraryExerciseId": "jerk",
+        "displayName": "RIGHT · Jerk"
       },
       {
         "id": "fluid-r1-left-thruster",
         "name": "Thruster",
         "damageCoefficient": 16,
         "damageType": "flat",
-        "targetReps": 5
+        "targetReps": 1,
+        "libraryExerciseId": "thruster",
+        "displayName": "LEFT · Thruster"
+      },
+      {
+        "id": "fluid-r1-right-thruster",
+        "name": "Thruster",
+        "damageCoefficient": 16,
+        "damageType": "flat",
+        "targetReps": 1,
+        "libraryExerciseId": "thruster",
+        "displayName": "RIGHT · Thruster"
       },
       {
         "id": "fluid-r1-left-tactical-snatch",
         "name": "Tactical Snatch",
         "damageCoefficient": 16,
         "damageType": "flat",
-        "targetReps": 5
+        "targetReps": 1,
+        "libraryExerciseId": "tactical-snatch",
+        "displayName": "LEFT · Tactical Snatch → RIGHT"
+      },
+      {
+        "id": "fluid-r1-right-tactical-snatch",
+        "name": "Tactical Snatch",
+        "damageCoefficient": 16,
+        "damageType": "flat",
+        "targetReps": 1,
+        "libraryExerciseId": "tactical-snatch",
+        "displayName": "RIGHT · Tactical Snatch → LEFT"
       }
     ],
     "sections": [
       {
-        "label": "Round 1 — Left Hand",
+        "label": "Round 1 — One Continuous Alternating-Hand Chain",
         "exercises": [
           {
             "id": "fluid-r1-left-swing",
             "name": "Swing",
             "damageCoefficient": 10,
             "damageType": "flat",
-            "targetReps": 5
+            "targetReps": 1,
+            "libraryExerciseId": "swing",
+            "displayName": "LEFT · Swing"
+          },
+          {
+            "id": "fluid-r1-right-swing",
+            "name": "Swing",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 1,
+            "libraryExerciseId": "swing",
+            "displayName": "RIGHT · Swing"
           },
           {
             "id": "fluid-r1-left-clean",
             "name": "Clean",
             "damageCoefficient": 14,
             "damageType": "flat",
-            "targetReps": 5
-          },
-          {
-            "id": "fluid-r1-left-lunge",
-            "name": "Reverse Lunge",
-            "damageCoefficient": 10,
-            "damageType": "flat",
-            "targetReps": 5
-          },
-          {
-            "id": "fluid-r1-left-jerk",
-            "name": "Jerk",
-            "damageCoefficient": 16,
-            "damageType": "flat",
-            "targetReps": 5
-          },
-          {
-            "id": "fluid-r1-left-thruster",
-            "name": "Thruster",
-            "damageCoefficient": 16,
-            "damageType": "flat",
-            "targetReps": 5
-          },
-          {
-            "id": "fluid-r1-left-tactical-snatch",
-            "name": "Tactical Snatch",
-            "damageCoefficient": 16,
-            "damageType": "flat",
-            "targetReps": 5
-          }
-        ]
-      },
-      {
-        "label": "Round 1 — Right Hand",
-        "exercises": [
-          {
-            "id": "fluid-r1-right-swing",
-            "name": "Swing",
-            "damageCoefficient": 10,
-            "damageType": "flat",
-            "targetReps": 5
+            "targetReps": 1,
+            "libraryExerciseId": "clean",
+            "displayName": "LEFT · Clean"
           },
           {
             "id": "fluid-r1-right-clean",
             "name": "Clean",
             "damageCoefficient": 14,
             "damageType": "flat",
-            "targetReps": 5
+            "targetReps": 1,
+            "libraryExerciseId": "clean",
+            "displayName": "RIGHT · Clean"
+          },
+          {
+            "id": "fluid-r1-left-lunge",
+            "name": "Reverse Lunge",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 1,
+            "libraryExerciseId": "reverse-lunge",
+            "displayName": "LEFT · Reverse Lunge"
           },
           {
             "id": "fluid-r1-right-lunge",
             "name": "Reverse Lunge",
             "damageCoefficient": 10,
             "damageType": "flat",
-            "targetReps": 5
+            "targetReps": 1,
+            "libraryExerciseId": "reverse-lunge",
+            "displayName": "RIGHT · Reverse Lunge"
+          },
+          {
+            "id": "fluid-r1-left-jerk",
+            "name": "Jerk",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 1,
+            "libraryExerciseId": "jerk",
+            "displayName": "LEFT · Jerk"
           },
           {
             "id": "fluid-r1-right-jerk",
             "name": "Jerk",
             "damageCoefficient": 16,
             "damageType": "flat",
-            "targetReps": 5
+            "targetReps": 1,
+            "libraryExerciseId": "jerk",
+            "displayName": "RIGHT · Jerk"
+          },
+          {
+            "id": "fluid-r1-left-thruster",
+            "name": "Thruster",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 1,
+            "libraryExerciseId": "thruster",
+            "displayName": "LEFT · Thruster"
           },
           {
             "id": "fluid-r1-right-thruster",
             "name": "Thruster",
             "damageCoefficient": 16,
             "damageType": "flat",
-            "targetReps": 5
+            "targetReps": 1,
+            "libraryExerciseId": "thruster",
+            "displayName": "RIGHT · Thruster"
+          },
+          {
+            "id": "fluid-r1-left-tactical-snatch",
+            "name": "Tactical Snatch",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 1,
+            "libraryExerciseId": "tactical-snatch",
+            "displayName": "LEFT · Tactical Snatch → RIGHT"
           },
           {
             "id": "fluid-r1-right-tactical-snatch",
             "name": "Tactical Snatch",
             "damageCoefficient": 16,
             "damageType": "flat",
-            "targetReps": 5
+            "targetReps": 1,
+            "libraryExerciseId": "tactical-snatch",
+            "displayName": "RIGHT · Tactical Snatch → LEFT"
           }
         ]
       },
       {
-        "label": "Round 2 — Left Hand",
+        "label": "Round 2 — One Continuous Alternating-Hand Chain",
         "exercises": [
           {
             "id": "fluid-r2-left-swing",
             "name": "Swing",
             "damageCoefficient": 10,
             "damageType": "flat",
-            "targetReps": 5
+            "targetReps": 1,
+            "libraryExerciseId": "swing",
+            "displayName": "LEFT · Swing"
+          },
+          {
+            "id": "fluid-r2-right-swing",
+            "name": "Swing",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 1,
+            "libraryExerciseId": "swing",
+            "displayName": "RIGHT · Swing"
           },
           {
             "id": "fluid-r2-left-clean",
             "name": "Clean",
             "damageCoefficient": 14,
             "damageType": "flat",
-            "targetReps": 5
-          },
-          {
-            "id": "fluid-r2-left-lunge",
-            "name": "Reverse Lunge",
-            "damageCoefficient": 10,
-            "damageType": "flat",
-            "targetReps": 5
-          },
-          {
-            "id": "fluid-r2-left-jerk",
-            "name": "Jerk",
-            "damageCoefficient": 16,
-            "damageType": "flat",
-            "targetReps": 5
-          },
-          {
-            "id": "fluid-r2-left-thruster",
-            "name": "Thruster",
-            "damageCoefficient": 16,
-            "damageType": "flat",
-            "targetReps": 5
-          },
-          {
-            "id": "fluid-r2-left-tactical-snatch",
-            "name": "Tactical Snatch",
-            "damageCoefficient": 16,
-            "damageType": "flat",
-            "targetReps": 5
-          }
-        ]
-      },
-      {
-        "label": "Round 2 — Right Hand",
-        "exercises": [
-          {
-            "id": "fluid-r2-right-swing",
-            "name": "Swing",
-            "damageCoefficient": 10,
-            "damageType": "flat",
-            "targetReps": 5
+            "targetReps": 1,
+            "libraryExerciseId": "clean",
+            "displayName": "LEFT · Clean"
           },
           {
             "id": "fluid-r2-right-clean",
             "name": "Clean",
             "damageCoefficient": 14,
             "damageType": "flat",
-            "targetReps": 5
+            "targetReps": 1,
+            "libraryExerciseId": "clean",
+            "displayName": "RIGHT · Clean"
+          },
+          {
+            "id": "fluid-r2-left-lunge",
+            "name": "Reverse Lunge",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 1,
+            "libraryExerciseId": "reverse-lunge",
+            "displayName": "LEFT · Reverse Lunge"
           },
           {
             "id": "fluid-r2-right-lunge",
             "name": "Reverse Lunge",
             "damageCoefficient": 10,
             "damageType": "flat",
-            "targetReps": 5
+            "targetReps": 1,
+            "libraryExerciseId": "reverse-lunge",
+            "displayName": "RIGHT · Reverse Lunge"
+          },
+          {
+            "id": "fluid-r2-left-jerk",
+            "name": "Jerk",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 1,
+            "libraryExerciseId": "jerk",
+            "displayName": "LEFT · Jerk"
           },
           {
             "id": "fluid-r2-right-jerk",
             "name": "Jerk",
             "damageCoefficient": 16,
             "damageType": "flat",
-            "targetReps": 5
+            "targetReps": 1,
+            "libraryExerciseId": "jerk",
+            "displayName": "RIGHT · Jerk"
+          },
+          {
+            "id": "fluid-r2-left-thruster",
+            "name": "Thruster",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 1,
+            "libraryExerciseId": "thruster",
+            "displayName": "LEFT · Thruster"
           },
           {
             "id": "fluid-r2-right-thruster",
             "name": "Thruster",
             "damageCoefficient": 16,
             "damageType": "flat",
-            "targetReps": 5
+            "targetReps": 1,
+            "libraryExerciseId": "thruster",
+            "displayName": "RIGHT · Thruster"
+          },
+          {
+            "id": "fluid-r2-left-tactical-snatch",
+            "name": "Tactical Snatch",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 1,
+            "libraryExerciseId": "tactical-snatch",
+            "displayName": "LEFT · Tactical Snatch → RIGHT"
           },
           {
             "id": "fluid-r2-right-tactical-snatch",
             "name": "Tactical Snatch",
             "damageCoefficient": 16,
             "damageType": "flat",
-            "targetReps": 5
+            "targetReps": 1,
+            "libraryExerciseId": "tactical-snatch",
+            "displayName": "RIGHT · Tactical Snatch → LEFT"
           }
         ]
       },
       {
-        "label": "Round 3 — Left Hand",
+        "label": "Round 3 — One Continuous Alternating-Hand Chain",
         "exercises": [
           {
             "id": "fluid-r3-left-swing",
             "name": "Swing",
             "damageCoefficient": 10,
             "damageType": "flat",
-            "targetReps": 5
+            "targetReps": 1,
+            "libraryExerciseId": "swing",
+            "displayName": "LEFT · Swing"
+          },
+          {
+            "id": "fluid-r3-right-swing",
+            "name": "Swing",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 1,
+            "libraryExerciseId": "swing",
+            "displayName": "RIGHT · Swing"
           },
           {
             "id": "fluid-r3-left-clean",
             "name": "Clean",
             "damageCoefficient": 14,
             "damageType": "flat",
-            "targetReps": 5
-          },
-          {
-            "id": "fluid-r3-left-lunge",
-            "name": "Reverse Lunge",
-            "damageCoefficient": 10,
-            "damageType": "flat",
-            "targetReps": 5
-          },
-          {
-            "id": "fluid-r3-left-jerk",
-            "name": "Jerk",
-            "damageCoefficient": 16,
-            "damageType": "flat",
-            "targetReps": 5
-          },
-          {
-            "id": "fluid-r3-left-thruster",
-            "name": "Thruster",
-            "damageCoefficient": 16,
-            "damageType": "flat",
-            "targetReps": 5
-          },
-          {
-            "id": "fluid-r3-left-tactical-snatch",
-            "name": "Tactical Snatch",
-            "damageCoefficient": 16,
-            "damageType": "flat",
-            "targetReps": 5
-          }
-        ]
-      },
-      {
-        "label": "Round 3 — Right Hand",
-        "exercises": [
-          {
-            "id": "fluid-r3-right-swing",
-            "name": "Swing",
-            "damageCoefficient": 10,
-            "damageType": "flat",
-            "targetReps": 5
+            "targetReps": 1,
+            "libraryExerciseId": "clean",
+            "displayName": "LEFT · Clean"
           },
           {
             "id": "fluid-r3-right-clean",
             "name": "Clean",
             "damageCoefficient": 14,
             "damageType": "flat",
-            "targetReps": 5
+            "targetReps": 1,
+            "libraryExerciseId": "clean",
+            "displayName": "RIGHT · Clean"
+          },
+          {
+            "id": "fluid-r3-left-lunge",
+            "name": "Reverse Lunge",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 1,
+            "libraryExerciseId": "reverse-lunge",
+            "displayName": "LEFT · Reverse Lunge"
           },
           {
             "id": "fluid-r3-right-lunge",
             "name": "Reverse Lunge",
             "damageCoefficient": 10,
             "damageType": "flat",
-            "targetReps": 5
+            "targetReps": 1,
+            "libraryExerciseId": "reverse-lunge",
+            "displayName": "RIGHT · Reverse Lunge"
+          },
+          {
+            "id": "fluid-r3-left-jerk",
+            "name": "Jerk",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 1,
+            "libraryExerciseId": "jerk",
+            "displayName": "LEFT · Jerk"
           },
           {
             "id": "fluid-r3-right-jerk",
             "name": "Jerk",
             "damageCoefficient": 16,
             "damageType": "flat",
-            "targetReps": 5
+            "targetReps": 1,
+            "libraryExerciseId": "jerk",
+            "displayName": "RIGHT · Jerk"
+          },
+          {
+            "id": "fluid-r3-left-thruster",
+            "name": "Thruster",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 1,
+            "libraryExerciseId": "thruster",
+            "displayName": "LEFT · Thruster"
           },
           {
             "id": "fluid-r3-right-thruster",
             "name": "Thruster",
             "damageCoefficient": 16,
             "damageType": "flat",
-            "targetReps": 5
+            "targetReps": 1,
+            "libraryExerciseId": "thruster",
+            "displayName": "RIGHT · Thruster"
+          },
+          {
+            "id": "fluid-r3-left-tactical-snatch",
+            "name": "Tactical Snatch",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 1,
+            "libraryExerciseId": "tactical-snatch",
+            "displayName": "LEFT · Tactical Snatch → RIGHT"
           },
           {
             "id": "fluid-r3-right-tactical-snatch",
             "name": "Tactical Snatch",
             "damageCoefficient": 16,
             "damageType": "flat",
-            "targetReps": 5
+            "targetReps": 1,
+            "libraryExerciseId": "tactical-snatch",
+            "displayName": "RIGHT · Tactical Snatch → LEFT"
           }
         ]
       },
       {
-        "label": "Round 4 — Left Hand",
+        "label": "Round 4 — One Continuous Alternating-Hand Chain",
         "exercises": [
           {
             "id": "fluid-r4-left-swing",
             "name": "Swing",
             "damageCoefficient": 10,
             "damageType": "flat",
-            "targetReps": 5
+            "targetReps": 1,
+            "libraryExerciseId": "swing",
+            "displayName": "LEFT · Swing"
+          },
+          {
+            "id": "fluid-r4-right-swing",
+            "name": "Swing",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 1,
+            "libraryExerciseId": "swing",
+            "displayName": "RIGHT · Swing"
           },
           {
             "id": "fluid-r4-left-clean",
             "name": "Clean",
             "damageCoefficient": 14,
             "damageType": "flat",
-            "targetReps": 5
-          },
-          {
-            "id": "fluid-r4-left-lunge",
-            "name": "Reverse Lunge",
-            "damageCoefficient": 10,
-            "damageType": "flat",
-            "targetReps": 5
-          },
-          {
-            "id": "fluid-r4-left-jerk",
-            "name": "Jerk",
-            "damageCoefficient": 16,
-            "damageType": "flat",
-            "targetReps": 5
-          },
-          {
-            "id": "fluid-r4-left-thruster",
-            "name": "Thruster",
-            "damageCoefficient": 16,
-            "damageType": "flat",
-            "targetReps": 5
-          },
-          {
-            "id": "fluid-r4-left-tactical-snatch",
-            "name": "Tactical Snatch",
-            "damageCoefficient": 16,
-            "damageType": "flat",
-            "targetReps": 5
-          }
-        ]
-      },
-      {
-        "label": "Round 4 — Right Hand",
-        "exercises": [
-          {
-            "id": "fluid-r4-right-swing",
-            "name": "Swing",
-            "damageCoefficient": 10,
-            "damageType": "flat",
-            "targetReps": 5
+            "targetReps": 1,
+            "libraryExerciseId": "clean",
+            "displayName": "LEFT · Clean"
           },
           {
             "id": "fluid-r4-right-clean",
             "name": "Clean",
             "damageCoefficient": 14,
             "damageType": "flat",
-            "targetReps": 5
+            "targetReps": 1,
+            "libraryExerciseId": "clean",
+            "displayName": "RIGHT · Clean"
+          },
+          {
+            "id": "fluid-r4-left-lunge",
+            "name": "Reverse Lunge",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 1,
+            "libraryExerciseId": "reverse-lunge",
+            "displayName": "LEFT · Reverse Lunge"
           },
           {
             "id": "fluid-r4-right-lunge",
             "name": "Reverse Lunge",
             "damageCoefficient": 10,
             "damageType": "flat",
-            "targetReps": 5
+            "targetReps": 1,
+            "libraryExerciseId": "reverse-lunge",
+            "displayName": "RIGHT · Reverse Lunge"
+          },
+          {
+            "id": "fluid-r4-left-jerk",
+            "name": "Jerk",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 1,
+            "libraryExerciseId": "jerk",
+            "displayName": "LEFT · Jerk"
           },
           {
             "id": "fluid-r4-right-jerk",
             "name": "Jerk",
             "damageCoefficient": 16,
             "damageType": "flat",
-            "targetReps": 5
+            "targetReps": 1,
+            "libraryExerciseId": "jerk",
+            "displayName": "RIGHT · Jerk"
+          },
+          {
+            "id": "fluid-r4-left-thruster",
+            "name": "Thruster",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 1,
+            "libraryExerciseId": "thruster",
+            "displayName": "LEFT · Thruster"
           },
           {
             "id": "fluid-r4-right-thruster",
             "name": "Thruster",
             "damageCoefficient": 16,
             "damageType": "flat",
-            "targetReps": 5
+            "targetReps": 1,
+            "libraryExerciseId": "thruster",
+            "displayName": "RIGHT · Thruster"
+          },
+          {
+            "id": "fluid-r4-left-tactical-snatch",
+            "name": "Tactical Snatch",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 1,
+            "libraryExerciseId": "tactical-snatch",
+            "displayName": "LEFT · Tactical Snatch → RIGHT"
           },
           {
             "id": "fluid-r4-right-tactical-snatch",
             "name": "Tactical Snatch",
             "damageCoefficient": 16,
             "damageType": "flat",
-            "targetReps": 5
+            "targetReps": 1,
+            "libraryExerciseId": "tactical-snatch",
+            "displayName": "RIGHT · Tactical Snatch → LEFT"
           }
         ]
       },
       {
-        "label": "Round 5 — Left Hand",
+        "label": "Round 5 — One Continuous Alternating-Hand Chain",
         "exercises": [
           {
             "id": "fluid-r5-left-swing",
             "name": "Swing",
             "damageCoefficient": 10,
             "damageType": "flat",
-            "targetReps": 5
+            "targetReps": 1,
+            "libraryExerciseId": "swing",
+            "displayName": "LEFT · Swing"
+          },
+          {
+            "id": "fluid-r5-right-swing",
+            "name": "Swing",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 1,
+            "libraryExerciseId": "swing",
+            "displayName": "RIGHT · Swing"
           },
           {
             "id": "fluid-r5-left-clean",
             "name": "Clean",
             "damageCoefficient": 14,
             "damageType": "flat",
-            "targetReps": 5
-          },
-          {
-            "id": "fluid-r5-left-lunge",
-            "name": "Reverse Lunge",
-            "damageCoefficient": 10,
-            "damageType": "flat",
-            "targetReps": 5
-          },
-          {
-            "id": "fluid-r5-left-jerk",
-            "name": "Jerk",
-            "damageCoefficient": 16,
-            "damageType": "flat",
-            "targetReps": 5
-          },
-          {
-            "id": "fluid-r5-left-thruster",
-            "name": "Thruster",
-            "damageCoefficient": 16,
-            "damageType": "flat",
-            "targetReps": 5
-          },
-          {
-            "id": "fluid-r5-left-tactical-snatch",
-            "name": "Tactical Snatch",
-            "damageCoefficient": 16,
-            "damageType": "flat",
-            "targetReps": 5
-          }
-        ]
-      },
-      {
-        "label": "Round 5 — Right Hand",
-        "exercises": [
-          {
-            "id": "fluid-r5-right-swing",
-            "name": "Swing",
-            "damageCoefficient": 10,
-            "damageType": "flat",
-            "targetReps": 5
+            "targetReps": 1,
+            "libraryExerciseId": "clean",
+            "displayName": "LEFT · Clean"
           },
           {
             "id": "fluid-r5-right-clean",
             "name": "Clean",
             "damageCoefficient": 14,
             "damageType": "flat",
-            "targetReps": 5
+            "targetReps": 1,
+            "libraryExerciseId": "clean",
+            "displayName": "RIGHT · Clean"
+          },
+          {
+            "id": "fluid-r5-left-lunge",
+            "name": "Reverse Lunge",
+            "damageCoefficient": 10,
+            "damageType": "flat",
+            "targetReps": 1,
+            "libraryExerciseId": "reverse-lunge",
+            "displayName": "LEFT · Reverse Lunge"
           },
           {
             "id": "fluid-r5-right-lunge",
             "name": "Reverse Lunge",
             "damageCoefficient": 10,
             "damageType": "flat",
-            "targetReps": 5
+            "targetReps": 1,
+            "libraryExerciseId": "reverse-lunge",
+            "displayName": "RIGHT · Reverse Lunge"
+          },
+          {
+            "id": "fluid-r5-left-jerk",
+            "name": "Jerk",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 1,
+            "libraryExerciseId": "jerk",
+            "displayName": "LEFT · Jerk"
           },
           {
             "id": "fluid-r5-right-jerk",
             "name": "Jerk",
             "damageCoefficient": 16,
             "damageType": "flat",
-            "targetReps": 5
+            "targetReps": 1,
+            "libraryExerciseId": "jerk",
+            "displayName": "RIGHT · Jerk"
+          },
+          {
+            "id": "fluid-r5-left-thruster",
+            "name": "Thruster",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 1,
+            "libraryExerciseId": "thruster",
+            "displayName": "LEFT · Thruster"
           },
           {
             "id": "fluid-r5-right-thruster",
             "name": "Thruster",
             "damageCoefficient": 16,
             "damageType": "flat",
-            "targetReps": 5
+            "targetReps": 1,
+            "libraryExerciseId": "thruster",
+            "displayName": "RIGHT · Thruster"
+          },
+          {
+            "id": "fluid-r5-left-tactical-snatch",
+            "name": "Tactical Snatch",
+            "damageCoefficient": 16,
+            "damageType": "flat",
+            "targetReps": 1,
+            "libraryExerciseId": "tactical-snatch",
+            "displayName": "LEFT · Tactical Snatch → RIGHT"
           },
           {
             "id": "fluid-r5-right-tactical-snatch",
             "name": "Tactical Snatch",
             "damageCoefficient": 16,
             "damageType": "flat",
-            "targetReps": 5
+            "targetReps": 1,
+            "libraryExerciseId": "tactical-snatch",
+            "displayName": "RIGHT · Tactical Snatch → LEFT"
           }
         ]
       }
@@ -4809,32 +4909,36 @@
     "exercises": [
       {
         "id": "moloch-chain1-deadlift",
-        "name": "Floor Deadlift",
-        "displayName": "Floor Deadlift (Chain 1/2)",
+        "name": "Single Deadlift",
+        "libraryExerciseId": "floor-deadlift",
+        "displayName": "Single Deadlift (Chain 1/2)",
         "damageCoefficient": 10,
         "damageType": "per_rep",
         "targetReps": 1
       },
       {
         "id": "moloch-chain1-pull",
-        "name": "Floor Pull",
-        "displayName": "Floor Pull (Chain 1/2)",
+        "name": "Single Dead Pull",
+        "libraryExerciseId": "floor-pull",
+        "displayName": "Single Dead Pull (Chain 1/2)",
         "damageCoefficient": 12,
         "damageType": "per_rep",
         "targetReps": 1
       },
       {
         "id": "moloch-chain1-clean-push",
-        "name": "Floor Clean / Push",
-        "displayName": "Floor Clean / Push (Chain 1/2)",
+        "name": "Single Dead Clean / Push",
+        "libraryExerciseId": "floor-clean-push",
+        "displayName": "Single Dead Clean / Push (Chain 1/2)",
         "damageCoefficient": 14,
         "damageType": "per_rep",
         "targetReps": 1
       },
       {
         "id": "moloch-chain1-thruster",
-        "name": "Floor Thruster",
-        "displayName": "Floor Thruster (Chain 1/2)",
+        "name": "Single Dead Thruster",
+        "libraryExerciseId": "floor-thruster",
+        "displayName": "Single Dead Thruster (Chain 1/2)",
         "damageCoefficient": 14,
         "damageType": "per_rep",
         "targetReps": 1
@@ -4842,40 +4946,44 @@
       {
         "id": "moloch-chain1-snatch",
         "name": "Single Dead Snatch",
+        "libraryExerciseId": "snatch-floor",
         "displayName": "Single Dead Snatch (Chain 1/2)",
         "damageCoefficient": 16,
         "damageType": "per_rep",
-        "targetReps": 1,
-        "libraryExerciseId": "snatch-floor"
+        "targetReps": 1
       },
       {
         "id": "moloch-chain2-deadlift",
-        "name": "Floor Deadlift",
-        "displayName": "Floor Deadlift (Chain 2/2)",
+        "name": "Single Deadlift",
+        "libraryExerciseId": "floor-deadlift",
+        "displayName": "Single Deadlift (Chain 2/2)",
         "damageCoefficient": 10,
         "damageType": "per_rep",
         "targetReps": 1
       },
       {
         "id": "moloch-chain2-pull",
-        "name": "Floor Pull",
-        "displayName": "Floor Pull (Chain 2/2)",
+        "name": "Single Dead Pull",
+        "libraryExerciseId": "floor-pull",
+        "displayName": "Single Dead Pull (Chain 2/2)",
         "damageCoefficient": 12,
         "damageType": "per_rep",
         "targetReps": 1
       },
       {
         "id": "moloch-chain2-clean-push",
-        "name": "Floor Clean / Push",
-        "displayName": "Floor Clean / Push (Chain 2/2)",
+        "name": "Single Dead Clean / Push",
+        "libraryExerciseId": "floor-clean-push",
+        "displayName": "Single Dead Clean / Push (Chain 2/2)",
         "damageCoefficient": 14,
         "damageType": "per_rep",
         "targetReps": 1
       },
       {
         "id": "moloch-chain2-thruster",
-        "name": "Floor Thruster",
-        "displayName": "Floor Thruster (Chain 2/2)",
+        "name": "Single Dead Thruster",
+        "libraryExerciseId": "floor-thruster",
+        "displayName": "Single Dead Thruster (Chain 2/2)",
         "damageCoefficient": 14,
         "damageType": "per_rep",
         "targetReps": 1
@@ -4883,40 +4991,44 @@
       {
         "id": "moloch-chain2-snatch",
         "name": "Single Dead Snatch",
+        "libraryExerciseId": "snatch-floor",
         "displayName": "Single Dead Snatch (Chain 2/2)",
         "damageCoefficient": 16,
         "damageType": "per_rep",
-        "targetReps": 1,
-        "libraryExerciseId": "snatch-floor"
+        "targetReps": 1
       },
       {
         "id": "moloch-complex-deadlift",
-        "name": "Floor Deadlift",
-        "displayName": "Floor Deadlift (Complex ×2)",
+        "name": "Single Deadlift",
+        "libraryExerciseId": "floor-deadlift",
+        "displayName": "Single Deadlift (Complex ×2)",
         "damageCoefficient": 10,
         "damageType": "per_rep",
         "targetReps": 2
       },
       {
         "id": "moloch-complex-pull",
-        "name": "Floor Pull",
-        "displayName": "Floor Pull (Complex ×2)",
+        "name": "Single Dead Pull",
+        "libraryExerciseId": "floor-pull",
+        "displayName": "Single Dead Pull (Complex ×2)",
         "damageCoefficient": 12,
         "damageType": "per_rep",
         "targetReps": 2
       },
       {
         "id": "moloch-complex-clean-push",
-        "name": "Floor Clean / Push",
-        "displayName": "Floor Clean / Push (Complex ×2)",
+        "name": "Single Dead Clean / Push",
+        "libraryExerciseId": "floor-clean-push",
+        "displayName": "Single Dead Clean / Push (Complex ×2)",
         "damageCoefficient": 14,
         "damageType": "per_rep",
         "targetReps": 2
       },
       {
         "id": "moloch-complex-thruster",
-        "name": "Floor Thruster",
-        "displayName": "Floor Thruster (Complex ×2)",
+        "name": "Single Dead Thruster",
+        "libraryExerciseId": "floor-thruster",
+        "displayName": "Single Dead Thruster (Complex ×2)",
         "damageCoefficient": 14,
         "damageType": "per_rep",
         "targetReps": 2
@@ -4924,11 +5036,11 @@
       {
         "id": "moloch-complex-snatch",
         "name": "Single Dead Snatch",
+        "libraryExerciseId": "snatch-floor",
         "displayName": "Single Dead Snatch (Complex ×2)",
         "damageCoefficient": 16,
         "damageType": "per_rep",
-        "targetReps": 2,
-        "libraryExerciseId": "snatch-floor"
+        "targetReps": 2
       }
     ],
     "finisher": {
@@ -5269,5 +5381,631 @@
       "scheme": "5 Rounds — TBD"
     },
     "sequenceType": "chain"
+  },
+  "judge-verdict": {
+    "id": "judge-verdict",
+    "name": "The Judge's Verdict",
+    "description": "Five rounds of a continuous six-movement double-bell chain, with five repetitions per movement and five lunges per leg.",
+    "difficulty": 5,
+    "estimatedMinutesRange": [
+      16,
+      21
+    ],
+    "gearWeightKg": 18,
+    "gearCount": 2,
+    "rounds": 5,
+    "restSeconds": 90,
+    "roundBonusDamage": 65,
+    "targetTimeSeconds": 1140,
+    "focus": [
+      "Double-Bell Technique",
+      "Unilateral Leg Strength",
+      "Continuous Movement"
+    ],
+    "sequenceType": "chain",
+    "exercises": [
+      {
+        "id": "judge-double-snatch",
+        "name": "Double Snatch",
+        "libraryExerciseId": "double-snatch",
+        "targetReps": 5,
+        "usesGearCount": 2,
+        "damageCoefficient": 16,
+        "damageType": "flat"
+      },
+      {
+        "id": "judge-handover-lunge",
+        "name": "Double Handover Lunge",
+        "libraryExerciseId": "double-handover-lunge",
+        "displayName": "Double Handover Lunge (5 Each Leg)",
+        "targetReps": 10,
+        "usesGearCount": 2,
+        "damageCoefficient": 10,
+        "damageType": "flat"
+      },
+      {
+        "id": "judge-double-clean",
+        "name": "Double Clean",
+        "libraryExerciseId": "double-clean",
+        "targetReps": 5,
+        "usesGearCount": 2,
+        "damageCoefficient": 14,
+        "damageType": "flat"
+      },
+      {
+        "id": "judge-front-rack-squat",
+        "name": "Double Front Squat",
+        "libraryExerciseId": "double-front-squat",
+        "displayName": "Double Front Rack Squat",
+        "targetReps": 5,
+        "usesGearCount": 2,
+        "damageCoefficient": 14,
+        "damageType": "flat"
+      },
+      {
+        "id": "judge-double-jerk",
+        "name": "Double Jerk",
+        "libraryExerciseId": "double-jerk",
+        "targetReps": 5,
+        "usesGearCount": 2,
+        "damageCoefficient": 16,
+        "damageType": "flat"
+      },
+      {
+        "id": "judge-double-swing",
+        "name": "Double Swing",
+        "libraryExerciseId": "double-swing",
+        "targetReps": 5,
+        "usesGearCount": 2,
+        "damageCoefficient": 10,
+        "damageType": "flat"
+      }
+    ],
+    "finisher": {
+      "name": "The Verdict",
+      "scheme": "5 Rounds"
+    }
+  },
+  "ravager-assault": {
+    "id": "ravager-assault",
+    "name": "The Ravager",
+    "description": "Five sets of the same sequence: Burpee x4, Clean x2, Jerk x2, Deadlift x4, Clean x2, Jerk x2, Deep Snatch x4, Clean x2, Jerk x2.",
+    "difficulty": 4,
+    "estimatedMinutesRange": [
+      6,
+      10
+    ],
+    "gearWeightKg": 20,
+    "gearCount": 1,
+    "rounds": 5,
+    "restSeconds": 90,
+    "roundBonusDamage": 170,
+    "targetTimeSeconds": 450,
+    "stepLabel": "Set",
+    "focus": [
+      "Floor-to-Overhead Power",
+      "Technical Precision",
+      "Sustained Output"
+    ],
+    "sequenceType": "chain",
+    "exercises": [
+      {
+        "id": "ravager-r1-burpee",
+        "name": "Burpee",
+        "libraryExerciseId": "burpee",
+        "targetReps": 4,
+        "damageCoefficient": 12,
+        "damageType": "per_rep",
+        "usesGearCount": 0
+      },
+      {
+        "id": "ravager-r1-clean-a",
+        "name": "Clean",
+        "libraryExerciseId": "clean",
+        "targetReps": 2,
+        "damageCoefficient": 14,
+        "damageType": "per_rep",
+        "usesGearCount": 1
+      },
+      {
+        "id": "ravager-r1-jerk-a",
+        "name": "Jerk",
+        "libraryExerciseId": "jerk",
+        "targetReps": 2,
+        "damageCoefficient": 16,
+        "damageType": "per_rep",
+        "usesGearCount": 1
+      },
+      {
+        "id": "ravager-r1-deadlift",
+        "name": "Single Deadlift",
+        "libraryExerciseId": "floor-deadlift",
+        "targetReps": 4,
+        "damageCoefficient": 10,
+        "damageType": "per_rep",
+        "usesGearCount": 1
+      },
+      {
+        "id": "ravager-r1-clean-b",
+        "name": "Clean",
+        "libraryExerciseId": "clean",
+        "targetReps": 2,
+        "damageCoefficient": 14,
+        "damageType": "per_rep",
+        "usesGearCount": 1
+      },
+      {
+        "id": "ravager-r1-jerk-b",
+        "name": "Jerk",
+        "libraryExerciseId": "jerk",
+        "targetReps": 2,
+        "damageCoefficient": 16,
+        "damageType": "per_rep",
+        "usesGearCount": 1
+      },
+      {
+        "id": "ravager-r1-deep-snatch",
+        "name": "Deep Snatch",
+        "libraryExerciseId": "deep-snatch",
+        "targetReps": 4,
+        "damageCoefficient": 16,
+        "damageType": "per_rep",
+        "usesGearCount": 1
+      },
+      {
+        "id": "ravager-r1-clean-c",
+        "name": "Clean",
+        "libraryExerciseId": "clean",
+        "targetReps": 2,
+        "damageCoefficient": 14,
+        "damageType": "per_rep",
+        "usesGearCount": 1
+      },
+      {
+        "id": "ravager-r1-jerk-c",
+        "name": "Jerk",
+        "libraryExerciseId": "jerk",
+        "targetReps": 2,
+        "damageCoefficient": 16,
+        "damageType": "per_rep",
+        "usesGearCount": 1
+      }
+    ],
+    "sections": [
+      {
+        "label": "Round 1 - One Continuous Chain",
+        "exercises": [
+          {
+            "id": "ravager-r1-burpee",
+            "name": "Burpee",
+            "libraryExerciseId": "burpee",
+            "targetReps": 4,
+            "damageCoefficient": 12,
+            "damageType": "per_rep",
+            "usesGearCount": 0
+          },
+          {
+            "id": "ravager-r1-clean-a",
+            "name": "Clean",
+            "libraryExerciseId": "clean",
+            "targetReps": 2,
+            "damageCoefficient": 14,
+            "damageType": "per_rep",
+            "usesGearCount": 1
+          },
+          {
+            "id": "ravager-r1-jerk-a",
+            "name": "Jerk",
+            "libraryExerciseId": "jerk",
+            "targetReps": 2,
+            "damageCoefficient": 16,
+            "damageType": "per_rep",
+            "usesGearCount": 1
+          },
+          {
+            "id": "ravager-r1-deadlift",
+            "name": "Single Deadlift",
+            "libraryExerciseId": "floor-deadlift",
+            "targetReps": 4,
+            "damageCoefficient": 10,
+            "damageType": "per_rep",
+            "usesGearCount": 1
+          },
+          {
+            "id": "ravager-r1-clean-b",
+            "name": "Clean",
+            "libraryExerciseId": "clean",
+            "targetReps": 2,
+            "damageCoefficient": 14,
+            "damageType": "per_rep",
+            "usesGearCount": 1
+          },
+          {
+            "id": "ravager-r1-jerk-b",
+            "name": "Jerk",
+            "libraryExerciseId": "jerk",
+            "targetReps": 2,
+            "damageCoefficient": 16,
+            "damageType": "per_rep",
+            "usesGearCount": 1
+          },
+          {
+            "id": "ravager-r1-deep-snatch",
+            "name": "Deep Snatch",
+            "libraryExerciseId": "deep-snatch",
+            "targetReps": 4,
+            "damageCoefficient": 16,
+            "damageType": "per_rep",
+            "usesGearCount": 1
+          },
+          {
+            "id": "ravager-r1-clean-c",
+            "name": "Clean",
+            "libraryExerciseId": "clean",
+            "targetReps": 2,
+            "damageCoefficient": 14,
+            "damageType": "per_rep",
+            "usesGearCount": 1
+          },
+          {
+            "id": "ravager-r1-jerk-c",
+            "name": "Jerk",
+            "libraryExerciseId": "jerk",
+            "targetReps": 2,
+            "damageCoefficient": 16,
+            "damageType": "per_rep",
+            "usesGearCount": 1
+          }
+        ]
+      },
+      {
+        "label": "Round 2 - One Continuous Chain",
+        "exercises": [
+          {
+            "id": "ravager-r2-burpee",
+            "name": "Burpee",
+            "libraryExerciseId": "burpee",
+            "targetReps": 4,
+            "damageCoefficient": 12,
+            "damageType": "per_rep",
+            "usesGearCount": 0
+          },
+          {
+            "id": "ravager-r2-clean-a",
+            "name": "Clean",
+            "libraryExerciseId": "clean",
+            "targetReps": 2,
+            "damageCoefficient": 14,
+            "damageType": "per_rep",
+            "usesGearCount": 1
+          },
+          {
+            "id": "ravager-r2-jerk-a",
+            "name": "Jerk",
+            "libraryExerciseId": "jerk",
+            "targetReps": 2,
+            "damageCoefficient": 16,
+            "damageType": "per_rep",
+            "usesGearCount": 1
+          },
+          {
+            "id": "ravager-r2-deadlift",
+            "name": "Single Deadlift",
+            "libraryExerciseId": "floor-deadlift",
+            "targetReps": 4,
+            "damageCoefficient": 10,
+            "damageType": "per_rep",
+            "usesGearCount": 1
+          },
+          {
+            "id": "ravager-r2-clean-b",
+            "name": "Clean",
+            "libraryExerciseId": "clean",
+            "targetReps": 2,
+            "damageCoefficient": 14,
+            "damageType": "per_rep",
+            "usesGearCount": 1
+          },
+          {
+            "id": "ravager-r2-jerk-b",
+            "name": "Jerk",
+            "libraryExerciseId": "jerk",
+            "targetReps": 2,
+            "damageCoefficient": 16,
+            "damageType": "per_rep",
+            "usesGearCount": 1
+          },
+          {
+            "id": "ravager-r2-deep-snatch",
+            "name": "Deep Snatch",
+            "libraryExerciseId": "deep-snatch",
+            "targetReps": 4,
+            "damageCoefficient": 16,
+            "damageType": "per_rep",
+            "usesGearCount": 1
+          },
+          {
+            "id": "ravager-r2-clean-c",
+            "name": "Clean",
+            "libraryExerciseId": "clean",
+            "targetReps": 2,
+            "damageCoefficient": 14,
+            "damageType": "per_rep",
+            "usesGearCount": 1
+          },
+          {
+            "id": "ravager-r2-jerk-c",
+            "name": "Jerk",
+            "libraryExerciseId": "jerk",
+            "targetReps": 2,
+            "damageCoefficient": 16,
+            "damageType": "per_rep",
+            "usesGearCount": 1
+          }
+        ]
+      },
+      {
+        "label": "Round 3 - One Continuous Chain",
+        "exercises": [
+          {
+            "id": "ravager-r3-burpee",
+            "name": "Burpee",
+            "libraryExerciseId": "burpee",
+            "targetReps": 4,
+            "damageCoefficient": 12,
+            "damageType": "per_rep",
+            "usesGearCount": 0
+          },
+          {
+            "id": "ravager-r3-clean-a",
+            "name": "Clean",
+            "libraryExerciseId": "clean",
+            "targetReps": 2,
+            "damageCoefficient": 14,
+            "damageType": "per_rep",
+            "usesGearCount": 1
+          },
+          {
+            "id": "ravager-r3-jerk-a",
+            "name": "Jerk",
+            "libraryExerciseId": "jerk",
+            "targetReps": 2,
+            "damageCoefficient": 16,
+            "damageType": "per_rep",
+            "usesGearCount": 1
+          },
+          {
+            "id": "ravager-r3-deadlift",
+            "name": "Single Deadlift",
+            "libraryExerciseId": "floor-deadlift",
+            "targetReps": 4,
+            "damageCoefficient": 10,
+            "damageType": "per_rep",
+            "usesGearCount": 1
+          },
+          {
+            "id": "ravager-r3-clean-b",
+            "name": "Clean",
+            "libraryExerciseId": "clean",
+            "targetReps": 2,
+            "damageCoefficient": 14,
+            "damageType": "per_rep",
+            "usesGearCount": 1
+          },
+          {
+            "id": "ravager-r3-jerk-b",
+            "name": "Jerk",
+            "libraryExerciseId": "jerk",
+            "targetReps": 2,
+            "damageCoefficient": 16,
+            "damageType": "per_rep",
+            "usesGearCount": 1
+          },
+          {
+            "id": "ravager-r3-deep-snatch",
+            "name": "Deep Snatch",
+            "libraryExerciseId": "deep-snatch",
+            "targetReps": 4,
+            "damageCoefficient": 16,
+            "damageType": "per_rep",
+            "usesGearCount": 1
+          },
+          {
+            "id": "ravager-r3-clean-c",
+            "name": "Clean",
+            "libraryExerciseId": "clean",
+            "targetReps": 2,
+            "damageCoefficient": 14,
+            "damageType": "per_rep",
+            "usesGearCount": 1
+          },
+          {
+            "id": "ravager-r3-jerk-c",
+            "name": "Jerk",
+            "libraryExerciseId": "jerk",
+            "targetReps": 2,
+            "damageCoefficient": 16,
+            "damageType": "per_rep",
+            "usesGearCount": 1
+          }
+        ]
+      },
+      {
+        "label": "Round 4 - One Continuous Chain",
+        "exercises": [
+          {
+            "id": "ravager-r4-burpee",
+            "name": "Burpee",
+            "libraryExerciseId": "burpee",
+            "targetReps": 4,
+            "damageCoefficient": 12,
+            "damageType": "per_rep",
+            "usesGearCount": 0
+          },
+          {
+            "id": "ravager-r4-clean-a",
+            "name": "Clean",
+            "libraryExerciseId": "clean",
+            "targetReps": 2,
+            "damageCoefficient": 14,
+            "damageType": "per_rep",
+            "usesGearCount": 1
+          },
+          {
+            "id": "ravager-r4-jerk-a",
+            "name": "Jerk",
+            "libraryExerciseId": "jerk",
+            "targetReps": 2,
+            "damageCoefficient": 16,
+            "damageType": "per_rep",
+            "usesGearCount": 1
+          },
+          {
+            "id": "ravager-r4-deadlift",
+            "name": "Single Deadlift",
+            "libraryExerciseId": "floor-deadlift",
+            "targetReps": 4,
+            "damageCoefficient": 10,
+            "damageType": "per_rep",
+            "usesGearCount": 1
+          },
+          {
+            "id": "ravager-r4-clean-b",
+            "name": "Clean",
+            "libraryExerciseId": "clean",
+            "targetReps": 2,
+            "damageCoefficient": 14,
+            "damageType": "per_rep",
+            "usesGearCount": 1
+          },
+          {
+            "id": "ravager-r4-jerk-b",
+            "name": "Jerk",
+            "libraryExerciseId": "jerk",
+            "targetReps": 2,
+            "damageCoefficient": 16,
+            "damageType": "per_rep",
+            "usesGearCount": 1
+          },
+          {
+            "id": "ravager-r4-deep-snatch",
+            "name": "Deep Snatch",
+            "libraryExerciseId": "deep-snatch",
+            "targetReps": 4,
+            "damageCoefficient": 16,
+            "damageType": "per_rep",
+            "usesGearCount": 1
+          },
+          {
+            "id": "ravager-r4-clean-c",
+            "name": "Clean",
+            "libraryExerciseId": "clean",
+            "targetReps": 2,
+            "damageCoefficient": 14,
+            "damageType": "per_rep",
+            "usesGearCount": 1
+          },
+          {
+            "id": "ravager-r4-jerk-c",
+            "name": "Jerk",
+            "libraryExerciseId": "jerk",
+            "targetReps": 2,
+            "damageCoefficient": 16,
+            "damageType": "per_rep",
+            "usesGearCount": 1
+          }
+        ]
+      },
+      {
+        "label": "Round 5 - One Continuous Chain",
+        "exercises": [
+          {
+            "id": "ravager-r5-burpee",
+            "name": "Burpee",
+            "libraryExerciseId": "burpee",
+            "targetReps": 4,
+            "damageCoefficient": 12,
+            "damageType": "per_rep",
+            "usesGearCount": 0
+          },
+          {
+            "id": "ravager-r5-clean-a",
+            "name": "Clean",
+            "libraryExerciseId": "clean",
+            "targetReps": 2,
+            "damageCoefficient": 14,
+            "damageType": "per_rep",
+            "usesGearCount": 1
+          },
+          {
+            "id": "ravager-r5-jerk-a",
+            "name": "Jerk",
+            "libraryExerciseId": "jerk",
+            "targetReps": 2,
+            "damageCoefficient": 16,
+            "damageType": "per_rep",
+            "usesGearCount": 1
+          },
+          {
+            "id": "ravager-r5-deadlift",
+            "name": "Single Deadlift",
+            "libraryExerciseId": "floor-deadlift",
+            "targetReps": 4,
+            "damageCoefficient": 10,
+            "damageType": "per_rep",
+            "usesGearCount": 1
+          },
+          {
+            "id": "ravager-r5-clean-b",
+            "name": "Clean",
+            "libraryExerciseId": "clean",
+            "targetReps": 2,
+            "damageCoefficient": 14,
+            "damageType": "per_rep",
+            "usesGearCount": 1
+          },
+          {
+            "id": "ravager-r5-jerk-b",
+            "name": "Jerk",
+            "libraryExerciseId": "jerk",
+            "targetReps": 2,
+            "damageCoefficient": 16,
+            "damageType": "per_rep",
+            "usesGearCount": 1
+          },
+          {
+            "id": "ravager-r5-deep-snatch",
+            "name": "Deep Snatch",
+            "libraryExerciseId": "deep-snatch",
+            "targetReps": 4,
+            "damageCoefficient": 16,
+            "damageType": "per_rep",
+            "usesGearCount": 1
+          },
+          {
+            "id": "ravager-r5-clean-c",
+            "name": "Clean",
+            "libraryExerciseId": "clean",
+            "targetReps": 2,
+            "damageCoefficient": 14,
+            "damageType": "per_rep",
+            "usesGearCount": 1
+          },
+          {
+            "id": "ravager-r5-jerk-c",
+            "name": "Jerk",
+            "libraryExerciseId": "jerk",
+            "targetReps": 2,
+            "damageCoefficient": 16,
+            "damageType": "per_rep",
+            "usesGearCount": 1
+          }
+        ]
+      }
+    ],
+    "finisher": {
+      "name": "The Ravager",
+      "scheme": "5 Sets"
+    }
   }
 }

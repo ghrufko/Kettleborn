@@ -41,14 +41,27 @@ export const createProgressSlice: StateCreator<AppStore, [], [], ProgressSlice> 
     const chronicle = await ChronicleRepository.reset(LOCAL_USER_ID);
     const user = await UserRepository.resetProgression(LOCAL_USER_ID);
 
+    const monsters = contentEngine.getAllMonsters();
+    const freshProgress: Record<string, MonsterProgress> = Object.fromEntries(
+      monsters.map((monster) => [monster.id, {
+        userId: LOCAL_USER_ID,
+        monsterId: monster.id,
+        huntsCompleted: 0,
+        huntsTotal: monster.hunts.length,
+        defeated: false,
+      }])
+    ) as Record<string, MonsterProgress>;
+    for (const progress of Object.values(freshProgress)) {
+      await ProgressRepository.upsertMonsterProgress(progress);
+    }
+
     set({
+      monsterProgress: freshProgress,
       chronicle,
       user: user ?? get().user,
       lastResult: null,
       lastHuntSummary: null,
     });
-
-    await get().loadAllMonsterProgress();
   },
 
   /**

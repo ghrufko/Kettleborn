@@ -36,8 +36,10 @@ export function SettingsScreen({ navigation }: Props) {
   const resetCampaignProgress = useAppStore((state) => state.resetCampaignProgress);
   const [isResetting, setIsResetting] = useState(false);
   const [resetDialogVisible, setResetDialogVisible] = useState(false);
+  const [resetError, setResetError] = useState<string | null>(null);
 
   const confirmResetCampaign = () => {
+    setResetError(null);
     setResetDialogVisible(true);
   };
 
@@ -46,6 +48,8 @@ export function SettingsScreen({ navigation }: Props) {
     setIsResetting(true);
     try {
       await resetCampaignProgress();
+    } catch {
+      setResetError('Campaign progress could not be reset. Please try again.');
     } finally {
       setIsResetting(false);
     }
@@ -128,6 +132,7 @@ export function SettingsScreen({ navigation }: Props) {
             Erases campaign progress, defeated/unlocked monster state, and Personal Best records.
             Your app settings and equipment are kept.
           </Text>
+          {resetError ? <Text style={styles.resetError}>{resetError}</Text> : null}
         </GlassCard>
       </ScrollView>
       <ConfirmDialog
@@ -211,5 +216,11 @@ const styles = StyleSheet.create({
     fontSize: fontSize.sm,
     color: colors.text.muted,
     marginTop: spacing.sm,
+  },
+  resetError: {
+    marginTop: spacing.sm,
+    color: colors.ember.base,
+    fontFamily: fontFamily.bodyRegular,
+    fontSize: fontSize.sm,
   },
 });

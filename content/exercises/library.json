@@ -104,9 +104,61 @@
     ]
   },
   {
+    "id": "double-deadlift-side",
+    "name": "Double Deadlift Side",
+    "description": "A two-kettlebell deadlift performed with the bells positioned outside the feet rather than centered, adding an anti-rotation demand.",
+    "musclesTrained": [
+      "Hamstrings",
+      "Glutes",
+      "Obliques",
+      "Grip"
+    ],
+    "benefits": [
+      "Builds hip-hinge strength unilaterally",
+      "Trains anti-rotation core stability",
+      "Carries over to real-world asymmetric lifting"
+    ],
+    "commonMistakes": [
+      "Rounding the spine to reach the bell",
+      "Letting the hips rotate toward the kettlebell",
+      "Rushing the lockout instead of standing fully tall"
+    ],
+    "category": "Grind",
+    "recommendedWeightRangeKg": [
+      16,
+      24
+    ]
+  },
+  {
     "id": "farmer-carry",
     "name": "Farmer Carry",
     "description": "Walking a fixed distance while carrying one or two kettlebells at the sides with a tall, braced posture.",
+    "musclesTrained": [
+      "Forearms",
+      "Traps",
+      "Core",
+      "Legs"
+    ],
+    "benefits": [
+      "Builds raw grip endurance",
+      "Reinforces postural strength under load",
+      "Simple, brutally effective conditioning tool"
+    ],
+    "commonMistakes": [
+      "Letting the shoulders round forward",
+      "Taking short, hurried steps instead of a controlled pace",
+      "Leaning to one side with an uneven load"
+    ],
+    "category": "Carry",
+    "recommendedWeightRangeKg": [
+      20,
+      32
+    ]
+  },
+  {
+    "id": "double-farmer-carry",
+    "name": "Double Farmer Carry",
+    "description": "Walking a fixed distance while carrying two kettlebells at the sides with a tall, braced posture.",
     "musclesTrained": [
       "Forearms",
       "Traps",
@@ -728,6 +780,32 @@
     ]
   },
   {
+    "id": "double-handover-lunge",
+    "name": "Double Handover Lunge",
+    "category": "Grind",
+    "description": "A lunge performed with two kettlebells, with each leg working in turn.",
+    "musclesTrained": [
+      "Quads",
+      "Glutes",
+      "Hamstrings",
+      "Core"
+    ],
+    "benefits": [
+      "Adds real single-leg strength work into an otherwise hip-dominant complex",
+      "Builds balance and control under load, not just raw output",
+      "Gives the grip and shoulders a brief recovery window mid-round without stopping the clock"
+    ],
+    "commonMistakes": [
+      "Letting the front knee cave inward on the way up",
+      "Taking too short a step and losing balance",
+      "Rushing the rep count instead of controlling the descent"
+    ],
+    "recommendedWeightRangeKg": [
+      12,
+      20
+    ]
+  },
+  {
     "id": "double-push-press",
     "name": "Double Push Press",
     "category": "Combo",
@@ -1173,7 +1251,7 @@
   },
   {
     "id": "floor-deadlift",
-    "name": "Floor Deadlift",
+    "name": "Single Deadlift",
     "category": "Grind",
     "description": "A kettlebell deadlifted from a dead stop on the floor to standing, hips driving the bell up rather than the arms, resetting fully between reps.",
     "musclesTrained": [
@@ -1225,7 +1303,7 @@
   },
   {
     "id": "floor-clean-push",
-    "name": "Floor Clean / Push",
+    "name": "Single Dead Clean / Push",
     "category": "Combo",
     "description": "A kettlebell cleaned from a dead stop on the floor, immediately followed by an overhead push before resetting for the next rep.",
     "musclesTrained": [
@@ -1329,7 +1407,7 @@
   },
   {
     "id": "floor-thruster",
-    "name": "Floor Thruster",
+    "name": "Single Dead Thruster",
     "category": "Combo",
     "description": "A kettlebell cleaned from a dead stop on the floor directly into a thruster — squat and overhead drive in one motion — before resetting for the next rep.",
     "musclesTrained": [
@@ -1538,7 +1616,7 @@
   },
   {
     "id": "floor-pull",
-    "name": "Floor Pull",
+    "name": "Single Dead Pull",
     "category": "Grind",
     "description": "A single kettlebell pulled explosively off the floor to about hip height with a bent-arm row, then returned to a dead stop for the next rep.",
     "musclesTrained": [

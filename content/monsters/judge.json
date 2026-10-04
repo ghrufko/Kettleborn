@@ -28,7 +28,7 @@
       "order": 1,
       "name": "First Encounter",
       "locked": false,
-      "workoutId": null
+      "workoutId": "judge-verdict"
     },
     {
       "id": "judge-second-encounter",
@@ -36,7 +36,7 @@
       "order": 2,
       "name": "Second Encounter",
       "locked": false,
-      "workoutId": null
+      "workoutId": "judge-verdict"
     },
     {
       "id": "judge-final-hunt",
@@ -44,7 +44,7 @@
       "order": 3,
       "name": "Final Hunt",
       "locked": false,
-      "workoutId": null
+      "workoutId": "judge-verdict"
     }
   ],
   "portraitAsset": "judge"

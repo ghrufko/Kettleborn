@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Image, Pressable, TextInput } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import { HuntStackParamList } from '../../navigation/types';
@@ -178,6 +179,7 @@ function WeightStepper({
 }
 
 export function HuntOverviewScreen({ route, navigation }: Props) {
+  const insets = useSafeAreaInsets();
   const { monsterId, huntId } = route.params;
   const hunt = contentEngine.getHunt(monsterId, huntId);
   const monster = contentEngine.getMonster(monsterId);
@@ -511,7 +513,7 @@ export function HuntOverviewScreen({ route, navigation }: Props) {
       atmosphericColor={getAtmosphericColor(monster.personality, monster.accentColor)}
     >
       <Header title={hunt.name} onBack={() => navigation.goBack()} />
-      <ScrollView contentContainerStyle={styles.content}>
+      <ScrollView style={styles.scrollView} contentContainerStyle={styles.content}>
         <View style={styles.briefHeader}>
           <View style={styles.portrait}>
             {portraitSource ? (
@@ -935,7 +937,7 @@ export function HuntOverviewScreen({ route, navigation }: Props) {
         </GlassCard>
       </ScrollView>
 
-      <View style={styles.footer}>
+      <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom, spacing.md) }]}>
         <Button
           label="Begin Hunt"
           disabled={isProgressionLocked ? !lockedConfig : !isWeightValid || !isWeightBValid}
@@ -957,6 +959,10 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     paddingBottom: spacing.xxl,
     gap: spacing.sm,
+  },
+  scrollView: {
+    flex: 1,
+    minHeight: 0,
   },
   missingState: {
     flex: 1,
@@ -988,10 +994,10 @@ const styles = StyleSheet.create({
   },
   portraitImage: {
     position: 'absolute',
-    left: '-4%',
-    top: '-4%',
-    width: '108%',
-    height: '108%',
+    left: 0,
+    top: 0,
+    width: '100%',
+    height: '100%',
   },
   portraitInitial: {
     fontFamily: fontFamily.displayBold,

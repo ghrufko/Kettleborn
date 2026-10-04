@@ -29,7 +29,7 @@ export interface ProgressSlice {
   /**
    * Campaign Reset (Settings): wipes campaign/monster progress, Personal
    * Best-bearing workout history, and lifetime Chronicle/XP records, then
-   * rebuilds fresh new-player rows via loadAllMonsterProgress. Does not
+   * rebuilds and publishes fresh new-player rows. Does not
    * touch app/user settings, exercise library, or campaign content.
    */
   resetCampaignProgress: () => Promise<void>;

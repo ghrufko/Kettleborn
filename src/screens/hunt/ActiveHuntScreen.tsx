@@ -706,7 +706,12 @@ function ActiveHuntSession({
         </Animated.View>
       ) : null}
 
-      <View style={[styles.trainingHud, styles.content]}>
+      <ScrollView
+        style={styles.trainingHud}
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator
+        keyboardShouldPersistTaps="handled"
+      >
         {/* Boss */}
         {/* Boss portrait and status. */}
         <View style={styles.portraitContainer}>
@@ -1041,9 +1046,9 @@ function ActiveHuntSession({
             </GlassCard>
           </>
         )}
-      </View>
+      </ScrollView>
 
-      {/* Fixed controls stay visible below the compact, non-scrollable training HUD. */}
+      {/* Controls have their own safe-area-reserved row below the scrollable workout HUD. */}
       <View style={styles.fixedControls}>
         {session.phase !== 'complete' && session.phase !== 'countdown' ? (
           /* Real-device follow-up: the timer and the round button used to
@@ -1261,10 +1266,10 @@ const styles = StyleSheet.create({
   },
   portraitImage: {
     position: 'absolute',
-    left: '-4%',
-    top: '-4%',
-    width: '108%',
-    height: '108%',
+    left: 0,
+    top: 0,
+    width: '100%',
+    height: '100%',
   },
   portraitInitial: {
     fontFamily: fontFamily.displayBold,
