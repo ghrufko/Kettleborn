@@ -5,6 +5,7 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import { HuntStackParamList } from '../../navigation/types';
 import { Header, Button, GlassCard, AppBackground } from '../../components/core';
+import { MonsterPortraitImage } from '../../components/monster/MonsterPortraitImage';
 import { contentEngine } from '../../../engines/content';
 import { getMonsterPortrait } from '../../constants/monsterPortraits';
 import { getTerritoryArt, TERRITORY_ACCENT } from '../../constants/territoryArt';
@@ -364,7 +365,7 @@ function BossHeroPage({
     >
       <View style={styles.heroPageArtWrap}>
         {portraitSource ? (
-          <Image source={portraitSource} style={styles.heroPageImage} resizeMode="cover" />
+          <MonsterPortraitImage source={portraitSource} style={styles.heroPageImage} />
         ) : (
           <View style={[styles.heroPageFallback, { backgroundColor: `${accentColor}33` }]}>
             <Text style={styles.heroPageFallbackInitial}>{isLocked ? '?' : monster.name.charAt(0)}</Text>

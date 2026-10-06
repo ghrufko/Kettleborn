@@ -1,0 +1,11 @@
+{
+  "monsterId": "ifrit",
+  "origin": "The Colossus stands among stones whose builders left no account of their work.",
+  "story": "The ruin has vanished around it, not beneath it.",
+  "weakness": "A burden moves only when it is borne in full.",
+  "quotes": [
+    "What remains is still heavy."
+  ],
+  "unlockText": "The trail to The Pillar That Remains is open.",
+  "victoryText": "The Pillar That Remains falls silent."
+}

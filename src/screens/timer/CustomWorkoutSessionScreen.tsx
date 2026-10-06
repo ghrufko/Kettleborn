@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Alert, BackHandler } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Alert, BackHandler, Pressable } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useFocusEffect } from '@react-navigation/native';
 import { TimerStackParamList } from '../../navigation/types';
@@ -8,6 +8,7 @@ import { useAppStore } from '../../store';
 import { useWorkoutSession } from '../../../engines/session/useWorkoutSession';
 import { customWorkoutToWorkout } from '../../utils/customWorkoutSession';
 import { getExerciseBreakdown } from '../../utils/exerciseBreakdown';
+import { contentEngine } from '../../../engines/content';
 import { colors, fontFamily, fontSize, spacing } from '../../theme';
 
 type Props = NativeStackScreenProps<TimerStackParamList, 'CustomWorkoutSession'>;
@@ -153,9 +154,25 @@ export function CustomWorkoutSessionScreen({ route, navigation }: Props) {
               Round {session.currentRound} / {session.totalRounds}
             </Text>
             {currentExercises.map((exercise) => (
-              <Text key={exercise.id} style={styles.exerciseLine}>
-                {exercise.targetReps} × {exercise.displayName ?? exercise.name}
-              </Text>
+              <Pressable
+                key={exercise.id}
+                onPress={() => {
+                  const entry = exercise.libraryExerciseId
+                    ? contentEngine.getExerciseLibraryEntry(exercise.libraryExerciseId)
+                    : contentEngine.getExerciseLibraryEntryByName(exercise.name);
+                  if (entry) {
+                    (navigation.getParent() as any)?.navigate('HuntTab', {
+                      screen: 'ExerciseDetail',
+                      params: { exerciseId: entry.id },
+                    });
+                  }
+                }}
+                accessibilityRole="link"
+              >
+                <Text style={styles.exerciseLine}>
+                  {exercise.targetReps} × {exercise.displayName ?? exercise.name}
+                </Text>
+              </Pressable>
             ))}
             <Text style={styles.roundClock}>{formatClock(session.currentRoundElapsedSeconds)}</Text>
           </GlassCard>

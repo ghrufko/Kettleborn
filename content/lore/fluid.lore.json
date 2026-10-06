@@ -1,0 +1,11 @@
+{
+  "monsterId": "fluid",
+  "origin": "It moves through the Ruins where every other line ends in rubble.",
+  "story": "The old pattern continues where the old structure failed.",
+  "weakness": "Continuity survives by changing hands.",
+  "quotes": [
+    "The pause is the only break."
+  ],
+  "unlockText": "The trail to The Current Without End is open.",
+  "victoryText": "The Current Without End falls silent."
+}

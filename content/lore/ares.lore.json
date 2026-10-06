@@ -1,0 +1,11 @@
+{
+  "monsterId": "ares",
+  "origin": "The Breaking is the name left on a threshold whose far side is unmarked.",
+  "story": "The boundary remains while those who meet it change.",
+  "weakness": "A threshold is crossed by meeting it as it is.",
+  "quotes": [
+    "The threshold does not move."
+  ],
+  "unlockText": "The trail to The Narrowing Threshold is open.",
+  "victoryText": "The Narrowing Threshold falls silent."
+}

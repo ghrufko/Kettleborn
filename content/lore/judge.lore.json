@@ -1,0 +1,11 @@
+{
+  "monsterId": "judge",
+  "origin": "The Judge remains at the place where the old measures were kept.",
+  "story": "The sentence was recorded before the hall fell silent.",
+  "weakness": "A verdict loses its mystery when its standard is understood.",
+  "quotes": [
+    "The measure was set before you arrived."
+  ],
+  "unlockText": "The trail to The Verdict Already Written is open.",
+  "victoryText": "The Verdict Already Written falls silent."
+}

@@ -1,0 +1,11 @@
+{
+  "monsterId": "chimera",
+  "origin": "The Duelist appears wherever the old stones divide a path into two equal lines.",
+  "story": "Its measure has room for two sides and no favored one.",
+  "weakness": "Balance exposes every strength that was borrowed.",
+  "quotes": [
+    "No hand may borrow the other’s truth."
+  ],
+  "unlockText": "The trail to The Twofold Measure is open.",
+  "victoryText": "The Twofold Measure falls silent."
+}

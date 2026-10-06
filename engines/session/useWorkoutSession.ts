@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Exercise, Workout } from '../../src/models';
 import { useIntervalClock } from '../timer/useIntervalClock';
+import { getWorkoutRoundExercises } from '../../src/utils/workoutPresentation';
 
 export type SessionStatus = 'active' | 'paused' | 'complete';
 export type SessionPhase = 'countdown' | 'round' | 'resting' | 'transition' | 'complete';
@@ -196,7 +197,7 @@ export function useWorkoutSession(
 
     const round = currentRound;
     const durationSeconds = currentRoundElapsedSeconds;
-    const roundExerciseList = workout.sections?.[round - 1]?.exercises ?? workout.exercises;
+    const roundExerciseList = getWorkoutRoundExercises(workout, round);
     const exercises = roundExerciseList.map((exercise) => ({
       exercise,
       repsCompleted: exercise.targetReps ?? 1,

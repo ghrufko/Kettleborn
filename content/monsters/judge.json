@@ -1,13 +1,13 @@
 {
   "id": "judge",
   "name": "The Judge",
-  "title": "The Warden",
-  "description": "The Judge doesn't announce a verdict — it reads one out, movement by movement, and expects you to already know the sentence. Double Snatch, Handover Lunge, Clean, Squat, Jerk, Swing: the same order, five rounds, no explanation given for why this sequence and not another. It was decided before you arrived. The Judge isn't interested in whether you agree with the ruling. Only in whether you can carry it.",
+  "title": "The Verdict Already Written",
+  "description": "The Judge speaks through an exact sequence whose reason was buried with the court. It asks for no agreement, only a complete answer.",
   "rarity": "boss",
   "personality": "steady",
   "accentColor": "#5a5248",
   "battle": {
-    "hp": 1,
+    "hp": 648,
     "phases": [
       65,
       30

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet, Animated, Image, TextInput } from 'react-native';
+import { View, Text, StyleSheet, Animated, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
@@ -7,6 +7,7 @@ import * as Haptics from 'expo-haptics';
 import { triggerHaptic } from '../../utils/haptics';
 import { HuntStackParamList } from '../../navigation/types';
 import { Button, GlassCard, LevelUpModal, AppBackground } from '../../components/core';
+import { MonsterPortraitImage } from '../../components/monster/MonsterPortraitImage';
 import { ProgressBar } from '../../components/progress';
 import { getAtmosphericColor } from '../../utils/bossPersonality';
 import { contentEngine } from '../../../engines/content';
@@ -238,10 +239,9 @@ export function HuntCompleteScreen({ route, navigation }: Props) {
           <View style={styles.badgeWrap}>
             <Animated.View style={[styles.badge, glow.lg, { transform: [{ scale: trophyPop }] }]}>
               {monster && getMonsterPortrait(monster.portraitAsset) ? (
-                <Image
-                  source={getMonsterPortrait(monster.portraitAsset)}
+                <MonsterPortraitImage
+                  source={getMonsterPortrait(monster.portraitAsset)!}
                   style={styles.badgeImage}
-                  resizeMode="cover"
                 />
               ) : (
                 <Ionicons name="trophy" size={48} color={colors.gold} />

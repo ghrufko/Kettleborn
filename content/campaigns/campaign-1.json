@@ -1,26 +1,26 @@
 {
     "id": "main-campaign",
-    "name": "The Wilds",
+    "name": "THE WILDS",
     "order": 1,
     "monsterIds": [
         "minotaur",
         "leviathan",
-        "behemoth",
         "hydra",
-        "arachne",
         "mammoth",
+        "behemoth",
+        "arachne",
         "basilisk"
     ],
     "finalBossId": "weaver",
     "unlockRequiresCampaignId": null,
-    "tagline": "Seven trials. One Weaver behind all of them.",
-    "introText": "Seven monsters guard the Wilds — strength, endurance, resilience, adaptation, precision, raw weight, and repetition under fatigue. None of them wait for you to be ready. Beyond all seven, something older is watching.",
-    "completionText": "The Wilds are over. Minotaur, Leviathan, Behemoth, Hydra, Arachne, Mammoth, and Basilisk have all fallen — and the Weaver has fallen with them. Whatever you were when you started, you are not that anymore.",
+    "tagline": "Seven trials. The first laws of the hunt.",
+    "introText": "THE WILDS are alive with instinct, weight, and repetition. Here the hunter learns that strength alone cannot carry the whole path.",
+    "completionText": "Minotaur, Leviathan, Hydra, Mammoth, Behemoth, Arachne, and Basilisk have each yielded their trial. The paths grow quiet; the marks beyond them do not.",
     "heroImageAsset": "territory-wilds",
     "territoryLore": {
-        "theTerritory": "The Wilds don't remember the men who came before you. Every trail here belongs to something with teeth.",
-        "whatDwellsHere": "Old muscle, older instinct. Creatures shaped by hunger and repetition — no strategy, no mercy, just weight and motion, over and over, until something breaks.",
-        "huntersPurpose": "You come here to prove your body still answers when it's told to keep going. There is no shortcut through the Wilds. Only through.",
-        "transition": "Choose your contract. The ground doesn't care which one you pick."
+        "theTerritory": "THE WILDS are a living country of trail, water, and tooth. Nothing here remembers who passed before.",
+        "whatDwellsHere": "Predators and old forces answer with hunger, pressure, rhythm, and weight. Their trials are physical, immediate, and never impressed by strength alone.",
+        "huntersPurpose": "Learn pace, grip, endurance, and control while the ground is still tangible beneath you.",
+        "transition": "Past the living trails, the stone bears marks shaped like the same trials."
     }
 }

@@ -1,0 +1,11 @@
+{
+  "monsterId": "descent",
+  "origin": "The first stair is visible. No account agrees on where the last one rests.",
+  "story": "The path can be counted, even when its end cannot.",
+  "weakness": "The descent can be read one rung at a time.",
+  "quotes": [
+    "Down is still a direction."
+  ],
+  "unlockText": "The trail to The Last Stair is open.",
+  "victoryText": "The Last Stair falls silent."
+}

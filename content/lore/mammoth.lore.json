@@ -1,0 +1,11 @@
+{
+  "monsterId": "mammoth",
+  "origin": "Its tracks cross the Wilds in a line too old to belong to any living herd.",
+  "story": "The burden remains after the tracks have vanished.",
+  "weakness": "The weight cannot be hurried into surrender.",
+  "quotes": [
+    "The clock has no lungs."
+  ],
+  "unlockText": "The trail to The Unspent Weight is open.",
+  "victoryText": "The Unspent Weight falls silent."
+}

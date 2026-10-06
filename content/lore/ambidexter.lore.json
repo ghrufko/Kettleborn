@@ -1,0 +1,11 @@
+{
+  "monsterId": "ambidexter",
+  "origin": "The Two-Faced is carved into a threshold that can be crossed from either side.",
+  "story": "Both faces see the same movement from opposite ends.",
+  "weakness": "Neither side can testify for the other.",
+  "quotes": [
+    "Both faces saw the same failure."
+  ],
+  "unlockText": "The trail to The Twin Witness is open.",
+  "victoryText": "The Twin Witness falls silent."
+}

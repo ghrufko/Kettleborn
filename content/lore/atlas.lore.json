@@ -1,0 +1,11 @@
+{
+  "monsterId": "atlas",
+  "origin": "Its decrees remain cut into stone where the hall around them has fallen.",
+  "story": "The command is older than the voice that gave it.",
+  "weakness": "An order can command motion, not conviction.",
+  "quotes": [
+    "The command is older than the voice."
+  ],
+  "unlockText": "The trail to The Decree in Stone is open.",
+  "victoryText": "The Decree in Stone falls silent."
+}

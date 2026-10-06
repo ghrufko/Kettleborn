@@ -1,0 +1,11 @@
+{
+  "monsterId": "moloch",
+  "origin": "The Risen was found beneath the floor, already reaching upward.",
+  "story": "The earth closes, but never holds it for long.",
+  "weakness": "Returning is not the same as being restored.",
+  "quotes": [
+    "The floor is not an ending."
+  ],
+  "unlockText": "The trail to The Grave That Opens is open.",
+  "victoryText": "The Grave That Opens falls silent."
+}

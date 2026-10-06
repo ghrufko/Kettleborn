@@ -1,8 +1,8 @@
 {
   "id": "chimera",
-  "name": "The Dualist",
-  "title": "The Twin-Bound",
-  "description": "In the Ruins, strength that favors one side is strength divided — and division is defeat. The Dualist is discipline torn evenly down the middle and made to answer as a single will: what the left hand fails, the right cannot redeem. It does not care which arm is stronger. It cares only that both obey the same command. The Hunter who enters believing they fight with one body leaves only if both halves agreed to it.",
+  "name": "The Duelist",
+  "title": "The Twofold Measure",
+  "description": "The Duelist measures each side alone, then demands that both answer as one. It notices every strength borrowed from the other hand.",
   "rarity": "boss",
   "personality": "regenerating",
   "accentColor": "#7a5a99",

@@ -1,8 +1,8 @@
 {
   "id": "ifrit",
   "name": "The Colossus",
-  "title": "The Standing Ruin",
-  "description": "The Colossus has stood in the Ruins since before there were Hunters to test it — stone and old iron that outlasted whatever built it. It does not dodge and it does not tire the way flesh tires. Lift it overhead, drop beneath it and rise again, swing what it will not yield — and when it is finally hoisted, it must be carried, a hundred feet at a stretch, because the Colossus was never meant to be beaten quickly. It was built to be endured. And once the Hunter's arms have nothing left to give, it asks for thirty more, without pause, to see what's still standing underneath the fatigue.",
+  "title": "The Pillar That Remains",
+  "description": "The structure is gone; its burden remains. The Colossus gives ground only to the full weight of what it asks the hunter to carry.",
   "rarity": "boss",
   "personality": "brutal",
   "accentColor": "#d9522b",

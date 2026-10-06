@@ -1,0 +1,11 @@
+{
+  "monsterId": "agony",
+  "origin": "The Fallen is found where the dust has settled over iron that was never put away.",
+  "story": "The ground keeps a record of every return.",
+  "weakness": "The debt can be met one return at a time.",
+  "quotes": [
+    "The ground keeps its own ledger."
+  ],
+  "unlockText": "The trail to The Debt Beneath the Dust is open.",
+  "victoryText": "The Debt Beneath the Dust falls silent."
+}

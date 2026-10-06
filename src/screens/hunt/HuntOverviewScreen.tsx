@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, Pressable, TextInput } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Pressable, TextInput } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import { HuntStackParamList } from '../../navigation/types';
 import { Header, Button, GlassCard, AppBackground } from '../../components/core';
 import { WorkoutStructure } from '../../components/workout/WorkoutStructure';
+import { MonsterPortraitImage } from '../../components/monster/MonsterPortraitImage';
 import { contentEngine } from '../../../engines/content';
 import { getMonsterPortrait } from '../../constants/monsterPortraits';
 import { getStructuralControlConfig, StructuralControlConfig, buildCustomWorkout, getRepsCustomizableTemplate } from '../../utils/customWorkoutStructure';
@@ -517,7 +518,7 @@ export function HuntOverviewScreen({ route, navigation }: Props) {
         <View style={styles.briefHeader}>
           <View style={styles.portrait}>
             {portraitSource ? (
-              <Image source={portraitSource} style={styles.portraitImage} resizeMode="cover" />
+              <MonsterPortraitImage source={portraitSource} style={styles.portraitImage} />
             ) : (
               <Text style={styles.portraitInitial}>{monster.name.charAt(0)}</Text>
             )}
@@ -543,8 +544,12 @@ export function HuntOverviewScreen({ route, navigation }: Props) {
             <View style={styles.exerciseList}>
               <WorkoutStructure
                 groups={workoutStructure}
-                onExercisePress={(exerciseName) => {
-                  const libraryEntry = contentEngine.getExerciseLibraryEntryByName(exerciseName);
+                onExercisePress={(exercise) => {
+                  const libraryEntry = exercise.libraryExerciseId
+                    ? contentEngine.getExerciseLibraryEntry(exercise.libraryExerciseId)
+                    : exercise.components?.[0]?.libraryExerciseId
+                      ? contentEngine.getExerciseLibraryEntry(exercise.components[0].libraryExerciseId)
+                      : contentEngine.getExerciseLibraryEntryByName(exercise.name);
                   if (libraryEntry) navigation.navigate('ExerciseDetail', { exerciseId: libraryEntry.id });
                 }}
               />
@@ -675,6 +680,12 @@ export function HuntOverviewScreen({ route, navigation }: Props) {
               </View>
             ))
           )}
+
+          {workout.finisher.name === 'The Summit' ? (
+            <Text style={styles.exerciseGroupLabel}>
+              3 phases · Rest {formatRestSeconds(hunt?.restSecondsOverride ?? workout.restSeconds)}
+            </Text>
+          ) : null}
 
           <View style={styles.finisherRow}>
             <Ionicons name="flash" size={16} color={colors.ember.base} />
@@ -849,7 +860,20 @@ export function HuntOverviewScreen({ route, navigation }: Props) {
                           const currentReps = repsOverrides[exercise.id] ?? canonicalReps;
                           return (
                             <View key={exercise.id} style={styles.customRow}>
-                              <Text style={styles.customRowLabel}>{exercise.displayName ?? exercise.name}</Text>
+                              <Pressable
+                                disabled={!contentEngine.getExerciseLibraryEntry(exercise.libraryExerciseId ?? '') && !contentEngine.getExerciseLibraryEntryByName(exercise.name)}
+                                onPress={() => {
+                                  const entry = exercise.libraryExerciseId
+                                    ? contentEngine.getExerciseLibraryEntry(exercise.libraryExerciseId)
+                                    : contentEngine.getExerciseLibraryEntryByName(exercise.name);
+                                  if (entry) navigation.navigate('ExerciseDetail', { exerciseId: entry.id });
+                                }}
+                                accessibilityRole="link"
+                                style={styles.customExerciseLink}
+                              >
+                                <Text style={styles.customRowLabel}>{exercise.displayName ?? exercise.name}</Text>
+                                <Ionicons name="information-circle-outline" size={15} color={colors.text.muted} />
+                              </Pressable>
                               <IntStepper
                                 value={currentReps}
                                 min={1}
@@ -1274,6 +1298,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginTop: spacing.sm,
   },
+  customExerciseLink: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: spacing.xxs, marginRight: spacing.sm },
   // Encounter Lock: "Canonical Encounter — Locked" card + footer styles.
   lockedPill: {
     flexDirection: 'row',

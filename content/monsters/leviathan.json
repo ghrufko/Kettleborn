@@ -1,8 +1,8 @@
 {
   "id": "leviathan",
   "name": "Leviathan",
-  "title": "The Abyss Walker",
-  "description": "Far below the surface, where neither light nor hope can reach, the Leviathan waits. It does not chase its prey. It lets the weight of the deep crush them first. Those who panic are swallowed. Those who remain steady rise again.",
+  "title": "The Weight Beneath the Surface",
+  "description": "The Leviathan does not pursue. Pressure gathers around it until the hunter mistakes panic for escape.",
   "rarity": "boss",
   "personality": "steady",
   "accentColor": "#3f7fa6",

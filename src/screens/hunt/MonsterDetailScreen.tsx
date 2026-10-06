@@ -1,9 +1,10 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, Pressable, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Pressable, Alert } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import { HuntStackParamList } from '../../navigation/types';
 import { Header, Button, GlassCard, AppBackground } from '../../components/core';
+import { MonsterPortraitImage } from '../../components/monster/MonsterPortraitImage';
 import { ProgressBar } from '../../components/progress';
 import { contentEngine } from '../../../engines/content';
 import { getMonsterPortrait } from '../../constants/monsterPortraits';
@@ -197,7 +198,7 @@ export function MonsterDetailScreen({ route, navigation }: Props) {
       <ScrollView contentContainerStyle={styles.content}>
         <View style={[styles.portrait, glow.lg, { borderColor: personality.accentColor }]}>
           {portraitSource ? (
-            <Image source={portraitSource} style={styles.portraitImage} resizeMode="cover" />
+            <MonsterPortraitImage source={portraitSource} style={styles.portraitImage} />
           ) : (
             <Text style={styles.portraitInitial}>{monster.name.charAt(0)}</Text>
           )}
@@ -236,27 +237,57 @@ export function MonsterDetailScreen({ route, navigation }: Props) {
             <Text style={styles.sectionLabel}>First Encounter</Text>
             <Text style={styles.previewSubtitle}>{firstWorkout.name}</Text>
             {firstWorkout.stepLabel === 'Rung' ? (
-              <Text style={styles.modeHint}>
-                A {firstWorkout.rounds}-{firstWorkout.stepLabel.toLowerCase()} ladder on{' '}
-                {Array.from(new Set(firstWorkout.exercises.map((e) => e.displayName ?? e.name))).join(' and ')}.
-              </Text>
+              <View>
+                <Text style={styles.modeHint}>A {firstWorkout.rounds}-{firstWorkout.stepLabel.toLowerCase()} ladder:</Text>
+                {firstWorkout.exercises.filter((exercise, index, all) =>
+                  all.findIndex((candidate) => (candidate.libraryExerciseId ?? candidate.name) === (exercise.libraryExerciseId ?? exercise.name)) === index
+                ).map((exercise) => {
+                  const libraryEntry = exercise.libraryExerciseId
+                    ? contentEngine.getExerciseLibraryEntry(exercise.libraryExerciseId)
+                    : contentEngine.getExerciseLibraryEntryByName(exercise.name);
+                  return (
+                    <Pressable
+                      key={exercise.id}
+                      disabled={!libraryEntry}
+                      onPress={() => libraryEntry && navigation.navigate('ExerciseDetail', { exerciseId: libraryEntry.id })}
+                      style={styles.statRow}
+                    >
+                      <Text style={styles.statLabel}>{exercise.displayName ?? exercise.name}</Text>
+                      {libraryEntry ? <Ionicons name="information-circle-outline" size={16} color={colors.text.muted} /> : null}
+                    </Pressable>
+                  );
+                })}
+              </View>
             ) : firstWorkoutStructure.length ? (
               <WorkoutStructure groups={firstWorkoutStructure} compact />
             ) : (
-              firstWorkout.exercises.map((exercise) => (
-                <View key={exercise.id} style={styles.statRow}>
-                  <Text style={styles.statLabel}>{exercise.displayName ?? exercise.name}</Text>
-                  <Text style={styles.statValue}>
-                    {exercise.targetReps
-                      ? `${exercise.targetReps} reps`
-                      : exercise.targetSteps
-                        ? `${exercise.targetSteps} steps`
-                      : exercise.targetDistanceFt
-                        ? `${exercise.targetDistanceFt} ft`
-                        : ''}
-                  </Text>
-                </View>
-              ))
+              firstWorkout.exercises.map((exercise) => {
+                const libraryEntry = exercise.libraryExerciseId
+                  ? contentEngine.getExerciseLibraryEntry(exercise.libraryExerciseId)
+                  : exercise.components?.[0]?.libraryExerciseId
+                    ? contentEngine.getExerciseLibraryEntry(exercise.components[0].libraryExerciseId)
+                    : contentEngine.getExerciseLibraryEntryByName(exercise.name);
+                return (
+                  <Pressable
+                    key={exercise.id}
+                    disabled={!libraryEntry}
+                    onPress={() => libraryEntry && navigation.navigate('ExerciseDetail', { exerciseId: libraryEntry.id })}
+                    style={styles.statRow}
+                  >
+                    <Text style={styles.statLabel}>{exercise.displayName ?? exercise.name}</Text>
+                    <Text style={styles.statValue}>
+                      {exercise.targetReps
+                        ? `${exercise.targetReps} reps`
+                        : exercise.targetSteps
+                          ? `${exercise.targetSteps} steps`
+                        : exercise.targetDistanceFt
+                          ? `${exercise.targetDistanceFt} ft`
+                          : ''}
+                    </Text>
+                    {libraryEntry ? <Ionicons name="information-circle-outline" size={16} color={colors.text.muted} /> : null}
+                  </Pressable>
+                );
+              })
             )}
             <View style={styles.statRow}>
               <Text style={styles.statLabel}>Structure</Text>

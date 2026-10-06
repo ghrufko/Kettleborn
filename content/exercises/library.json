@@ -1641,6 +1641,32 @@
     ]
   },
   {
+    "id": "double-dead-pull",
+    "name": "Double Dead Pull",
+    "category": "Grind",
+    "description": "Two kettlebells are set on the floor in front of the athlete and pulled from a dead stop with a bent-arm row, then returned to the floor before the next repetition.",
+    "musclesTrained": [
+      "Back",
+      "Lats",
+      "Grip",
+      "Hips"
+    ],
+    "benefits": [
+      "Builds bilateral pulling strength from a true dead stop",
+      "Trains both sides to pull evenly without relying on bell momentum",
+      "Reinforces a braced hinge while both kettlebells return to the floor"
+    ],
+    "commonMistakes": [
+      "Rounding the back to muscle the bells up",
+      "Using the hips to heave the bells instead of pulling with the back",
+      "Letting either bell drift away from the shins on the way up"
+    ],
+    "recommendedWeightRangeKg": [
+      12,
+      24
+    ]
+  },
+  {
     "id": "single-side-deadlift",
     "name": "Suitcase Deadlift",
     "category": "Grind",

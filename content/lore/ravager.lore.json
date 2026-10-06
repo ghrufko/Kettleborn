@@ -1,0 +1,11 @@
+{
+  "monsterId": "ravager",
+  "origin": "The Ravager appears where the last clear mark gives way to dark stone.",
+  "story": "Its path is destruction repeated without flourish.",
+  "weakness": "The sequence ends when nothing false remains.",
+  "quotes": [
+    "Nothing is spared by repetition."
+  ],
+  "unlockText": "The trail to The Final Ruin is open.",
+  "victoryText": "The Final Ruin falls silent."
+}

@@ -34,6 +34,22 @@ import hydraLoreData from '../../content/lore/hydra.lore.json';
 import leviathanLoreData from '../../content/lore/leviathan.lore.json';
 import behemothLoreData from '../../content/lore/behemoth.lore.json';
 import weaverLoreData from '../../content/lore/weaver.lore.json';
+import mammothLoreData from '../../content/lore/mammoth.lore.json';
+import basiliskLoreData from '../../content/lore/basilisk.lore.json';
+import atlasLoreData from '../../content/lore/atlas.lore.json';
+import chimeraLoreData from '../../content/lore/chimera.lore.json';
+import agonyLoreData from '../../content/lore/agony.lore.json';
+import fluidLoreData from '../../content/lore/fluid.lore.json';
+import judgeLoreData from '../../content/lore/judge.lore.json';
+import ifritLoreData from '../../content/lore/ifrit.lore.json';
+import ambidexterLoreData from '../../content/lore/ambidexter.lore.json';
+import molochLoreData from '../../content/lore/moloch.lore.json';
+import aresLoreData from '../../content/lore/ares.lore.json';
+import aetherLoreData from '../../content/lore/aether.lore.json';
+import riteLoreData from '../../content/lore/rite.lore.json';
+import crookedLoreData from '../../content/lore/crooked.lore.json';
+import descentLoreData from '../../content/lore/descent.lore.json';
+import ravagerLoreData from '../../content/lore/ravager.lore.json';
 import builtInTimerPresetsData from '../../content/timers/builtin-presets.json';
 import exerciseLibraryData from '../../content/exercises/library.json';
 import { Monster, Workout, Campaign, Hunt, Exercise, Lore, TimerPreset, ExerciseLibraryEntry } from '../../src/models';
@@ -44,11 +60,10 @@ import { Monster, Workout, Campaign, Hunt, Exercise, Lore, TimerPreset, Exercise
  * same constraint noted since Sprint 9). Adding a new campaign or monster
  * never requires touching any screen.
  *
- * Campaign 2 ("The Ruins", Harpy/Atlas/Ifrit/Chimera) has no lore
- * files — Lore is decorative only (validateLore below just skips a
- * missing/malformed entry with a warning, never blocks load), and every
- * screen that reads it already treats an absent Lore as "no lore to show"
- * rather than an error.
+ * Campaign lore lives in this static registry so the Bestiary can render
+ * the same Origin / Weakness / signature-line structure for every
+ * campaign monster. Legacy, non-campaign records remain independently
+ * registered where their existing content requires them.
  */
 const ALL_MONSTER_SOURCES = [
   minotaurData,
@@ -81,10 +96,26 @@ const ALL_MONSTER_SOURCES = [
 const ALL_CAMPAIGN_SOURCES = [campaign1Data, campaign2Data, campaign3Data];
 const ALL_LORE_SOURCES = [
   minotaurLoreData,
-  arachneLoreData,
-  hydraLoreData,
   leviathanLoreData,
+  hydraLoreData,
+  mammothLoreData,
   behemothLoreData,
+  arachneLoreData,
+  basiliskLoreData,
+  atlasLoreData,
+  chimeraLoreData,
+  agonyLoreData,
+  fluidLoreData,
+  judgeLoreData,
+  ifritLoreData,
+  ambidexterLoreData,
+  riteLoreData,
+  molochLoreData,
+  crookedLoreData,
+  aresLoreData,
+  aetherLoreData,
+  descentLoreData,
+  ravagerLoreData,
   weaverLoreData,
 ];
 

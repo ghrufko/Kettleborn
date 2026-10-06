@@ -1,11 +1,12 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, Pressable, ScrollView, Animated, Image } from 'react-native';
+import { View, Text, StyleSheet, Pressable, ScrollView, Animated } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { HuntStackParamList } from '../../navigation/types';
 import { Button, GlassCard, AppBackground } from '../../components/core';
+import { MonsterPortraitImage } from '../../components/monster/MonsterPortraitImage';
 import { contentEngine } from '../../../engines/content';
 import { getMonsterPortrait } from '../../constants/monsterPortraits';
 import { useStaggeredReveal } from '../../utils/useStaggeredReveal';
@@ -72,10 +73,9 @@ export function HuntFailedScreen({ route, navigation }: Props) {
           <View style={[styles.badge, glow.md]}>
             {monster && getMonsterPortrait(monster.portraitAsset) ? (
               <>
-                <Image
-                  source={getMonsterPortrait(monster.portraitAsset)}
+                <MonsterPortraitImage
+                  source={getMonsterPortrait(monster.portraitAsset)!}
                   style={styles.badgeImage}
-                  resizeMode="cover"
                 />
                 <View style={styles.badgeDefeatOverlay} pointerEvents="none" />
               </>

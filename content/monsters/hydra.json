@@ -1,8 +1,8 @@
 {
   "id": "hydra",
   "name": "Hydra",
-  "title": "The Everlasting Serpent",
-  "description": "The Hydra never stops. Cut off one head, another rises. Break one attack, the next has already begun.",
+  "title": "The Head That Returns",
+  "description": "Every finished effort reveals another demand. The Hydra makes repetition feel like an attack that has learned your answer.",
   "rarity": "boss",
   "personality": "regenerating",
   "accentColor": "#4a9a6d",

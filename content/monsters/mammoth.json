@@ -1,8 +1,8 @@
 {
   "id": "mammoth",
   "name": "Mammoth",
-  "title": "The Weight That Doesn't Move",
-  "description": "The Mammoth doesn't dodge, doesn't tire, and doesn't hurry. It sets a three-minute clock and waits for you to keep pace with it, round after round, until one of you stops.",
+  "title": "The Unspent Weight",
+  "description": "The Mammoth advances by keeping the same burden before you. It does not hurry; the clock makes haste feel like your idea.",
   "rarity": "boss",
   "personality": "brutal",
   "battle": {

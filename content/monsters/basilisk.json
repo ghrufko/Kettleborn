@@ -2,8 +2,8 @@
   "id": "basilisk",
   "name": "Basilisk",
   "portraitAsset": "basilisk",
-  "title": "The Same Threat, Again",
-  "description": "The Basilisk doesn't chase you. It makes you face it again — every return demands control under greater fatigue.",
+  "title": "The Returning Gaze",
+  "description": "The Basilisk does not chase. It holds its ground and makes the hunter face the same confrontation again, when fatigue has changed its meaning.",
   "rarity": "boss",
   "personality": "steady",
   "battle": {

@@ -1,6 +1,6 @@
 {
     "id": "forgotten-trials",
-    "name": "The Abyss",
+    "name": "THE ABYSS",
     "order": 3,
     "monsterIds": [
         "rite",
@@ -13,14 +13,14 @@
     ],
     "finalBossId": null,
     "unlockRequiresCampaignId": null,
-    "tagline": "Will. Corruption. Transformation.",
-    "introText": "There is no floor to the Abyss, only further. What waits down here doesn't fight you — it asks how much of yourself you're willing to spend.",
-    "completionText": "The Rite, The Risen, The Crooked, The Breaking, The Wraith, The Descent, and The Ravager are down. The Abyss doesn't celebrate this. It just waits to see what you bring down here next.",
+    "tagline": "Seven trials at the edge of the hunter’s certainty.",
+    "introText": "THE ABYSS strips away trail and record. What remains is the trial in front of the hunter, and the self that answers it.",
+    "completionText": "The Rite, the Risen, the Crooked, the Breaking, the Wraith, the Descent, and the Ravager have each been faced. The last mark ends. What it marks remains unknown.",
     "heroImageAsset": "territory-abyss",
     "territoryLore": {
-        "theTerritory": "There is no floor to the Abyss, only further. What waits down here doesn't fight you — it asks how much of yourself you're willing to spend.",
-        "whatDwellsHere": "Things that were once something else. Obsession given shape. The Abyss doesn't grow monsters — it grows what's left after everything reasonable has been burned out of you.",
-        "huntersPurpose": "You come here after the Wilds and the Ruins stop being enough. Somewhere below, you start to wonder if you're still hunting, or becoming.",
-        "transition": "Go slow. Nothing down here is in a hurry, and neither should you be."
+        "theTerritory": "THE ABYSS takes away the trail and the walls. Distance has no clear measure here.",
+        "whatDwellsHere": "Ritual, return, imbalance, fracture, absence, and descent take forms that resist easy explanation.",
+        "huntersPurpose": "There is no record of what waits below. Only the test before you, and what it asks you to spend.",
+        "transition": "The final mark ends. What it marks does not."
     }
 }

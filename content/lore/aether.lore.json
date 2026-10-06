@@ -1,0 +1,11 @@
+{
+  "monsterId": "aether",
+  "origin": "The Wraith is recorded in the half-light between one movement and the next.",
+  "story": "Every witness remembers the motion more clearly than the shape.",
+  "weakness": "Attention gives shape to what seems absent.",
+  "quotes": [
+    "You saw enough to continue."
+  ],
+  "unlockText": "The trail to The Shape in Half-Light is open.",
+  "victoryText": "The Shape in Half-Light falls silent."
+}

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet, Image, Animated, BackHandler, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Animated, BackHandler, ScrollView, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useFocusEffect } from '@react-navigation/native';
@@ -7,6 +7,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { HuntStackParamList } from '../../navigation/types';
 import { Button, GlassCard, AppBackground, ConfirmDialog } from '../../components/core';
 import { WorkoutStructure } from '../../components/workout/WorkoutStructure';
+import { MonsterPortraitImage } from '../../components/monster/MonsterPortraitImage';
 import { ProgressBar } from '../../components/progress';
 import { TimerWidget } from '../../components/workout';
 import { contentEngine } from '../../../engines/content';
@@ -27,7 +28,7 @@ import { useConditionalKeepAwake } from '../../utils/useConditionalKeepAwake';
 import { getCombatPersonality, getAtmosphericColor } from '../../utils/bossPersonality';
 import { restFlavorFor } from '../../utils/huntAtmosphere';
 import { getRoundStats } from '../../utils/roundStats';
-import { groupWorkoutStructure } from '../../utils/workoutPresentation';
+import { getWorkoutRoundExercises, groupWorkoutStructure, isAlternatingHandChain } from '../../utils/workoutPresentation';
 import { triggerHaptic } from '../../utils/haptics';
 import { audioEngine } from '../../../engines/audio/AudioEngine';
 import * as Haptics from 'expo-haptics';
@@ -66,9 +67,11 @@ function exerciseTargetLabel(exercise: Workout['exercises'][number]): string {
 function RoundExerciseList({
   exercises,
   compact = false,
+  onExercisePress,
 }: {
   exercises: Workout['exercises'];
   compact?: boolean;
+  onExercisePress?: (exercise: Workout['exercises'][number], libraryExerciseId?: string) => void;
 }) {
   return (
     <View style={[styles.roundExerciseList, compact && styles.roundExerciseListCompact]}>
@@ -80,15 +83,33 @@ function RoundExerciseList({
           return (
             <View key={`${exercise.id}-${index}`} style={styles.roundExerciseRow}>
               <Text style={[styles.roundExerciseIndex, compact && styles.roundExerciseTextCompact]}>{index + 1}.</Text>
-              <Text
-                style={[
-                  styles.roundExerciseName,
-                  isLongCycle && styles.roundExerciseNameInline,
-                  compact && styles.roundExerciseTextCompact,
-                ]}
-              >
-                {name}
-              </Text>
+              {onExercisePress && exercise.components?.length && name.includes('→') ? (
+                <View style={styles.inlineExerciseComponents}>
+                  {exercise.components.map((component, componentIndex) => {
+                    const componentName = contentEngine.getExerciseLibraryEntry(component.libraryExerciseId)?.name ?? component.libraryExerciseId;
+                    return (
+                      <React.Fragment key={component.libraryExerciseId}>
+                        {componentIndex > 0 ? <Text style={[styles.roundExerciseName, styles.roundExerciseComponentName, compact && styles.roundExerciseTextCompact]}> → </Text> : null}
+                        <Pressable onPress={() => onExercisePress(exercise, component.libraryExerciseId)} accessibilityRole="link">
+                          <Text style={[styles.roundExerciseName, styles.roundExerciseComponentName, isLongCycle && styles.roundExerciseNameInline, compact && styles.roundExerciseTextCompact]}>
+                            {componentName}
+                          </Text>
+                        </Pressable>
+                      </React.Fragment>
+                    );
+                  })}
+                </View>
+              ) : onExercisePress ? (
+                <Pressable onPress={() => onExercisePress(exercise)} accessibilityRole="link">
+                  <Text style={[styles.roundExerciseName, isLongCycle && styles.roundExerciseNameInline, compact && styles.roundExerciseTextCompact]}>
+                    {name}
+                  </Text>
+                </Pressable>
+              ) : (
+                <Text style={[styles.roundExerciseName, isLongCycle && styles.roundExerciseNameInline, compact && styles.roundExerciseTextCompact]}>
+                  {name}
+                </Text>
+              )}
               {exerciseTargetLabel(exercise) ? (
                 <Text
                   style={[
@@ -240,6 +261,9 @@ export function ActiveHuntScreen({ route, navigation }: Props) {
       : undefined
     : customWorkout;
   const effectiveWorkout = effectiveCustomWorkout ?? workout;
+  const plannedRestSeconds = lockedConfig?.restSeconds ?? (isCustomHunt
+    ? customRestSeconds ?? workout.restSeconds
+    : hunt?.restSecondsOverride ?? workout.restSeconds);
   const effectiveMonster = effectiveCustomWorkout
     ? {
         ...monster,
@@ -251,6 +275,17 @@ export function ActiveHuntScreen({ route, navigation }: Props) {
     <ActiveHuntSession
       monster={effectiveMonster}
       workout={effectiveWorkout}
+      plannedRestSeconds={plannedRestSeconds}
+      onExercisePress={(exercise, componentId) => {
+        const libraryEntry = componentId
+          ? contentEngine.getExerciseLibraryEntry(componentId)
+          : exercise.libraryExerciseId
+          ? contentEngine.getExerciseLibraryEntry(exercise.libraryExerciseId)
+          : exercise.components?.[0]?.libraryExerciseId
+            ? contentEngine.getExerciseLibraryEntry(exercise.components[0].libraryExerciseId)
+            : contentEngine.getExerciseLibraryEntryByName(exercise.name);
+        if (libraryEntry) navigation.navigate('ExerciseDetail', { exerciseId: libraryEntry.id });
+      }}
       previousBestSeconds={previousBestSeconds}
       targetSeconds={isLocked ? lockState.targetSeconds : null}
       targetRounds={isLocked ? lockState.targetRounds : null}
@@ -353,6 +388,8 @@ export function ActiveHuntScreen({ route, navigation }: Props) {
 interface ActiveHuntSessionProps {
   monster: Monster;
   workout: Workout;
+  plannedRestSeconds: number;
+  onExercisePress: (exercise: Workout['exercises'][number], libraryExerciseId?: string) => void;
   previousBestSeconds: number | null;
   /**
    * Target-to-beat HUD chip: the exact same lockState.targetSeconds
@@ -376,6 +413,8 @@ interface ActiveHuntSessionProps {
 function ActiveHuntSession({
   monster,
   workout,
+  plannedRestSeconds,
+  onExercisePress,
   previousBestSeconds,
   targetSeconds,
   targetRounds,
@@ -445,7 +484,7 @@ function ActiveHuntSession({
   );
 
   const elapsedClock = formatClock(session.elapsedSeconds);
-  const restClock = formatClock(session.restElapsedSeconds);
+  const restClock = formatClock(Math.max(plannedRestSeconds - session.restElapsedSeconds, 0));
   const transitionClock = formatClock(session.transitionRemainingSeconds);
   const roundClock = formatClock(session.currentRoundElapsedSeconds);
   const emomClock = formatClock(session.emomRemainingSeconds ?? 0);
@@ -466,11 +505,17 @@ function ActiveHuntSession({
   // dense round like The Two-Faced's 10-item circuit or Atlas's 6-item
   // chain, vs. a normal 2-4 item round. No monster names involved, so
   // this scales automatically to any future workout with a big round.
-  const currentRoundExerciseCount = (
-    workout.sections?.[session.currentRound - 1]?.exercises ?? workout.exercises
-  ).length;
-  const currentRoundExercises = workout.sections?.[session.currentRound - 1]?.exercises ?? workout.exercises;
-  const currentRoundStructure = groupWorkoutStructure(currentRoundExercises, workout.sequenceType);
+  const currentRoundExercises = getWorkoutRoundExercises(workout, session.currentRound);
+  const currentRoundExerciseCount = currentRoundExercises.length;
+  const currentRoundGroups = groupWorkoutStructure(currentRoundExercises, workout.sequenceType);
+  const repeatedFlatChain = workout.sequenceType === 'chain' && !workout.sections?.length &&
+    currentRoundExercises.length < workout.exercises.length;
+  const currentRoundStructure = currentRoundGroups.map((group) => ({
+    ...group,
+    label: repeatedFlatChain || isAlternatingHandChain(group.exercises)
+      ? `Chain ×${workout.rounds}`
+      : group.label,
+  }));
   const compactSequencePreview = currentRoundExercises
     .slice(0, 5)
     .map(sequenceMovementName)
@@ -733,10 +778,9 @@ function ActiveHuntSession({
             ]}
           >
             {getMonsterPortrait(monster.portraitAsset) ? (
-              <Image
-                source={getMonsterPortrait(monster.portraitAsset)}
+              <MonsterPortraitImage
+                source={getMonsterPortrait(monster.portraitAsset)!}
                 style={styles.portraitImage}
-                resizeMode="cover"
               />
             ) : (
               <Text style={styles.portraitInitial}>{monster.name.charAt(0)}</Text>
@@ -944,7 +988,7 @@ function ActiveHuntSession({
             <View style={styles.sequencePreviewBlock}>
               <Text style={styles.sequencePreviewLabel}>NEXT SEQUENCE</Text>
               {currentRoundStructure.length ? (
-                <WorkoutStructure groups={currentRoundStructure} compact />
+                <WorkoutStructure groups={currentRoundStructure} />
               ) : (
                 <Text style={styles.sequencePreviewText} numberOfLines={3}>
                   {compactSequencePreview}{sequencePreviewRemainder ? `  ·  +${sequencePreviewRemainder} more` : ''}
@@ -1019,7 +1063,11 @@ function ActiveHuntSession({
                       nestedScrollEnabled
                       showsVerticalScrollIndicator
                     >
-                      <RoundExerciseList exercises={currentRoundExercises} compact />
+                      {workout.sequenceType === 'chain' && currentRoundStructure.length ? (
+                        <WorkoutStructure groups={currentRoundStructure} compact onExercisePress={onExercisePress} />
+                      ) : (
+                        <RoundExerciseList exercises={currentRoundExercises} compact onExercisePress={onExercisePress} />
+                      )}
                     </ScrollView>
                   </View>
                 </>
@@ -1028,7 +1076,11 @@ function ActiveHuntSession({
                   <Text style={styles.sectionLabel}>
                     {workout.sections?.[session.currentRound - 1]?.label ?? stepLabel + ' ' + session.currentRound}
                   </Text>
-                  <RoundExerciseList exercises={currentRoundExercises} />
+                  {workout.sequenceType === 'chain' && currentRoundStructure.length ? (
+                    <WorkoutStructure groups={currentRoundStructure} onExercisePress={onExercisePress} />
+                  ) : (
+                    <RoundExerciseList exercises={currentRoundExercises} onExercisePress={onExercisePress} />
+                  )}
                 </>
               )}
               <Text
@@ -1113,7 +1165,7 @@ function ActiveHuntSession({
                 />
               ) : (
                 <Button
-                  label="ROUND COMPLETE"
+                  label={workout.sequenceType === 'chain' ? 'COMPLETE CHAIN' : 'ROUND COMPLETE'}
                   onPress={session.completeRound}
                   disabled={session.status !== 'active'}
                   style={styles.actionButton}
@@ -1169,7 +1221,7 @@ function ActiveHuntSession({
         visible={quitDialogVisible}
         title="Abandon Hunt?"
         message="The boss will be marked as undefeated. No experience will be awarded, and this attempt will not be saved."
-        cancelLabel="Keep Fighting"
+        cancelLabel="Continue"
         confirmLabel="Abandon"
         onCancel={() => setQuitDialogVisible(false)}
         onConfirm={confirmQuit}
@@ -1488,6 +1540,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing.xxs,
   },
+  inlineExerciseComponents: { flex: 1, flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center' },
+  roundExerciseComponentName: { flex: 0 },
   roundExerciseIndex: {
     width: 22,
     fontFamily: fontFamily.monoRegular,

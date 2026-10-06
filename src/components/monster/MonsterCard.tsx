@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, Text, Pressable, StyleSheet, ImageSourcePropType, Image } from 'react-native';
+import { View, Text, Pressable, StyleSheet, ImageSourcePropType } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { MonsterPortraitImage } from './MonsterPortraitImage';
 import { colors, fontFamily, fontSize, radii, spacing, glow, RarityTier } from '../../theme';
 
 interface MonsterCardProps {
@@ -50,7 +51,7 @@ export function MonsterCard({
         ]}
       >
         {portraitSource ? (
-          <Image source={portraitSource} style={styles.portraitImage} resizeMode="cover" />
+          <MonsterPortraitImage source={portraitSource} style={styles.portraitImage} />
         ) : (
           <Text style={styles.portraitInitial}>{name.charAt(0)}</Text>
         )}

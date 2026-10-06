@@ -1,8 +1,8 @@
 {
   "id": "aether",
   "name": "The Wraith",
-  "title": "The Half-Light",
-  "description": "The Wraith is never fully there. Snatch, overhead lunge, jerk, windmill, swing — one hand completes the whole shape, and before you've even confirmed what you saw, it's already in the other hand, doing it again. Blink during the transition and you'll swear it never left. It didn't tire. It moved.",
+  "title": "The Shape in Half-Light",
+  "description": "The Wraith leaves no clear image, only a sequence passing from one hand to the other. Uncertainty is the space in which it moves.",
   "rarity": "boss",
   "personality": "agile",
   "accentColor": "#9a7ab0",

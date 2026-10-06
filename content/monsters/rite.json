@@ -1,8 +1,8 @@
 {
   "id": "rite",
   "name": "The Rite",
-  "title": "The First Descent",
-  "description": "The Rite does not care how strong the Hunter already is. It only cares whether the same four movements can be performed the same way, every time, until repetition stops feeling like practice and starts feeling like devotion. The chain comes first, whole — jerk into snatch into clean into swing, three times over. Then it is taken apart, each piece performed alone, examined without the rhythm that made it easy. Then the chain is given back, and the Hunter must prove the whole was never separate from its parts. Nothing down here waits to be beaten. It waits to be finished — and by the third repetition, it is no longer clear which one of you is performing the ritual.",
+  "title": "The First Vow",
+  "description": "The Rite repeats a sequence until practice and ceremony share the same shape. It gives the whole back only after each part has stood alone.",
   "rarity": "boss",
   "personality": "steady",
   "accentColor": "#6b1f2a",

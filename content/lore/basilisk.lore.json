@@ -1,0 +1,11 @@
+{
+  "monsterId": "basilisk",
+  "origin": "No path records the Basilisk arriving. The first account begins with someone already facing it.",
+  "story": "The threat is unchanged; the one who returns is not.",
+  "weakness": "What is faced clearly cannot command the whole field.",
+  "quotes": [
+    "The second meeting is the true one."
+  ],
+  "unlockText": "The trail to The Returning Gaze is open.",
+  "victoryText": "The Returning Gaze falls silent."
+}

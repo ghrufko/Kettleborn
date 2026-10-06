@@ -1,0 +1,11 @@
+{
+  "monsterId": "crooked",
+  "origin": "The Crooked stands where the path bends without changing direction.",
+  "story": "Its imbalance is easiest to miss when the strong side leads.",
+  "weakness": "Imbalance loses its disguise when both sides are seen.",
+  "quotes": [
+    "The weaker side was never absent."
+  ],
+  "unlockText": "The trail to The Tilted Line is open.",
+  "victoryText": "The Tilted Line falls silent."
+}

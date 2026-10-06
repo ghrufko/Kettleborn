@@ -60,7 +60,70 @@ export function getContinuousChainRange(
 }
 
 function sameMovements(a: Exercise[], b: Exercise[]): boolean {
-  return a.length === b.length && a.every((exercise, index) => movementName(exercise) === movementName(b[index]));
+  return a.length === b.length && a.every((exercise, index) =>
+    (exercise.libraryExerciseId ?? exercise.name) === (b[index].libraryExerciseId ?? b[index].name) &&
+    exercise.targetReps === b[index].targetReps &&
+    exercise.targetSteps === b[index].targetSteps &&
+    exercise.targetDistanceFt === b[index].targetDistanceFt &&
+    exercise.damageCoefficient === b[index].damageCoefficient &&
+    exercise.damageType === b[index].damageType &&
+    exercise.libraryExerciseId === b[index].libraryExerciseId &&
+    exercise.usesGearCount === b[index].usesGearCount
+  );
+}
+
+/**
+ * Returns the authored movements for one round. Some legacy repeated Chains
+ * are stored as consecutive copies of the same sequence in the flat exercise
+ * list; in that case, select the matching block instead of scoring/displaying
+ * the entire workout as one round.
+ */
+export function getWorkoutRoundExercises(workout: Workout, round: number): Exercise[] {
+  if (workout.sections?.length) {
+    return workout.sections[round - 1]?.exercises ?? workout.exercises;
+  }
+
+  if (workout.sequenceType !== 'chain' || workout.rounds < 2 || workout.exercises.length <= workout.rounds) {
+    return workout.exercises;
+  }
+
+  const blockSize = workout.exercises.length / workout.rounds;
+  if (!Number.isInteger(blockSize) || blockSize < 1) return workout.exercises;
+
+  const authoredChainCount = workout.rounds - 1;
+  if (!workout.exercises.slice(0, blockSize).every((exercise) => chainInfo(exercise)?.count === authoredChainCount)) {
+    return workout.exercises;
+  }
+
+  const blocks = Array.from({ length: workout.rounds }, (_, index) =>
+    workout.exercises.slice(index * blockSize, (index + 1) * blockSize)
+  );
+  const passesAreOrdered = blocks.slice(0, -1).every((block, index) =>
+    block.every((exercise) => chainInfo(exercise)?.pass === index + 1 && chainInfo(exercise)?.count === authoredChainCount)
+  );
+  const finalBlockIsComplex = blocks[blocks.length - 1].every((exercise) => complexCount(exercise) === authoredChainCount);
+  if (!passesAreOrdered || !finalBlockIsComplex) return workout.exercises;
+  if (!blocks.every((block) => sameMovements(blocks[0], block))) return workout.exercises;
+
+  return blocks[Math.max(0, Math.min(round - 1, blocks.length - 1))];
+}
+
+function handOf(exercise: Exercise): 'left' | 'right' | null {
+  const displayName = exercise.displayName ?? '';
+  const match = displayName.match(/^\s*(left|right)\s*[·:-]/i);
+  return match ? match[1].toLowerCase() as 'left' | 'right' : null;
+}
+
+export function isAlternatingHandChain(exercises: Exercise[]): boolean {
+  const left = exercises.filter((exercise) => handOf(exercise) === 'left');
+  const right = exercises.filter((exercise) => handOf(exercise) === 'right');
+  const movementForSide = (exercise: Exercise) => movementName(exercise)
+    .replace(/^\s*(?:left|right)\s*[·:-]\s*/i, '')
+    .replace(/\s*→\s*(?:left|right)\s*$/i, '')
+    .trim();
+  return left.length === 6 && right.length === 6 && left.every((exercise, index) =>
+    movementForSide(exercise) === movementForSide(right[index])
+  );
 }
 
 /**
@@ -205,13 +268,21 @@ export function groupWorkoutPresentation(workout: Workout): WorkoutPresentationG
         });
       }
     }
-    return Array.from(groupsByLabel.values()).map(({ group, count }) => ({
-      ...group,
-      occurrence: 1,
-      occurrenceCount: count,
-    }));
+    return Array.from(groupsByLabel.values()).map(({ group, count }) => {
+      const alternatingHands = isAlternatingHandChain(group.exercises);
+      return {
+        ...group,
+        label: alternatingHands ? `Chain ×${count}` : group.label,
+        occurrence: 1,
+        occurrenceCount: alternatingHands ? 1 : count,
+      };
+    });
   }
 
-  const exercises = workout.sections?.[0]?.exercises ?? workout.exercises;
-  return groupWorkoutStructure(exercises, workout.sequenceType);
+  const exercises = getWorkoutRoundExercises(workout, 1);
+  const groups = groupWorkoutStructure(exercises, workout.sequenceType);
+  if (exercises.length < workout.exercises.length && workout.sequenceType === 'chain') {
+    return groups.map((group) => ({ ...group, label: `Chain ×${workout.rounds}` }));
+  }
+  return groups;
 }

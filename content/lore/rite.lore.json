@@ -1,0 +1,11 @@
+{
+  "monsterId": "rite",
+  "origin": "The Rite begins where the last marks on the stone become difficult to follow.",
+  "story": "No record says who began the ceremony or why it endured.",
+  "weakness": "A ritual can be completed without surrendering the self.",
+  "quotes": [
+    "The form remains when the reason is gone."
+  ],
+  "unlockText": "The trail to The First Vow is open.",
+  "victoryText": "The First Vow falls silent."
+}
