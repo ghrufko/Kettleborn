@@ -199,6 +199,10 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: spacing.md,
+    // Bottom-nav clearance fix — see MonsterDetailScreen.tsx's identical
+    // comment; same spacing.xxl convention every tab-bar-visible
+    // scrollable screen now uses.
+    paddingBottom: spacing.xxl,
     gap: spacing.md,
   },
   sectionLabel: {

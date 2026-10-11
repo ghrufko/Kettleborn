@@ -144,6 +144,10 @@ const styles = StyleSheet.create({
   },
   list: {
     padding: spacing.md,
+    // Bottom-nav clearance fix — see WorldMapScreen.tsx's identical
+    // comment; same under-padded outlier, same fix, matching the
+    // spacing.xxl convention Chronicle/Hunter/Hunt Overview already use.
+    paddingBottom: spacing.xxl,
     gap: spacing.md,
   },
   pressed: {

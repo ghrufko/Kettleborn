@@ -1902,5 +1902,84 @@
       10,
       16
     ]
+  },
+  {
+    "id": "double-kb-pushup",
+    "name": "Double-Kettlebell Push-Up",
+    "category": "Grind",
+    "description": "A standard push-up performed with each hand gripping the handle of its own kettlebell instead of the floor, keeping the wrists neutral and adding a small stability demand through the shoulders and core.",
+    "musclesTrained": [
+      "Chest",
+      "Triceps",
+      "Shoulders",
+      "Core"
+    ],
+    "benefits": [
+      "Keeps the wrists in a neutral, lower-strain position than a flat-palm push-up",
+      "Adds an anti-tip stability demand through the shoulders and core",
+      "A simple extra set to layer onto a Hunt without any new equipment"
+    ],
+    "commonMistakes": [
+      "Letting the hips sag or pike instead of holding a straight line",
+      "Flaring the elbows out wide instead of tracking back toward the hips",
+      "Rushing the lockout at the top instead of finishing each rep fully"
+    ],
+    "recommendedWeightRangeKg": [
+      8,
+      16
+    ]
+  },
+  {
+    "id": "single-kb-pushup",
+    "name": "Single-Kettlebell Push-Up",
+    "category": "Grind",
+    "description": "A push-up with one hand gripping a kettlebell handle and the other flat on the floor, raising one side of the body and adding an anti-rotation demand through the torso.",
+    "musclesTrained": [
+      "Chest",
+      "Triceps",
+      "Shoulders",
+      "Core",
+      "Obliques"
+    ],
+    "benefits": [
+      "Trains each side of the chest and shoulder slightly independently",
+      "Builds anti-rotation core strength from the uneven hand height",
+      "A simple extra set to layer onto a Hunt without any new equipment"
+    ],
+    "commonMistakes": [
+      "Letting the torso rotate toward the raised hand instead of staying square",
+      "Collapsing the raised-side shoulder instead of pressing it away from the ear",
+      "Rushing reps and losing the straight-line plank position"
+    ],
+    "recommendedWeightRangeKg": [
+      8,
+      16
+    ]
+  },
+  {
+    "id": "vertical-pullup",
+    "name": "Vertical Pull-Up",
+    "category": "Grind",
+    "description": "A standard bodyweight pull-up on a vertical bar, pulling the chin over the bar and lowering under control back to a dead hang before the next rep.",
+    "musclesTrained": [
+      "Lats",
+      "Back",
+      "Biceps",
+      "Grip"
+    ],
+    "benefits": [
+      "Builds vertical pulling strength the Hunt's own kettlebell pulls don't train directly",
+      "Reinforces grip endurance from a dead hang",
+      "A simple extra set to layer onto a Hunt with no equipment beyond a bar"
+    ],
+    "commonMistakes": [
+      "Kipping or swinging instead of pulling strictly",
+      "Stopping short of a full chin-over-bar finish",
+      "Dropping from the top instead of lowering under control"
+    ],
+    "recommendedWeightRangeKg": [
+      0,
+      8
+    ]
   }
 ]

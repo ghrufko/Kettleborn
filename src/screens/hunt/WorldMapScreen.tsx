@@ -490,6 +490,13 @@ const styles = StyleSheet.create({
   },
   list: {
     padding: spacing.md,
+    // Bottom-nav clearance fix: matches the spacing.xxl bottom padding
+    // already used by every other tab-bar-visible scrollable screen
+    // (Chronicle, Hunter, Hunt Overview) — this screen was the outlier at
+    // a plain spacing.md on every side, leaving the last monster card
+    // uncomfortably close to the tab bar instead of clearing it with room
+    // to spare.
+    paddingBottom: spacing.xxl,
     gap: spacing.sm,
   },
   huntsTab: {

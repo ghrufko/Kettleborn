@@ -1,33 +1,27 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { dirname, join } from 'node:path';
 
-const { EXTRA_EXERCISE_DEFINITIONS, getExtraExerciseName } = await import(
-  new URL('../extraExercises.ts', import.meta.url).href
-);
+const { EXTRA_EXERCISE_IDS } = await import(new URL('../extraExercises.ts', import.meta.url).href);
 
-test('defines exactly the three initial exercise options, in order', () => {
-  assert.deepEqual(
-    EXTRA_EXERCISE_DEFINITIONS.map((d: { id: string }) => d.id),
-    ['double-kb-pushup', 'single-kb-pushup', 'vertical-pullup']
-  );
+test('defines exactly the three initial exercise ids, in order', () => {
+  assert.deepEqual(EXTRA_EXERCISE_IDS, ['double-kb-pushup', 'single-kb-pushup', 'vertical-pullup']);
 });
 
-test('every definition has a non-empty display name', () => {
-  for (const def of EXTRA_EXERCISE_DEFINITIONS as { id: string; name: string }[]) {
-    assert.ok(def.name.length > 0, `missing name for ${def.id}`);
+test('every id corresponds to a real entry in the exercise library', () => {
+  // fileURLToPath(import.meta.url) — a plain string, not `new URL(...)` —
+  // deliberately avoids passing a URL object to a node:fs path argument:
+  // this project's tsconfig pulls in both DOM and Node lib types, whose
+  // two separate `URL` declarations are structurally incompatible for
+  // that specific overload, even though both resolve identically at
+  // runtime.
+  const testDir = dirname(fileURLToPath(import.meta.url));
+  const libraryPath = join(testDir, '../../../content/exercises/library.json');
+  const library = JSON.parse(readFileSync(libraryPath, 'utf8'));
+  const libraryIds = new Set(library.map((entry: { id: string }) => entry.id));
+  for (const id of EXTRA_EXERCISE_IDS as string[]) {
+    assert.ok(libraryIds.has(id), `${id} is not present in content/exercises/library.json`);
   }
-});
-
-test('getExtraExerciseName: resolves each known id to its display name', () => {
-  assert.equal(getExtraExerciseName('double-kb-pushup'), 'Double-Kettlebell Push-Up');
-  assert.equal(getExtraExerciseName('single-kb-pushup'), 'Single-Kettlebell Push-Up');
-  assert.equal(getExtraExerciseName('vertical-pullup'), 'Vertical Pull-Up');
-});
-
-test('getExtraExerciseName: an unknown id falls back to the raw id rather than fabricating a name', () => {
-  // Deliberately an id outside the known union (dynamic import() types as
-  // `any` here, same as every other test file using this import pattern
-  // in this repo) — exercises the defensive fallback for a value a
-  // future/unexpected id could still produce at runtime.
-  assert.equal(getExtraExerciseName('some-future-exercise'), 'some-future-exercise');
 });

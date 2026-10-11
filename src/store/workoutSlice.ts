@@ -20,6 +20,10 @@ import {
   findExerciseStats,
   getWeaknessProfile as computeWeaknessProfile,
 } from '../utils/exerciseStats';
+import {
+  getAllExtraExerciseStats as computeAllExtraExerciseStats,
+  findExtraExerciseStats,
+} from '../utils/extraExerciseStats';
 import { detectAllQualifyingMilestones } from '../utils/milestones';
 import { isCampaignComplete } from '../utils/campaignState';
 
@@ -501,5 +505,15 @@ export const createWorkoutSlice: StateCreator<AppStore, [], [], WorkoutSlice> = 
   getWeaknessProfile: async () => {
     const stats = await get().getAllExerciseStats();
     return computeWeaknessProfile(stats);
+  },
+
+  getAllExtraExerciseStats: async () => {
+    const results = await WorkoutRepository.getResultsForUser(LOCAL_USER_ID);
+    return computeAllExtraExerciseStats(results);
+  },
+
+  getExtraExerciseStatsById: async (exerciseId) => {
+    const stats = await get().getAllExtraExerciseStats();
+    return findExtraExerciseStats(stats, exerciseId);
   },
 });

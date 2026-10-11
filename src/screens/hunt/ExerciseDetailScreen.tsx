@@ -7,6 +7,7 @@ import { Header, GlassCard } from '../../components/core';
 import { contentEngine } from '../../../engines/content';
 import { useAppStore } from '../../store';
 import { ExerciseStats } from '../../utils/exerciseStats';
+import { ExtraExerciseStats } from '../../utils/extraExerciseStats';
 import { convertKgToDisplay } from '../../utils/weight';
 import { colors, fontFamily, fontSize, lineHeight, spacing } from '../../theme';
 
@@ -42,17 +43,26 @@ export function ExerciseDetailScreen({ route, navigation }: Props) {
   const { exerciseId } = route.params;
   const entry = contentEngine.getExerciseLibraryEntry(exerciseId);
   const getExerciseStatsById = useAppStore((state) => state.getExerciseStatsById);
+  const getExtraExerciseStatsById = useAppStore((state) => state.getExtraExerciseStatsById);
   const unitPreference = useAppStore((state) => state.settings?.unitPreference ?? 'kg');
 
   const [stats, setStats] = useState<ExerciseStats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  // Optional post-Hunt exercises (double-kb-pushup, single-kb-pushup,
+  // vertical-pullup) are real library entries now, but their completion
+  // history lives in a SEPARATE pool from `stats` above (extraSets, never
+  // a workout's prescribed exercises — see extraExerciseStats.ts). Only
+  // ever non-null for those 3 ids; every other exercise's card below
+  // simply doesn't render.
+  const [extraStats, setExtraStats] = useState<ExtraExerciseStats | null>(null);
 
   useEffect(() => {
     getExerciseStatsById(exerciseId).then((result) => {
       setStats(result);
       setIsLoading(false);
     });
-  }, [exerciseId, getExerciseStatsById]);
+    getExtraExerciseStatsById(exerciseId).then(setExtraStats);
+  }, [exerciseId, getExerciseStatsById, getExtraExerciseStatsById]);
 
   if (!entry) {
     return (
@@ -115,6 +125,33 @@ export function ExerciseDetailScreen({ route, navigation }: Props) {
           )}
         </GlassCard>
 
+        {/*
+          Optional post-Hunt exercises: a deliberately separate card from
+          "Your Lifetime Stats" above — extraSets were never part of any
+          Hunt's prescribed structure, so pooling them together would
+          misrepresent both totals. Only renders when this exercise has
+          ever actually been logged as an extra set (non-null extraStats);
+          a regular Hunt exercise's detail page never shows this card.
+        */}
+        {extraStats ? (
+          <GlassCard style={styles.section}>
+            <Text style={styles.sectionLabel}>Extra Exercise Log</Text>
+            <View style={styles.statsGrid}>
+              <View style={styles.statCell}>
+                <Text style={styles.statValue}>{extraStats.totalReps.toLocaleString()}</Text>
+                <Text style={styles.statCaption}>Total Reps</Text>
+              </View>
+              <View style={styles.statCell}>
+                <Text style={styles.statValue}>{extraStats.totalSets}</Text>
+                <Text style={styles.statCaption}>Sets Logged</Text>
+              </View>
+            </View>
+            <Text style={styles.lastPerformed}>
+              Last performed: {formatLastPerformed(extraStats.lastPerformedAt)}
+            </Text>
+          </GlassCard>
+        ) : null}
+
         <GlassCard style={styles.section}>
           <Text style={styles.sectionLabel}>Muscles Trained</Text>
           <View style={styles.tagRow}>
@@ -159,6 +196,10 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: spacing.md,
+    // Bottom-nav clearance fix — see MonsterDetailScreen.tsx's identical
+    // comment; same spacing.xxl convention every tab-bar-visible
+    // scrollable screen now uses.
+    paddingBottom: spacing.xxl,
     gap: spacing.sm,
   },
   missingState: {

@@ -12,7 +12,6 @@ import { ProgressBar } from '../../components/progress';
 import { getAtmosphericColor } from '../../utils/bossPersonality';
 import { contentEngine } from '../../../engines/content';
 import { getMonsterPortrait } from '../../constants/monsterPortraits';
-import { getExtraExerciseName } from '../../constants/extraExercises';
 import { useAppStore } from '../../store';
 import { getLevelProgress } from '../../../engines/progress/progressionEngine';
 import { isCampaignComplete } from '../../utils/campaignState';
@@ -485,15 +484,37 @@ export function HuntCompleteScreen({ route, navigation }: Props) {
         {summary.extraSets && summary.extraSets.length > 0 ? (
           <GlassCard style={styles.card}>
             <Text style={styles.sectionLabel}>Extra Exercises</Text>
-            {summary.extraSets.map((set, index) => (
-              <View
-                key={set.id}
-                style={[styles.breakdownEntry, index > 0 && styles.breakdownEntryDivider]}
-              >
-                <Text style={styles.breakdownEntryName}>{getExtraExerciseName(set.exerciseId)}</Text>
-                <Text style={styles.breakdownEntryReps}>{set.reps} reps</Text>
-              </View>
-            ))}
+            {summary.extraSets.map((set, index) => {
+              // Same library-lookup + name-link pattern as the Exercise
+              // Breakdown card right above — each extra exercise is now a
+              // real content/exercises/library.json entry (double-kb-pushup,
+              // single-kb-pushup, vertical-pullup), so it gets the exact
+              // same navigable-name treatment every other exercise here does.
+              const libraryEntry = contentEngine.getExerciseLibraryEntry(set.exerciseId);
+              const nameText = (
+                <Text style={styles.breakdownEntryName}>{libraryEntry?.name ?? set.exerciseId}</Text>
+              );
+              return (
+                <View
+                  key={set.id}
+                  style={[styles.breakdownEntry, index > 0 && styles.breakdownEntryDivider]}
+                >
+                  {libraryEntry ? (
+                    <Pressable
+                      onPress={() => navigation.navigate('ExerciseDetail', { exerciseId: libraryEntry.id })}
+                      accessibilityRole="link"
+                      style={styles.breakdownEntryNamePressable}
+                    >
+                      {nameText}
+                      <Ionicons name="information-circle-outline" size={14} color={colors.text.muted} />
+                    </Pressable>
+                  ) : (
+                    nameText
+                  )}
+                  <Text style={styles.breakdownEntryReps}>{set.reps} reps</Text>
+                </View>
+              );
+            })}
           </GlassCard>
         ) : null}
 

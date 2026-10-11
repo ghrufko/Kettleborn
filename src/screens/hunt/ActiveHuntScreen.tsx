@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { View, Text, StyleSheet, Animated, BackHandler, ScrollView, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { HuntStackParamList } from '../../navigation/types';
 import { Button, GlassCard, AppBackground, ConfirmDialog } from '../../components/core';
@@ -33,7 +33,7 @@ import { triggerHaptic } from '../../utils/haptics';
 import { audioEngine } from '../../../engines/audio/AudioEngine';
 import * as Haptics from 'expo-haptics';
 import { Monster, Workout, ExtraExerciseSet, ExtraExerciseId } from '../../models';
-import { EXTRA_EXERCISE_DEFINITIONS, getExtraExerciseName } from '../../constants/extraExercises';
+import { EXTRA_EXERCISE_IDS } from '../../constants/extraExercises';
 import { colors, fontFamily, fontSize, radii, spacing, glow } from '../../theme';
 
 type Props = NativeStackScreenProps<HuntStackParamList, 'ActiveHunt'>;
@@ -441,15 +441,18 @@ function ActiveHuntSession({
 }: ActiveHuntSessionProps) {
   const keepScreenAwake = useAppStore((state) => state.settings?.keepScreenAwake ?? false);
   useConditionalKeepAwake(keepScreenAwake);
+  // Same `useNavigation<any>()` escape hatch WorkoutStructure.tsx already
+  // uses — this component has no typed navigation prop of its own
+  // (ActiveHuntScreen, the outer component, owns that), only needed here
+  // for the extra-exercise rows' link into ExerciseDetailScreen.
+  const navigation = useNavigation<any>();
   // Optional post-Hunt exercises: local to this screen instance, never
   // touches session/battle state — only read once, when Finish Hunt is
   // pressed (see the onFinish call below). Each added set gets its own
   // id so the list can be rendered/removed by key, same convention as
   // every other `${prefix}-${Date.now()}` id in this codebase.
   const [extraSets, setExtraSets] = useState<ExtraExerciseSet[]>([]);
-  const [pendingExtraExerciseId, setPendingExtraExerciseId] = useState<ExtraExerciseId>(
-    EXTRA_EXERCISE_DEFINITIONS[0].id
-  );
+  const [pendingExtraExerciseId, setPendingExtraExerciseId] = useState<ExtraExerciseId>(EXTRA_EXERCISE_IDS[0]);
   const [pendingExtraReps, setPendingExtraReps] = useState(10);
   const addExtraSet = useCallback(() => {
     setExtraSets((prev) => [
@@ -1040,44 +1043,75 @@ function ActiveHuntSession({
             <Text style={styles.sectionLabel}>Extra Exercises (Optional)</Text>
             {extraSets.length > 0 ? (
               <View style={styles.extraSetList}>
-                {extraSets.map((set) => (
-                  <View key={set.id} style={styles.extraSetRow}>
-                    <Text style={styles.extraSetText}>
-                      {getExtraExerciseName(set.exerciseId)} · {set.reps} reps
-                    </Text>
-                    <Pressable
-                      onPress={() => removeExtraSet(set.id)}
-                      hitSlop={8}
-                      accessibilityRole="button"
-                      accessibilityLabel={`Remove ${getExtraExerciseName(set.exerciseId)} set`}
-                    >
-                      <Ionicons name="trash-outline" size={18} color={colors.text.muted} />
-                    </Pressable>
-                  </View>
-                ))}
+                {extraSets.map((set) => {
+                  const libraryEntry = contentEngine.getExerciseLibraryEntry(set.exerciseId);
+                  const exerciseName = libraryEntry?.name ?? set.exerciseId;
+                  return (
+                    <View key={set.id} style={styles.extraSetRow}>
+                      {/*
+                        Library integration: the name is now a real link
+                        into ExerciseDetailScreen (the same navigation
+                        pattern every other exercise name in this app
+                        already uses — WorkoutStructure, Hunt Overview's
+                        preview list) now that each extra exercise is a
+                        real content/exercises/library.json entry, not
+                        just a label. The remove action stays a separate
+                        sibling Pressable, same shape as ForgeScreen's own
+                        name-link + trash-icon rows.
+                      */}
+                      {libraryEntry ? (
+                        <Pressable
+                          onPress={() => navigation.navigate('ExerciseDetail', { exerciseId: libraryEntry.id })}
+                          accessibilityRole="link"
+                          style={styles.extraSetNameLink}
+                        >
+                          <Text style={styles.extraSetText}>
+                            {exerciseName} · {set.reps} reps
+                          </Text>
+                          <Ionicons name="information-circle-outline" size={14} color={colors.text.muted} />
+                        </Pressable>
+                      ) : (
+                        <Text style={styles.extraSetText}>
+                          {exerciseName} · {set.reps} reps
+                        </Text>
+                      )}
+                      <Pressable
+                        onPress={() => removeExtraSet(set.id)}
+                        hitSlop={8}
+                        accessibilityRole="button"
+                        accessibilityLabel={`Remove ${exerciseName} set`}
+                      >
+                        <Ionicons name="trash-outline" size={18} color={colors.text.muted} />
+                      </Pressable>
+                    </View>
+                  );
+                })}
               </View>
             ) : null}
 
             <View style={styles.extraExercisePickerRow}>
-              {EXTRA_EXERCISE_DEFINITIONS.map((def) => (
-                <Pressable
-                  key={def.id}
-                  onPress={() => setPendingExtraExerciseId(def.id)}
-                  style={[
-                    styles.extraExerciseChip,
-                    pendingExtraExerciseId === def.id && styles.extraExerciseChipActive,
-                  ]}
-                >
-                  <Text
+              {EXTRA_EXERCISE_IDS.map((id) => {
+                const name = contentEngine.getExerciseLibraryEntry(id)?.name ?? id;
+                return (
+                  <Pressable
+                    key={id}
+                    onPress={() => setPendingExtraExerciseId(id)}
                     style={[
-                      styles.extraExerciseChipText,
-                      pendingExtraExerciseId === def.id && styles.extraExerciseChipTextActive,
+                      styles.extraExerciseChip,
+                      pendingExtraExerciseId === id && styles.extraExerciseChipActive,
                     ]}
                   >
-                    {def.name}
-                  </Text>
-                </Pressable>
-              ))}
+                    <Text
+                      style={[
+                        styles.extraExerciseChipText,
+                        pendingExtraExerciseId === id && styles.extraExerciseChipTextActive,
+                      ]}
+                    >
+                      {name}
+                    </Text>
+                  </Pressable>
+                );
+              })}
             </View>
 
             <View style={styles.extraRepsRow}>
@@ -1818,6 +1852,17 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.xxs,
     borderBottomWidth: 1,
     borderBottomColor: colors.border.hairline,
+  },
+  // Wraps the name + info icon as ONE flex:1 child of extraSetRow — same
+  // reasoning as MonsterDetailScreen's statLabelWithIcon fix: a
+  // three-child space-between row would misalign the remove icon instead
+  // of keeping it flush against the row's right edge.
+  extraSetNameLink: {
+    flex: 1,
+    minWidth: 0,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xxs,
   },
   extraSetText: {
     fontFamily: fontFamily.bodyRegular,

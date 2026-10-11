@@ -5,7 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { HuntStackParamList } from '../../navigation/types';
 import { Header, Button, GlassCard, AppBackground, ConfirmDialog } from '../../components/core';
 import { MonsterPortraitImage } from '../../components/monster/MonsterPortraitImage';
-import { ProgressBar, DurationTrendChart, RoundsTrendChart } from '../../components/progress';
+import { ProgressBar } from '../../components/progress';
 import { contentEngine } from '../../../engines/content';
 import { getMonsterPortrait } from '../../constants/monsterPortraits';
 import { getHuntDisplayState } from '../../utils/huntState';
@@ -13,7 +13,7 @@ import { getCombatPersonality } from '../../utils/bossPersonality';
 import { getBestiaryStats, BestiaryStats } from '../../utils/bestiaryStats';
 import { computeHistoricalRanks } from '../../utils/rankHistory';
 import { groupResultsByDay } from '../../utils/timeline';
-import { getDurationTrendSeries, getRoundsTrendSeries, getMonsterHistoryEntries } from '../../utils/performanceHistory';
+import { getMonsterHistoryEntries } from '../../utils/performanceHistory';
 import { getRPELabel } from '../../utils/rpeLabels';
 import { WorkoutStructure } from '../../components/workout/WorkoutStructure';
 import { groupWorkoutPresentation } from '../../utils/workoutPresentation';
@@ -71,8 +71,7 @@ interface RankedHistoryEntry {
 
 // Phase 2.9: caps the Hunt History list to a readable length on a narrow
 // phone screen — every result is still real and persisted either way;
-// this only limits how many render at once, matching the Chart's own
-// windowing (DurationTrendChart's maxPoints).
+// this only limits how many render at once.
 const HISTORY_DISPLAY_LIMIT = 10;
 
 export function MonsterDetailScreen({ route, navigation }: Props) {
@@ -176,28 +175,6 @@ export function MonsterDetailScreen({ route, navigation }: Props) {
       wasPersonalRecord: prByResultId.get(result.id) ?? false,
     }));
   }, [monsterResults]);
-
-  // Phase 2.9: this monster's single workoutId (every monster's hunts
-  // share exactly one, confirmed across all current content) — computed
-  // independently of the `firstWorkout` variable below since hooks must
-  // run before the `!monster` early return, while `firstWorkout` is only
-  // safe to compute after it.
-  const durationTrendWorkout = monster
-    ? contentEngine.getWorkout(monster.hunts.find((h) => h.order === 1)?.workoutId ?? '')
-    : undefined;
-  const durationTrendSeries = useMemo(
-    () => getDurationTrendSeries(monsterResults, durationTrendWorkout),
-    [monsterResults, durationTrendWorkout]
-  );
-  // Phase 2.10: the EMOM companion to durationTrendSeries above — mutually
-  // exclusive by construction (getDurationTrendSeries returns [] when
-  // workout.emomSeconds is set, and getRoundsTrendSeries returns []
-  // when it isn't), so exactly one of the two ever has data for a given
-  // monster.
-  const roundsTrendSeries = useMemo(
-    () => getRoundsTrendSeries(monsterResults, durationTrendWorkout),
-    [monsterResults, durationTrendWorkout]
-  );
 
   if (!monster) {
     return (
@@ -327,7 +304,25 @@ export function MonsterDetailScreen({ route, navigation }: Props) {
                     onPress={() => libraryEntry && navigation.navigate('ExerciseDetail', { exerciseId: libraryEntry.id })}
                     style={styles.statRow}
                   >
-                    <Text style={styles.statLabel}>{exercise.displayName ?? exercise.name}</Text>
+                    {/*
+                      Right-alignment fix: the label and its optional info
+                      icon must be ONE child of statRow (a flex:1 column),
+                      never two separate siblings alongside statValue — a
+                      three-child `justifyContent: 'space-between'` row
+                      distributes all three across the row instead of
+                      pushing the value to the far edge, so a row with the
+                      icon (a libraryEntry match) showed its value shifted
+                      left of rows without one (Structure/Weight/Rest/
+                      Target Time below, which only ever have 2 children).
+                      Same two-child shape ChronicleScreen's own
+                      exerciseRecordLink + statValue pair already uses.
+                    */}
+                    <View style={styles.statLabelWithIcon}>
+                      <Text style={styles.statLabel}>{exercise.displayName ?? exercise.name}</Text>
+                      {libraryEntry ? (
+                        <Ionicons name="information-circle-outline" size={16} color={colors.text.muted} />
+                      ) : null}
+                    </View>
                     <Text style={styles.statValue}>
                       {exercise.targetReps
                         ? `${exercise.targetReps} reps`
@@ -337,7 +332,6 @@ export function MonsterDetailScreen({ route, navigation }: Props) {
                           ? `${exercise.targetDistanceFt} ft`
                           : ''}
                     </Text>
-                    {libraryEntry ? <Ionicons name="information-circle-outline" size={16} color={colors.text.muted} /> : null}
                   </Pressable>
                 );
               })
@@ -430,26 +424,6 @@ export function MonsterDetailScreen({ route, navigation }: Props) {
               <Text style={styles.statLabel}>Favorite Hunt</Text>
               <Text style={styles.statValue}>{bestiaryStats.favoriteHuntName ?? '—'}</Text>
             </View>
-          </GlassCard>
-        ) : null}
-
-        {/*
-          Phase 2.9/2.10: Performance Trend — a real chart of actual
-          persisted WorkoutResult rows, never a fabricated trend. Only
-          rendered once the player has fought this monster at least once.
-          An EMOM-style workout (elapsed time is a fixed window there, not
-          a performance measure — see performanceHistory.ts) gets the
-          rounds-completed chart instead of the duration one; the two are
-          mutually exclusive by construction, never both rendered.
-        */}
-        {monsterResults.length > 0 ? (
-          <GlassCard style={styles.progressCard}>
-            <Text style={styles.sectionLabel}>Performance Trend</Text>
-            {durationTrendWorkout?.emomSeconds ? (
-              <RoundsTrendChart points={roundsTrendSeries} />
-            ) : (
-              <DurationTrendChart points={durationTrendSeries} />
-            )}
           </GlassCard>
         ) : null}
 
@@ -629,6 +603,12 @@ const styles = StyleSheet.create({
   content: {
     alignItems: 'center',
     padding: spacing.lg,
+    // Bottom-nav clearance fix: this screen had no extra bottom
+    // clearance at all (plain `padding` on every side) — the real root
+    // cause of the Hunt History/Bestiary cards sitting flush against the
+    // tab bar instead of scrolling clear of it. Matches the spacing.xxl
+    // convention Chronicle/Hunter/Hunt Overview/World Map/Hunt already use.
+    paddingBottom: spacing.xxl,
   },
   missingState: {
     flex: 1,
@@ -743,6 +723,7 @@ const styles = StyleSheet.create({
   },
   statRow: {
     flexDirection: 'row',
+    alignItems: 'center',
     justifyContent: 'space-between',
     marginTop: spacing.xs,
   },
@@ -751,10 +732,21 @@ const styles = StyleSheet.create({
     fontSize: fontSize.base,
     color: colors.text.secondary,
   },
+  // Wraps the label with its optional info icon as ONE flex:1 child of
+  // statRow — see the comment at this style's call site for why this
+  // must never be two separate siblings next to statValue.
+  statLabelWithIcon: {
+    flex: 1,
+    minWidth: 0,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xxs,
+  },
   statValue: {
     fontFamily: fontFamily.monoBold,
     fontSize: fontSize.base,
     color: colors.text.primary,
+    textAlign: 'right',
   },
   progressBar: {
     marginTop: spacing.sm,

@@ -2,6 +2,7 @@ import { User, Settings, Chronicle, MonsterProgress, WorkoutResult, Equipment, T
 import { HuntRank } from '../utils/huntRank';
 import { XPBreakdown } from '../../engines/progress/progressionEngine';
 import { ExerciseStats, WeaknessProfile } from '../utils/exerciseStats';
+import { ExtraExerciseStats } from '../utils/extraExerciseStats';
 import { RoundLap } from '../../engines/session/useWorkoutSession';
 import { ExerciseBreakdownEntry } from '../utils/exerciseBreakdown';
 import { AppAuthUser, AuthFailure, AuthResult, SignUpResult } from '../services/supabase/auth';
@@ -308,6 +309,9 @@ export interface WorkoutSlice {
   getAllExerciseStats: () => Promise<ExerciseStats[]>;
   getExerciseStatsById: (exerciseId: string) => Promise<ExerciseStats | null>;
   getWeaknessProfile: () => Promise<WeaknessProfile>;
+  /** Lifetime totals for the optional post-Hunt extra exercises — see extraExerciseStats.ts. Deliberately separate from getAllExerciseStats above, which only ever reads a workout's prescribed exercises. */
+  getAllExtraExerciseStats: () => Promise<ExtraExerciseStats[]>;
+  getExtraExerciseStatsById: (exerciseId: string) => Promise<ExtraExerciseStats | null>;
 }
 
 export interface TimerSlice {
