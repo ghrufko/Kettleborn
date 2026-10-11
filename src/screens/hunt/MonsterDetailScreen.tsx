@@ -1,11 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Pressable, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import { HuntStackParamList } from '../../navigation/types';
-import { Header, Button, GlassCard, AppBackground } from '../../components/core';
+import { Header, Button, GlassCard, AppBackground, ConfirmDialog } from '../../components/core';
 import { MonsterPortraitImage } from '../../components/monster/MonsterPortraitImage';
-import { ProgressBar } from '../../components/progress';
+import { ProgressBar, DurationTrendChart, RoundsTrendChart } from '../../components/progress';
 import { contentEngine } from '../../../engines/content';
 import { getMonsterPortrait } from '../../constants/monsterPortraits';
 import { getHuntDisplayState } from '../../utils/huntState';
@@ -13,6 +13,7 @@ import { getCombatPersonality } from '../../utils/bossPersonality';
 import { getBestiaryStats, BestiaryStats } from '../../utils/bestiaryStats';
 import { computeHistoricalRanks } from '../../utils/rankHistory';
 import { groupResultsByDay } from '../../utils/timeline';
+import { getDurationTrendSeries, getRoundsTrendSeries, getMonsterHistoryEntries } from '../../utils/performanceHistory';
 import { getRPELabel } from '../../utils/rpeLabels';
 import { WorkoutStructure } from '../../components/workout/WorkoutStructure';
 import { groupWorkoutPresentation } from '../../utils/workoutPresentation';
@@ -62,6 +63,18 @@ interface PreviousEncounterSummary {
   wasPersonalRecord: boolean;
 }
 
+interface RankedHistoryEntry {
+  result: WorkoutResult;
+  rank: HuntRank;
+  wasPersonalRecord: boolean;
+}
+
+// Phase 2.9: caps the Hunt History list to a readable length on a narrow
+// phone screen — every result is still real and persisted either way;
+// this only limits how many render at once, matching the Chart's own
+// windowing (DurationTrendChart's maxPoints).
+const HISTORY_DISPLAY_LIMIT = 10;
+
 export function MonsterDetailScreen({ route, navigation }: Props) {
   const { monsterId } = route.params;
   const monster = contentEngine.getMonster(monsterId);
@@ -71,6 +84,7 @@ export function MonsterDetailScreen({ route, navigation }: Props) {
   const resetMonsterProgress = useAppStore((state) => state.resetMonsterProgress);
   const unitPreference = useAppStore((state) => state.settings?.unitPreference ?? 'kg');
   const [isResetting, setIsResetting] = useState(false);
+  const [resetDialogVisible, setResetDialogVisible] = useState(false);
   const [bestiaryStats, setBestiaryStats] = useState<BestiaryStats | null>(null);
   const [completedHuntIds, setCompletedHuntIds] = useState<Set<string>>(new Set());
   const [monsterResults, setMonsterResults] = useState<WorkoutResult[]>([]);
@@ -140,6 +154,51 @@ export function MonsterDetailScreen({ route, navigation }: Props) {
     return summaries;
   }, [monsterResults]);
 
+  // Phase 2.9: full Hunt History list (every completed result for this
+  // monster, newest first) — a separate, independent computation from
+  // previousEncounterByHuntId above (which only keeps the LATEST result
+  // per huntId) rather than threading a second return value through that
+  // memo, so neither can accidentally break the other.
+  const rankedHistoryEntries: RankedHistoryEntry[] = useMemo(() => {
+    if (monsterResults.length === 0) {
+      return [];
+    }
+    const ranked = computeHistoricalRanks(monsterResults, (id) => contentEngine.getWorkout(id));
+    const rankByResultId = new Map(ranked.map(({ result, rank }) => [result.id, rank]));
+    const prByResultId = new Map(
+      groupResultsByDay(monsterResults)
+        .flatMap((group) => group.entries)
+        .map((entry) => [entry.result.id, entry.wasPersonalRecord])
+    );
+    return getMonsterHistoryEntries(monsterResults).map((result) => ({
+      result,
+      rank: rankByResultId.get(result.id) ?? 'C',
+      wasPersonalRecord: prByResultId.get(result.id) ?? false,
+    }));
+  }, [monsterResults]);
+
+  // Phase 2.9: this monster's single workoutId (every monster's hunts
+  // share exactly one, confirmed across all current content) — computed
+  // independently of the `firstWorkout` variable below since hooks must
+  // run before the `!monster` early return, while `firstWorkout` is only
+  // safe to compute after it.
+  const durationTrendWorkout = monster
+    ? contentEngine.getWorkout(monster.hunts.find((h) => h.order === 1)?.workoutId ?? '')
+    : undefined;
+  const durationTrendSeries = useMemo(
+    () => getDurationTrendSeries(monsterResults, durationTrendWorkout),
+    [monsterResults, durationTrendWorkout]
+  );
+  // Phase 2.10: the EMOM companion to durationTrendSeries above — mutually
+  // exclusive by construction (getDurationTrendSeries returns [] when
+  // workout.emomSeconds is set, and getRoundsTrendSeries returns []
+  // when it isn't), so exactly one of the two ever has data for a given
+  // monster.
+  const roundsTrendSeries = useMemo(
+    () => getRoundsTrendSeries(monsterResults, durationTrendWorkout),
+    [monsterResults, durationTrendWorkout]
+  );
+
   if (!monster) {
     return (
       <AppBackground style={styles.container}>
@@ -169,27 +228,21 @@ export function MonsterDetailScreen({ route, navigation }: Props) {
 
   // Encounter Lock: Reset Progress — same confirm-then-destructive-action
   // pattern as Settings' "Reset Campaign Progress" (SettingsScreen.tsx),
-  // scoped to just this monster via resetMonsterProgress.
-  const confirmResetProgress = () => {
-    Alert.alert(
-      `Reset ${monster.name}'s Progress?`,
-      "This will erase this monster's Encounter results, baseline, and Hunt progress, as if you had never fought it. Other monsters, your Chronicle, Custom Workouts, and Timer data are not affected. This cannot be undone.",
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Reset',
-          style: 'destructive',
-          onPress: async () => {
-            setIsResetting(true);
-            try {
-              await resetMonsterProgress(monsterId);
-            } finally {
-              setIsResetting(false);
-            }
-          },
-        },
-      ]
-    );
+  // scoped to just this monster via resetMonsterProgress. Uses the shared
+  // ConfirmDialog (a React Native Modal), not Alert.alert — Alert.alert
+  // does not reliably render on this app's web/PWA build target, which
+  // was why this button previously appeared to do nothing there: the
+  // confirmation never showed, so resetMonsterProgress was never called.
+  const confirmResetProgress = () => setResetDialogVisible(true);
+
+  const handleResetProgress = async () => {
+    setIsResetting(true);
+    try {
+      await resetMonsterProgress(monsterId);
+    } finally {
+      setIsResetting(false);
+      setResetDialogVisible(false);
+    }
   };
 
   return (
@@ -380,6 +433,67 @@ export function MonsterDetailScreen({ route, navigation }: Props) {
           </GlassCard>
         ) : null}
 
+        {/*
+          Phase 2.9/2.10: Performance Trend — a real chart of actual
+          persisted WorkoutResult rows, never a fabricated trend. Only
+          rendered once the player has fought this monster at least once.
+          An EMOM-style workout (elapsed time is a fixed window there, not
+          a performance measure — see performanceHistory.ts) gets the
+          rounds-completed chart instead of the duration one; the two are
+          mutually exclusive by construction, never both rendered.
+        */}
+        {monsterResults.length > 0 ? (
+          <GlassCard style={styles.progressCard}>
+            <Text style={styles.sectionLabel}>Performance Trend</Text>
+            {durationTrendWorkout?.emomSeconds ? (
+              <RoundsTrendChart points={roundsTrendSeries} />
+            ) : (
+              <DurationTrendChart points={durationTrendSeries} />
+            )}
+          </GlassCard>
+        ) : null}
+
+        {/*
+          Phase 2.9: Hunt History — every completed result for this
+          monster, newest first (getMonsterHistoryEntries), capped to
+          HISTORY_DISPLAY_LIMIT for a readable list on a narrow screen.
+          Distinct from the "Hunts" card further below, which shows only
+          the single latest result per encounter slot inline with that
+          encounter's row — this is the full record, replays included.
+        */}
+        {rankedHistoryEntries.length > 0 ? (
+          <GlassCard style={styles.progressCard}>
+            <Text style={styles.sectionLabel}>Hunt History</Text>
+            {rankedHistoryEntries.slice(0, HISTORY_DISPLAY_LIMIT).map(({ result, rank, wasPersonalRecord }) => (
+              <View key={result.id} style={styles.historyRow}>
+                <View style={[styles.previousRankBadge, { borderColor: RANK_COLORS[rank] }]}>
+                  <Text style={[styles.previousRankText, { color: RANK_COLORS[rank] }]}>{rank}</Text>
+                </View>
+                <View style={styles.historyRowBody}>
+                  <Text style={styles.historyRowTitle}>
+                    {formatDate(result.completedAt)} ·{' '}
+                    {formatSecondsClock(result.timeMinutes * 60 + result.timeSeconds)}
+                  </Text>
+                  <Text style={styles.historyRowMeta}>
+                    {formatWeightPair(result.weightValueA, result.weightValueB, result.weightUnit)}
+                    {wasPersonalRecord ? ' · Personal Record' : ''}
+                    {result.isCustomHunt ? ' · Custom Hunt' : ''}
+                    {result.extraSets && result.extraSets.length > 0
+                      ? ` · +${result.extraSets.length} extra set${result.extraSets.length === 1 ? '' : 's'}`
+                      : ''}
+                  </Text>
+                </View>
+              </View>
+            ))}
+            {rankedHistoryEntries.length > HISTORY_DISPLAY_LIMIT ? (
+              <Text style={styles.resetCaption}>
+                +{rankedHistoryEntries.length - HISTORY_DISPLAY_LIMIT} earlier result
+                {rankedHistoryEntries.length - HISTORY_DISPLAY_LIMIT === 1 ? '' : 's'} not shown.
+              </Text>
+            ) : null}
+          </GlassCard>
+        ) : null}
+
         {lore ? (
           <GlassCard style={styles.loreCard}>
             <Text style={styles.sectionLabel}>Bestiary</Text>
@@ -492,6 +606,16 @@ export function MonsterDetailScreen({ route, navigation }: Props) {
           />
         ) : null}
       </ScrollView>
+      <ConfirmDialog
+        visible={resetDialogVisible}
+        title={`Reset ${monster.name}'s Progress?`}
+        message="This will erase this monster's Encounter results, baseline, and Hunt progress, as if you had never fought it. Other monsters, your Chronicle, Custom Workouts, and Timer data are not affected. This cannot be undone."
+        cancelLabel="Cancel"
+        confirmLabel="Reset"
+        confirmDisabled={isResetting}
+        onCancel={() => setResetDialogVisible(false)}
+        onConfirm={handleResetProgress}
+      />
     </AppBackground>
   );
 }
@@ -753,6 +877,29 @@ const styles = StyleSheet.create({
     fontSize: 10,
     color: colors.text.muted,
     opacity: 0.85,
+    marginTop: 1,
+  },
+  // Phase 2.9: Hunt History row — reuses previousRankBadge/previousRankText
+  // (defined above) for the rank chip, same visual language as the
+  // Encounter row's own previous-result summary.
+  historyRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    marginTop: spacing.sm,
+  },
+  historyRowBody: {
+    flex: 1,
+  },
+  historyRowTitle: {
+    fontFamily: fontFamily.monoBold,
+    fontSize: fontSize.sm,
+    color: colors.text.primary,
+  },
+  historyRowMeta: {
+    fontFamily: fontFamily.monoRegular,
+    fontSize: fontSize.xs,
+    color: colors.text.muted,
     marginTop: 1,
   },
   startButton: {

@@ -1,0 +1,60 @@
+-- Phase 2.5.1: idempotency guarantee for future workout-result sync.
+--
+-- Prerequisite for any future sync writer, identified in Phase 1.3's
+-- "Explicitly deferred" section and re-confirmed open in every phase
+-- since: `client_result_id` exists (added in the original
+-- 20250615120200_workout_results.sql) but has never had a uniqueness
+-- guarantee. Without one, a retried upload (timeout, dropped
+-- connection, duplicate request) would insert a second history row —
+-- `workout_results` has no UPDATE/DELETE grant at all, so there would
+-- be no way to later deduplicate it either.
+--
+-- NOT YET USED: nothing in the app writes to this table yet (confirmed
+-- live against the real `kettleborn-dev` project this phase — `select
+-- count(*) from workout_results` returns 0 rows). This migration adds
+-- the constraint ahead of that writer existing, not in response to any
+-- existing duplicate or data-integrity problem.
+--
+-- Uniqueness scope — per-user, not global, and the reasoning matters:
+-- the local SQLite id this column will eventually carry
+-- (src/models/WorkoutResult.ts, assigned in
+-- src/store/workoutSlice.ts's completeHunt()) is generated as
+-- `` `${workoutId}-${Date.now()}` `` — a millisecond timestamp
+-- concatenated with the workout id, NOT a cryptographically random
+-- UUID. Two different users' devices completing the same workout in
+-- the same millisecond would produce the IDENTICAL string. A global
+-- `unique (client_result_id)` constraint would let one user's
+-- legitimate result collide with and block a different, unrelated
+-- user's equally legitimate result — a real correctness bug this
+-- migration avoids by scoping uniqueness to `(user_id, client_result_id)`
+-- instead. `user_id` is always the server-forced `auth.uid()` value
+-- (workout_results_before_insert(), unchanged by this migration), so
+-- this scoping is exactly as trustworthy as every other ownership
+-- check already in this schema — never client-asserted.
+--
+-- NULL handling, not worked around: a plain composite `unique`
+-- constraint already treats `NULL` as distinct from every other `NULL`
+-- under standard Postgres semantics — so any number of rows with a
+-- `NULL` client_result_id (every current and any future non-synced
+-- canonical/custom result, since local writes don't populate this
+-- column) remain completely unaffected by this constraint. No partial
+-- index or extra `where` clause is needed to achieve that; it's the
+-- database's own default behavior for a nullable column in a unique
+-- constraint, confirmed against this exact migration via the PGlite
+-- suite (see supabase/tests/pglite/run_sync_readiness_checks.mjs).
+--
+-- What this constraint guarantees once a sync writer exists: a retry
+-- of the same local result (same user, same client_result_id) is
+-- rejected outright by the database — not merely discouraged — so a
+-- client-side `on conflict (user_id, client_result_id) do nothing`
+-- upsert becomes genuinely safe to retry an unbounded number of times
+-- without ever producing a duplicate history row. This migration adds
+-- only the constraint; the upsert-based sync writer itself is still
+-- not implemented (out of scope for this phase).
+--
+-- Nothing else about this table changes: no RLS policy, grant, or
+-- trigger is touched. The existing 20250615120200_workout_results.sql
+-- file is not edited — this is a new, additive, forward-only migration.
+alter table public.workout_results
+  add constraint workout_results_user_client_result_id_key
+  unique (user_id, client_result_id);

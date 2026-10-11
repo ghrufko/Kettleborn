@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { View } from 'react-native';
+import { View, Linking } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import * as SplashScreen from 'expo-splash-screen';
 import { NavigationContainer, DarkTheme, Theme as NavigationTheme } from '@react-navigation/native';
@@ -23,9 +23,13 @@ import {
 import { RootNavigator } from './src/navigation/RootNavigator';
 import { ErrorScreen } from './src/screens/shared/ErrorScreen';
 import { OnboardingScreen } from './src/screens/onboarding/OnboardingScreen';
+import { UpdatePasswordScreen } from './src/screens/account/UpdatePasswordScreen';
 import { hasCompletedOnboarding, markOnboardingComplete } from './src/utils/onboardingStorage';
 import { colors } from './src/theme';
 import { bootstrapApp } from './src/store/bootstrap';
+import { useAppStore } from './src/store';
+import { extractResetPasswordCode } from './src/utils/resetPasswordLink';
+import { extractEmailConfirmationCode } from './src/utils/emailConfirmationLink';
 
 SplashScreen.preventAutoHideAsync().catch(() => {
   // Splash was already hidden or preventAutoHideAsync isn't supported
@@ -57,6 +61,44 @@ export default function App() {
   const [appReady, setAppReady] = useState(false);
   const [bootstrapError, setBootstrapError] = useState<Error | null>(null);
   const [showOnboarding, setShowOnboarding] = useState<boolean | null>(null);
+  const passwordRecoveryPending = useAppStore((state) => state.passwordRecoveryPending);
+
+  // Phase 2.4: handles the kettleborn://reset-password?code=... deep link
+  // the password-reset email redirects to. Covers both cold start
+  // (getInitialURL, app wasn't running) and warm start (the 'url' event,
+  // app was already running in the background) — independent of
+  // bootstrap/onboarding state, since the store's initializeAuth() call
+  // in bootstrap.ts is what actually makes the Supabase client available
+  // for this to call into; this effect only reacts to the incoming URL,
+  // it doesn't gate on bootstrap having finished (handlePasswordRecoveryLink
+  // itself safely no-ops via 'not_configured' if Supabase isn't ready).
+  //
+  // Email-confirmation fix: also handles the
+  // kettleborn://confirm-email?code=... link signUp()'s emailRedirectTo
+  // now points to. extractResetPasswordCode/extractEmailConfirmationCode
+  // each gate on their own distinct path segment, so a given URL only
+  // ever matches one of them — never both, never neither for a link this
+  // app actually sent.
+  useEffect(() => {
+    const handleUrl = (url: string) => {
+      const resetCode = extractResetPasswordCode(url);
+      if (resetCode) {
+        useAppStore.getState().handlePasswordRecoveryLink(resetCode);
+        return;
+      }
+      const confirmationCode = extractEmailConfirmationCode(url);
+      if (confirmationCode) {
+        useAppStore.getState().handleEmailConfirmationLink(confirmationCode);
+      }
+    };
+    Linking.getInitialURL().then((url) => {
+      if (url) {
+        handleUrl(url);
+      }
+    });
+    const subscription = Linking.addEventListener('url', ({ url }) => handleUrl(url));
+    return () => subscription.remove();
+  }, []);
 
   const runBootstrap = useCallback(() => {
     setBootstrapError(null);
@@ -105,7 +147,9 @@ export default function App() {
     <SafeAreaProvider>
       <View style={{ flex: 1, backgroundColor: colors.void.base }} onLayout={onLayoutRootView}>
         <StatusBar style="light" />
-        {showOnboarding ? (
+        {passwordRecoveryPending ? (
+          <UpdatePasswordScreen />
+        ) : showOnboarding ? (
           <OnboardingScreen
             onDone={() => {
               setShowOnboarding(false);

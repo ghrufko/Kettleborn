@@ -23,6 +23,7 @@ interface WorkoutResultRow {
   rest_seconds_used: number | null;
   structural_value_used: number | null;
   reps_overrides_used_json: string | null;
+  extra_sets_json: string | null;
 }
 
 function toWorkoutResult(row: WorkoutResultRow): WorkoutResult {
@@ -48,6 +49,7 @@ function toWorkoutResult(row: WorkoutResultRow): WorkoutResult {
     restSecondsUsed: row.rest_seconds_used,
     structuralValueUsed: row.structural_value_used,
     repsOverridesUsed: row.reps_overrides_used_json ? JSON.parse(row.reps_overrides_used_json) : null,
+    extraSets: row.extra_sets_json ? JSON.parse(row.extra_sets_json) : null,
   };
 }
 
@@ -58,8 +60,8 @@ export const WorkoutRepository = {
       `INSERT INTO workout_result
         (id, user_id, workout_id, monster_id, hunt_id, completed_at, time_minutes, time_seconds,
          weight_value_a, weight_value_b, weight_unit, notes, xp_awarded, difficulty, app_version, rung_times_json, rpe, is_custom_hunt,
-         rest_seconds_used, structural_value_used, reps_overrides_used_json)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
+         rest_seconds_used, structural_value_used, reps_overrides_used_json, extra_sets_json)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
       result.id,
       result.userId,
       result.workoutId,
@@ -80,7 +82,8 @@ export const WorkoutRepository = {
       result.isCustomHunt ? 1 : 0,
       result.restSecondsUsed,
       result.structuralValueUsed,
-      result.repsOverridesUsed ? JSON.stringify(result.repsOverridesUsed) : null
+      result.repsOverridesUsed ? JSON.stringify(result.repsOverridesUsed) : null,
+      result.extraSets && result.extraSets.length > 0 ? JSON.stringify(result.extraSets) : null
     );
   },
 

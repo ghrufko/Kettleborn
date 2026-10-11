@@ -7,7 +7,7 @@
   "personality": "steady",
   "accentColor": "#3f7fa6",
   "battle": {
-    "hp": 1150,
+    "hp": 1120,
     "phases": [
       70,
       45,

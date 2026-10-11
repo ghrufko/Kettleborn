@@ -25,8 +25,10 @@ function AlternatingHandChain({
   navigate: (screen: string, params: { exerciseId: string }) => void;
   onExercisePress?: (exercise: WorkoutPresentationGroup['exercises'][number]) => void;
 }) {
-  const left = exercises.filter((exercise) => /^\s*left\s*[·:-]/i.test(exercise.displayName ?? ''));
-  const right = exercises.filter((exercise) => /^\s*right\s*[·:-]/i.test(exercise.displayName ?? ''));
+  // Same tolerant pattern as isAlternatingHandChain's own handOf() — covers
+  // both "LEFT · Swing" (Unbroken) and "Left Hand · Snatch" (the Wraith).
+  const left = exercises.filter((exercise) => /^\s*left(?:\s+(?:hand|side))?\s*[·:-]/i.test(exercise.displayName ?? ''));
+  const right = exercises.filter((exercise) => /^\s*right(?:\s+(?:hand|side))?\s*[·:-]/i.test(exercise.displayName ?? ''));
   const renderFlow = (items: typeof left) => (
     <View style={styles.sequenceFlow}>
       {items.map((exercise, index) => {
@@ -202,7 +204,7 @@ const styles = StyleSheet.create({
   namePressable: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing.xxs, flexShrink: 1 },
   exerciseName: { flexShrink: 1, fontFamily: fontFamily.bodySemiBold, fontSize: fontSize.base, lineHeight: 23, color: colors.text.primary },
   exerciseNameCompact: { fontSize: fontSize.sm, lineHeight: 20 },
-  target: { minWidth: 48, textAlign: 'right', fontFamily: fontFamily.monoRegular, fontSize: fontSize.base, color: colors.bronze.active },
+  target: { width: 64, textAlign: 'right', fontFamily: fontFamily.monoRegular, fontSize: fontSize.base, color: colors.bronze.active },
   targetCompact: { fontSize: fontSize.sm },
   handRepSummary: { marginTop: 2, fontFamily: fontFamily.monoRegular, fontSize: fontSize.xs, color: colors.bronze.active },
   alternatingChain: { width: '100%', marginTop: spacing.xs, gap: 2 },

@@ -9,6 +9,8 @@ import { createTimerSlice } from './timerSlice';
 import { createCustomHuntSlice } from './customHuntSlice';
 import { createCustomWorkoutSlice } from './customWorkoutSlice';
 import { createStopwatchSlice } from './stopwatchSlice';
+import { createAchievementSlice } from './achievementSlice';
+import { createAuthSlice } from './authSlice';
 
 export const useAppStore = create<AppStore>()((...api) => ({
   ...createUserSlice(...api),
@@ -20,6 +22,8 @@ export const useAppStore = create<AppStore>()((...api) => ({
   ...createCustomHuntSlice(...api),
   ...createCustomWorkoutSlice(...api),
   ...createStopwatchSlice(...api),
+  ...createAchievementSlice(...api),
+  ...createAuthSlice(...api),
 }));
 
 export type { AppStore } from './types';

@@ -108,20 +108,64 @@ export function getWorkoutRoundExercises(workout: Workout, round: number): Exerc
   return blocks[Math.max(0, Math.min(round - 1, blocks.length - 1))];
 }
 
+/**
+ * Every exercise actually performed across a completed session, resolved
+ * per round exactly as `useWorkoutSession`/the Battle Engine do (via
+ * `getWorkoutRoundExercises`) — not a blind `workout.exercises` flat list
+ * repeated `actualRounds` times. That blind multiply is correct for an
+ * ordinary flat workout (where `getWorkoutRoundExercises` returns the same
+ * full list every round anyway — mathematically identical output), but
+ * double-counts a workout using the "legacy repeated Chain stored as
+ * consecutive blocks" fallback (e.g. Atlas: 30 authored exercises really
+ * means 5 per round, not 30) and silently ignores a content-authored
+ * `rounds` value an open-ended EMOM workout's real `actualRounds` has
+ * already outgrown. Sectioned workouts are unaffected — each section is
+ * already one round's worth, same as before.
+ */
+export function getWorkoutActualExercises(workout: Workout, actualRounds: number): Exercise[] {
+  if (workout.sections) {
+    return workout.sections.flatMap((section) => section.exercises);
+  }
+  const result: Exercise[] = [];
+  for (let round = 1; round <= actualRounds; round += 1) {
+    result.push(...getWorkoutRoundExercises(workout, round));
+  }
+  return result;
+}
+
+/** Same "left"/"right hand/side" tolerance as handOf(), applied to a raw
+ * `Exercise.sequenceGroup` string instead of a displayName. */
+function sideOf(sequenceGroup: string | undefined): 'left' | 'right' | null {
+  if (!sequenceGroup) return null;
+  const match = sequenceGroup.match(/^\s*(left|right)(?:\s+(?:hand|side))?\s*$/i);
+  return match ? (match[1].toLowerCase() as 'left' | 'right') : null;
+}
+
 function handOf(exercise: Exercise): 'left' | 'right' | null {
   const displayName = exercise.displayName ?? '';
-  const match = displayName.match(/^\s*(left|right)\s*[·:-]/i);
+  // Tolerates both authored forms seen in content: "LEFT · Swing" (Unbroken)
+  // and "Left Hand · Snatch" (the Wraith's sequenceGroup-derived label) —
+  // an optional "hand"/"side" word is the only difference between them.
+  const match = displayName.match(/^\s*(left|right)(?:\s+(?:hand|side))?\s*[·:-]/i);
   return match ? match[1].toLowerCase() as 'left' | 'right' : null;
 }
 
+/**
+ * True for any chain whose exercises split evenly into a left-hand half and
+ * a right-hand half of the same movements, regardless of how many movements
+ * each half has — Unbroken's 6-per-side and the Wraith's 5-per-side both
+ * qualify; a hardcoded "6" previously left the Wraith (and any future
+ * differently-sized alternating chain) rendered as a flat, unstructured row
+ * list instead of the compact left/right flow.
+ */
 export function isAlternatingHandChain(exercises: Exercise[]): boolean {
   const left = exercises.filter((exercise) => handOf(exercise) === 'left');
   const right = exercises.filter((exercise) => handOf(exercise) === 'right');
   const movementForSide = (exercise: Exercise) => movementName(exercise)
-    .replace(/^\s*(?:left|right)\s*[·:-]\s*/i, '')
+    .replace(/^\s*(?:left|right)(?:\s+(?:hand|side))?\s*[·:-]\s*/i, '')
     .replace(/\s*→\s*(?:left|right)\s*$/i, '')
     .trim();
-  return left.length === 6 && right.length === 6 && left.every((exercise, index) =>
+  return left.length > 0 && left.length === right.length && left.every((exercise, index) =>
     movementForSide(exercise) === movementForSide(right[index])
   );
 }
@@ -227,15 +271,51 @@ export function groupWorkoutStructure(
       while (cursor < exercises.length && exercises[cursor].sequenceGroup === sequenceGroup) {
         members.push(exercises[cursor++]);
       }
-      const reps = members.map((exercise) => exercise.targetReps ?? null);
+
+      // A "Left Hand" sequenceGroup run immediately followed by an
+      // equal-length "Right Hand" run (the Wraith) is one alternating-hand
+      // chain authored as two separate sequenceGroups, not two unrelated
+      // Chain blocks — combine them into a single group up front, before
+      // movementName() strips each exercise's own sequenceGroup prefix
+      // from its displayName (which would otherwise erase the left/right
+      // signal isAlternatingHandChain needs downstream). Checked on the
+      // raw sequenceGroup string, not the stripped text.
+      let combined = members;
+      const side = sideOf(sequenceGroup);
+      const nextSequenceGroup = exercises[cursor]?.sequenceGroup;
+      if (side === 'left' && sideOf(nextSequenceGroup) === 'right') {
+        const rightMembers: Exercise[] = [];
+        while (cursor < exercises.length && exercises[cursor].sequenceGroup === nextSequenceGroup) {
+          rightMembers.push(exercises[cursor++]);
+        }
+        if (rightMembers.length === members.length) {
+          combined = [...members, ...rightMembers];
+        } else {
+          // Shape mismatch — not expected in authored content, but put
+          // the cursor back rather than silently drop the right half.
+          cursor -= rightMembers.length;
+        }
+      }
+
+      const reps = combined.map((exercise) => exercise.targetReps ?? null);
+      const repsEachValue = reps.every((rep) => rep === reps[0]) ? reps[0] : null;
+      const isMergedPair = combined !== members;
       groups.push({
         id: `chain-${sequenceGroup ?? first.id}`,
         kind: 'chain',
-        label: sequenceGroup ? `Chain · ${sequenceGroup}` : 'Chain',
+        // A merged left/right pair uses an "×N" label carrying the real
+        // reps-per-side (read by WorkoutStructure's "N reps per hand"
+        // line) instead of a sequenceGroup name — and, critically, its
+        // exercises keep their ORIGINAL displayName (left unstripped by
+        // movementName()) so isAlternatingHandChain can still read the
+        // "Left Hand ·"/"Right Hand ·" prefix once WorkoutStructure
+        // re-checks it; movementName() would otherwise erase that signal
+        // before it's ever used downstream.
+        label: isMergedPair ? `Chain ×${repsEachValue ?? ''}` : sequenceGroup ? `Chain · ${sequenceGroup}` : 'Chain',
         occurrence: 0,
         occurrenceCount: 0,
-        exercises: members.map((exercise) => ({ ...exercise, displayName: movementName(exercise) })),
-        repsEach: reps.every((rep) => rep === reps[0]) ? reps[0] : null,
+        exercises: isMergedPair ? combined : combined.map((exercise) => ({ ...exercise, displayName: movementName(exercise) })),
+        repsEach: repsEachValue,
       });
     }
     return numberOccurrences(groups);

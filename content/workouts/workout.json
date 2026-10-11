@@ -4890,7 +4890,7 @@
   "iron-descent": {
     "id": "iron-descent",
     "name": "The Risen",
-    "description": "Two passes through a five-movement chain give way to the same movements performed as a complex.",
+    "description": "Two passes through a five-movement chain give way to the same movements performed as a complex, across three rounds.",
     "difficulty": 4,
     "estimatedMinutesRange": [
       6,
@@ -4898,7 +4898,7 @@
     ],
     "gearWeightKg": 20,
     "gearCount": 1,
-    "rounds": 1,
+    "rounds": 3,
     "restSeconds": 90,
     "roundBonusDamage": 170,
     "targetTimeSeconds": 450,
@@ -4952,102 +4952,164 @@
         "damageCoefficient": 16,
         "damageType": "per_rep",
         "targetReps": 1
-      },
-      {
-        "id": "moloch-chain2-deadlift",
-        "name": "Single Deadlift",
-        "libraryExerciseId": "floor-deadlift",
-        "displayName": "Single Deadlift (Chain 2/2)",
-        "damageCoefficient": 10,
-        "damageType": "per_rep",
-        "targetReps": 1
-      },
-      {
-        "id": "moloch-chain2-pull",
-        "name": "Single Dead Pull",
-        "libraryExerciseId": "floor-pull",
-        "displayName": "Single Dead Pull (Chain 2/2)",
-        "damageCoefficient": 12,
-        "damageType": "per_rep",
-        "targetReps": 1
-      },
-      {
-        "id": "moloch-chain2-clean-push",
-        "name": "Single Dead Clean / Push",
-        "libraryExerciseId": "floor-clean-push",
-        "displayName": "Single Dead Clean / Push (Chain 2/2)",
-        "damageCoefficient": 14,
-        "damageType": "per_rep",
-        "targetReps": 1
-      },
-      {
-        "id": "moloch-chain2-thruster",
-        "name": "Single Dead Thruster",
-        "libraryExerciseId": "floor-thruster",
-        "displayName": "Single Dead Thruster (Chain 2/2)",
-        "damageCoefficient": 14,
-        "damageType": "per_rep",
-        "targetReps": 1
-      },
-      {
-        "id": "moloch-chain2-snatch",
-        "name": "Single Dead Snatch",
-        "libraryExerciseId": "snatch-floor",
-        "displayName": "Single Dead Snatch (Chain 2/2)",
-        "damageCoefficient": 16,
-        "damageType": "per_rep",
-        "targetReps": 1
-      },
-      {
-        "id": "moloch-complex-deadlift",
-        "name": "Single Deadlift",
-        "libraryExerciseId": "floor-deadlift",
-        "displayName": "Single Deadlift (Complex ×2)",
-        "damageCoefficient": 10,
-        "damageType": "per_rep",
-        "targetReps": 2
-      },
-      {
-        "id": "moloch-complex-pull",
-        "name": "Single Dead Pull",
-        "libraryExerciseId": "floor-pull",
-        "displayName": "Single Dead Pull (Complex ×2)",
-        "damageCoefficient": 12,
-        "damageType": "per_rep",
-        "targetReps": 2
-      },
-      {
-        "id": "moloch-complex-clean-push",
-        "name": "Single Dead Clean / Push",
-        "libraryExerciseId": "floor-clean-push",
-        "displayName": "Single Dead Clean / Push (Complex ×2)",
-        "damageCoefficient": 14,
-        "damageType": "per_rep",
-        "targetReps": 2
-      },
-      {
-        "id": "moloch-complex-thruster",
-        "name": "Single Dead Thruster",
-        "libraryExerciseId": "floor-thruster",
-        "displayName": "Single Dead Thruster (Complex ×2)",
-        "damageCoefficient": 14,
-        "damageType": "per_rep",
-        "targetReps": 2
-      },
-      {
-        "id": "moloch-complex-snatch",
-        "name": "Single Dead Snatch",
-        "libraryExerciseId": "snatch-floor",
-        "displayName": "Single Dead Snatch (Complex ×2)",
-        "damageCoefficient": 16,
-        "damageType": "per_rep",
-        "targetReps": 2
       }
     ],
     "finisher": {
       "name": "The Ancient Machine",
       "scheme": "2 Chains"
-    }
+    },
+    "sections": [
+      {
+        "label": "Chain 1",
+        "exercises": [
+          {
+            "id": "moloch-chain1-deadlift",
+            "name": "Single Deadlift",
+            "libraryExerciseId": "floor-deadlift",
+            "displayName": "Single Deadlift (Chain 1/2)",
+            "damageCoefficient": 10,
+            "damageType": "per_rep",
+            "targetReps": 1
+          },
+          {
+            "id": "moloch-chain1-pull",
+            "name": "Single Dead Pull",
+            "libraryExerciseId": "floor-pull",
+            "displayName": "Single Dead Pull (Chain 1/2)",
+            "damageCoefficient": 12,
+            "damageType": "per_rep",
+            "targetReps": 1
+          },
+          {
+            "id": "moloch-chain1-clean-push",
+            "name": "Single Dead Clean / Push",
+            "libraryExerciseId": "floor-clean-push",
+            "displayName": "Single Dead Clean / Push (Chain 1/2)",
+            "damageCoefficient": 14,
+            "damageType": "per_rep",
+            "targetReps": 1
+          },
+          {
+            "id": "moloch-chain1-thruster",
+            "name": "Single Dead Thruster",
+            "libraryExerciseId": "floor-thruster",
+            "displayName": "Single Dead Thruster (Chain 1/2)",
+            "damageCoefficient": 14,
+            "damageType": "per_rep",
+            "targetReps": 1
+          },
+          {
+            "id": "moloch-chain1-snatch",
+            "name": "Single Dead Snatch",
+            "libraryExerciseId": "snatch-floor",
+            "displayName": "Single Dead Snatch (Chain 1/2)",
+            "damageCoefficient": 16,
+            "damageType": "per_rep",
+            "targetReps": 1
+          }
+        ]
+      },
+      {
+        "label": "Chain 2",
+        "exercises": [
+          {
+            "id": "moloch-chain2-deadlift",
+            "name": "Single Deadlift",
+            "libraryExerciseId": "floor-deadlift",
+            "displayName": "Single Deadlift (Chain 2/2)",
+            "damageCoefficient": 10,
+            "damageType": "per_rep",
+            "targetReps": 1
+          },
+          {
+            "id": "moloch-chain2-pull",
+            "name": "Single Dead Pull",
+            "libraryExerciseId": "floor-pull",
+            "displayName": "Single Dead Pull (Chain 2/2)",
+            "damageCoefficient": 12,
+            "damageType": "per_rep",
+            "targetReps": 1
+          },
+          {
+            "id": "moloch-chain2-clean-push",
+            "name": "Single Dead Clean / Push",
+            "libraryExerciseId": "floor-clean-push",
+            "displayName": "Single Dead Clean / Push (Chain 2/2)",
+            "damageCoefficient": 14,
+            "damageType": "per_rep",
+            "targetReps": 1
+          },
+          {
+            "id": "moloch-chain2-thruster",
+            "name": "Single Dead Thruster",
+            "libraryExerciseId": "floor-thruster",
+            "displayName": "Single Dead Thruster (Chain 2/2)",
+            "damageCoefficient": 14,
+            "damageType": "per_rep",
+            "targetReps": 1
+          },
+          {
+            "id": "moloch-chain2-snatch",
+            "name": "Single Dead Snatch",
+            "libraryExerciseId": "snatch-floor",
+            "displayName": "Single Dead Snatch (Chain 2/2)",
+            "damageCoefficient": 16,
+            "damageType": "per_rep",
+            "targetReps": 1
+          }
+        ]
+      },
+      {
+        "label": "Complex",
+        "exercises": [
+          {
+            "id": "moloch-complex-deadlift",
+            "name": "Single Deadlift",
+            "libraryExerciseId": "floor-deadlift",
+            "displayName": "Single Deadlift (Complex ×2)",
+            "damageCoefficient": 10,
+            "damageType": "per_rep",
+            "targetReps": 2
+          },
+          {
+            "id": "moloch-complex-pull",
+            "name": "Single Dead Pull",
+            "libraryExerciseId": "floor-pull",
+            "displayName": "Single Dead Pull (Complex ×2)",
+            "damageCoefficient": 12,
+            "damageType": "per_rep",
+            "targetReps": 2
+          },
+          {
+            "id": "moloch-complex-clean-push",
+            "name": "Single Dead Clean / Push",
+            "libraryExerciseId": "floor-clean-push",
+            "displayName": "Single Dead Clean / Push (Complex ×2)",
+            "damageCoefficient": 14,
+            "damageType": "per_rep",
+            "targetReps": 2
+          },
+          {
+            "id": "moloch-complex-thruster",
+            "name": "Single Dead Thruster",
+            "libraryExerciseId": "floor-thruster",
+            "displayName": "Single Dead Thruster (Complex ×2)",
+            "damageCoefficient": 14,
+            "damageType": "per_rep",
+            "targetReps": 2
+          },
+          {
+            "id": "moloch-complex-snatch",
+            "name": "Single Dead Snatch",
+            "libraryExerciseId": "snatch-floor",
+            "displayName": "Single Dead Snatch (Complex ×2)",
+            "damageCoefficient": 16,
+            "damageType": "per_rep",
+            "targetReps": 2
+          }
+        ]
+      }
+    ]
   },
   "war-engine": {
     "id": "war-engine",
@@ -5229,6 +5291,7 @@
     "gearCount": 2,
     "rounds": 5,
     "restSeconds": 0,
+    "emomSeconds": 180,
     "roundBonusDamage": 55,
     "targetTimeSeconds": 900,
     "focus": [
@@ -5331,8 +5394,12 @@
         "name": "Double Clean → Double Jerk",
         "displayName": "Double Clean → Double Jerk (Long Cycle)",
         "components": [
-          { "libraryExerciseId": "double-clean" },
-          { "libraryExerciseId": "double-jerk" }
+          {
+            "libraryExerciseId": "double-clean"
+          },
+          {
+            "libraryExerciseId": "double-jerk"
+          }
         ],
         "damageCoefficient": 16,
         "damageType": "flat",
@@ -5352,8 +5419,12 @@
         "name": "Double Clean → Double Jerk",
         "displayName": "Long Cycle",
         "components": [
-          { "libraryExerciseId": "double-clean" },
-          { "libraryExerciseId": "double-jerk" }
+          {
+            "libraryExerciseId": "double-clean"
+          },
+          {
+            "libraryExerciseId": "double-jerk"
+          }
         ],
         "damageCoefficient": 16,
         "damageType": "flat",
@@ -5372,8 +5443,12 @@
         "name": "Double Clean → Double Jerk",
         "displayName": "Long Cycle",
         "components": [
-          { "libraryExerciseId": "double-clean" },
-          { "libraryExerciseId": "double-jerk" }
+          {
+            "libraryExerciseId": "double-clean"
+          },
+          {
+            "libraryExerciseId": "double-jerk"
+          }
         ],
         "damageCoefficient": 16,
         "damageType": "flat",
@@ -5383,8 +5458,7 @@
     "finisher": {
       "name": "The Return",
       "scheme": "5 Rounds — TBD"
-    },
-    "sequenceType": "chain"
+    }
   },
   "judge-verdict": {
     "id": "judge-verdict",
@@ -5473,14 +5547,14 @@
   "ravager-assault": {
     "id": "ravager-assault",
     "name": "The Ravager",
-    "description": "Five sets repeat the nine-movement sequence: Burpee, Clean, Jerk, Deadlift, Clean, Jerk, Deep Snatch, Clean, Jerk, with the authored 4-2-2 pattern.",
+    "description": "Five sets repeat one continuous sequence: Burpee, Long Cycle, Double Deadlift, Long Cycle, Double Long-Hike Snatch, Long Cycle — the player returns to Long Cycle three times a set.",
     "difficulty": 4,
     "estimatedMinutesRange": [
       6,
       10
     ],
     "gearWeightKg": 20,
-    "gearCount": 1,
+    "gearCount": 2,
     "rounds": 5,
     "restSeconds": 90,
     "roundBonusDamage": 170,
@@ -5491,518 +5565,355 @@
       "Technical Precision",
       "Sustained Output"
     ],
-    "sequenceType": "chain",
     "exercises": [
       {
         "id": "ravager-r1-burpee",
-        "name": "Burpee",
-        "libraryExerciseId": "burpee",
+        "name": "Burpee — Double KB",
+        "libraryExerciseId": "burpee-kettlebell",
         "targetReps": 4,
         "damageCoefficient": 12,
         "damageType": "per_rep",
-        "usesGearCount": 0
+        "usesGearCount": 2
       },
       {
-        "id": "ravager-r1-clean-a",
-        "name": "Clean",
-        "libraryExerciseId": "clean",
+        "id": "ravager-r1-long-cycle-a",
+        "name": "Long Cycle",
+        "libraryExerciseId": "long-cycle",
         "targetReps": 2,
-        "damageCoefficient": 14,
+        "damageCoefficient": 30,
         "damageType": "per_rep",
-        "usesGearCount": 1
-      },
-      {
-        "id": "ravager-r1-jerk-a",
-        "name": "Jerk",
-        "libraryExerciseId": "jerk",
-        "targetReps": 2,
-        "damageCoefficient": 16,
-        "damageType": "per_rep",
-        "usesGearCount": 1
+        "usesGearCount": 2
       },
       {
         "id": "ravager-r1-deadlift",
-        "name": "Single Deadlift",
-        "libraryExerciseId": "floor-deadlift",
+        "name": "Double Deadlift",
+        "libraryExerciseId": "deadlift",
         "targetReps": 4,
         "damageCoefficient": 10,
         "damageType": "per_rep",
-        "usesGearCount": 1
+        "usesGearCount": 2
       },
       {
-        "id": "ravager-r1-clean-b",
-        "name": "Clean",
-        "libraryExerciseId": "clean",
+        "id": "ravager-r1-long-cycle-b",
+        "name": "Long Cycle",
+        "libraryExerciseId": "long-cycle",
         "targetReps": 2,
-        "damageCoefficient": 14,
+        "damageCoefficient": 30,
         "damageType": "per_rep",
-        "usesGearCount": 1
+        "usesGearCount": 2
       },
       {
-        "id": "ravager-r1-jerk-b",
-        "name": "Jerk",
-        "libraryExerciseId": "jerk",
-        "targetReps": 2,
-        "damageCoefficient": 16,
-        "damageType": "per_rep",
-        "usesGearCount": 1
-      },
-      {
-        "id": "ravager-r1-deep-snatch",
-        "name": "Deep Snatch",
-        "libraryExerciseId": "deep-snatch",
+        "id": "ravager-r1-long-hike-snatch",
+        "name": "Double Long-Hike Snatch",
+        "libraryExerciseId": "long-hike-snatch",
         "targetReps": 4,
         "damageCoefficient": 16,
         "damageType": "per_rep",
-        "usesGearCount": 1
+        "usesGearCount": 2
       },
       {
-        "id": "ravager-r1-clean-c",
-        "name": "Clean",
-        "libraryExerciseId": "clean",
+        "id": "ravager-r1-long-cycle-c",
+        "name": "Long Cycle",
+        "libraryExerciseId": "long-cycle",
         "targetReps": 2,
-        "damageCoefficient": 14,
+        "damageCoefficient": 30,
         "damageType": "per_rep",
-        "usesGearCount": 1
-      },
-      {
-        "id": "ravager-r1-jerk-c",
-        "name": "Jerk",
-        "libraryExerciseId": "jerk",
-        "targetReps": 2,
-        "damageCoefficient": 16,
-        "damageType": "per_rep",
-        "usesGearCount": 1
+        "usesGearCount": 2
       }
     ],
     "sections": [
       {
-        "label": "Round 1 - One Continuous Chain",
+        "label": "Set 1",
         "exercises": [
           {
             "id": "ravager-r1-burpee",
-            "name": "Burpee",
-            "libraryExerciseId": "burpee",
+            "name": "Burpee — Double KB",
+            "libraryExerciseId": "burpee-kettlebell",
             "targetReps": 4,
             "damageCoefficient": 12,
             "damageType": "per_rep",
-            "usesGearCount": 0
+            "usesGearCount": 2
           },
           {
-            "id": "ravager-r1-clean-a",
-            "name": "Clean",
-            "libraryExerciseId": "clean",
+            "id": "ravager-r1-long-cycle-a",
+            "name": "Long Cycle",
+            "libraryExerciseId": "long-cycle",
             "targetReps": 2,
-            "damageCoefficient": 14,
+            "damageCoefficient": 30,
             "damageType": "per_rep",
-            "usesGearCount": 1
-          },
-          {
-            "id": "ravager-r1-jerk-a",
-            "name": "Jerk",
-            "libraryExerciseId": "jerk",
-            "targetReps": 2,
-            "damageCoefficient": 16,
-            "damageType": "per_rep",
-            "usesGearCount": 1
+            "usesGearCount": 2
           },
           {
             "id": "ravager-r1-deadlift",
-            "name": "Single Deadlift",
-            "libraryExerciseId": "floor-deadlift",
+            "name": "Double Deadlift",
+            "libraryExerciseId": "deadlift",
             "targetReps": 4,
             "damageCoefficient": 10,
             "damageType": "per_rep",
-            "usesGearCount": 1
+            "usesGearCount": 2
           },
           {
-            "id": "ravager-r1-clean-b",
-            "name": "Clean",
-            "libraryExerciseId": "clean",
+            "id": "ravager-r1-long-cycle-b",
+            "name": "Long Cycle",
+            "libraryExerciseId": "long-cycle",
             "targetReps": 2,
-            "damageCoefficient": 14,
+            "damageCoefficient": 30,
             "damageType": "per_rep",
-            "usesGearCount": 1
+            "usesGearCount": 2
           },
           {
-            "id": "ravager-r1-jerk-b",
-            "name": "Jerk",
-            "libraryExerciseId": "jerk",
-            "targetReps": 2,
-            "damageCoefficient": 16,
-            "damageType": "per_rep",
-            "usesGearCount": 1
-          },
-          {
-            "id": "ravager-r1-deep-snatch",
-            "name": "Deep Snatch",
-            "libraryExerciseId": "deep-snatch",
+            "id": "ravager-r1-long-hike-snatch",
+            "name": "Double Long-Hike Snatch",
+            "libraryExerciseId": "long-hike-snatch",
             "targetReps": 4,
             "damageCoefficient": 16,
             "damageType": "per_rep",
-            "usesGearCount": 1
+            "usesGearCount": 2
           },
           {
-            "id": "ravager-r1-clean-c",
-            "name": "Clean",
-            "libraryExerciseId": "clean",
+            "id": "ravager-r1-long-cycle-c",
+            "name": "Long Cycle",
+            "libraryExerciseId": "long-cycle",
             "targetReps": 2,
-            "damageCoefficient": 14,
+            "damageCoefficient": 30,
             "damageType": "per_rep",
-            "usesGearCount": 1
-          },
-          {
-            "id": "ravager-r1-jerk-c",
-            "name": "Jerk",
-            "libraryExerciseId": "jerk",
-            "targetReps": 2,
-            "damageCoefficient": 16,
-            "damageType": "per_rep",
-            "usesGearCount": 1
+            "usesGearCount": 2
           }
         ]
       },
       {
-        "label": "Round 2 - One Continuous Chain",
+        "label": "Set 2",
         "exercises": [
           {
             "id": "ravager-r2-burpee",
-            "name": "Burpee",
-            "libraryExerciseId": "burpee",
+            "name": "Burpee — Double KB",
+            "libraryExerciseId": "burpee-kettlebell",
             "targetReps": 4,
             "damageCoefficient": 12,
             "damageType": "per_rep",
-            "usesGearCount": 0
+            "usesGearCount": 2
           },
           {
-            "id": "ravager-r2-clean-a",
-            "name": "Clean",
-            "libraryExerciseId": "clean",
+            "id": "ravager-r2-long-cycle-a",
+            "name": "Long Cycle",
+            "libraryExerciseId": "long-cycle",
             "targetReps": 2,
-            "damageCoefficient": 14,
+            "damageCoefficient": 30,
             "damageType": "per_rep",
-            "usesGearCount": 1
-          },
-          {
-            "id": "ravager-r2-jerk-a",
-            "name": "Jerk",
-            "libraryExerciseId": "jerk",
-            "targetReps": 2,
-            "damageCoefficient": 16,
-            "damageType": "per_rep",
-            "usesGearCount": 1
+            "usesGearCount": 2
           },
           {
             "id": "ravager-r2-deadlift",
-            "name": "Single Deadlift",
-            "libraryExerciseId": "floor-deadlift",
+            "name": "Double Deadlift",
+            "libraryExerciseId": "deadlift",
             "targetReps": 4,
             "damageCoefficient": 10,
             "damageType": "per_rep",
-            "usesGearCount": 1
+            "usesGearCount": 2
           },
           {
-            "id": "ravager-r2-clean-b",
-            "name": "Clean",
-            "libraryExerciseId": "clean",
+            "id": "ravager-r2-long-cycle-b",
+            "name": "Long Cycle",
+            "libraryExerciseId": "long-cycle",
             "targetReps": 2,
-            "damageCoefficient": 14,
+            "damageCoefficient": 30,
             "damageType": "per_rep",
-            "usesGearCount": 1
+            "usesGearCount": 2
           },
           {
-            "id": "ravager-r2-jerk-b",
-            "name": "Jerk",
-            "libraryExerciseId": "jerk",
-            "targetReps": 2,
-            "damageCoefficient": 16,
-            "damageType": "per_rep",
-            "usesGearCount": 1
-          },
-          {
-            "id": "ravager-r2-deep-snatch",
-            "name": "Deep Snatch",
-            "libraryExerciseId": "deep-snatch",
+            "id": "ravager-r2-long-hike-snatch",
+            "name": "Double Long-Hike Snatch",
+            "libraryExerciseId": "long-hike-snatch",
             "targetReps": 4,
             "damageCoefficient": 16,
             "damageType": "per_rep",
-            "usesGearCount": 1
+            "usesGearCount": 2
           },
           {
-            "id": "ravager-r2-clean-c",
-            "name": "Clean",
-            "libraryExerciseId": "clean",
+            "id": "ravager-r2-long-cycle-c",
+            "name": "Long Cycle",
+            "libraryExerciseId": "long-cycle",
             "targetReps": 2,
-            "damageCoefficient": 14,
+            "damageCoefficient": 30,
             "damageType": "per_rep",
-            "usesGearCount": 1
-          },
-          {
-            "id": "ravager-r2-jerk-c",
-            "name": "Jerk",
-            "libraryExerciseId": "jerk",
-            "targetReps": 2,
-            "damageCoefficient": 16,
-            "damageType": "per_rep",
-            "usesGearCount": 1
+            "usesGearCount": 2
           }
         ]
       },
       {
-        "label": "Round 3 - One Continuous Chain",
+        "label": "Set 3",
         "exercises": [
           {
             "id": "ravager-r3-burpee",
-            "name": "Burpee",
-            "libraryExerciseId": "burpee",
+            "name": "Burpee — Double KB",
+            "libraryExerciseId": "burpee-kettlebell",
             "targetReps": 4,
             "damageCoefficient": 12,
             "damageType": "per_rep",
-            "usesGearCount": 0
+            "usesGearCount": 2
           },
           {
-            "id": "ravager-r3-clean-a",
-            "name": "Clean",
-            "libraryExerciseId": "clean",
+            "id": "ravager-r3-long-cycle-a",
+            "name": "Long Cycle",
+            "libraryExerciseId": "long-cycle",
             "targetReps": 2,
-            "damageCoefficient": 14,
+            "damageCoefficient": 30,
             "damageType": "per_rep",
-            "usesGearCount": 1
-          },
-          {
-            "id": "ravager-r3-jerk-a",
-            "name": "Jerk",
-            "libraryExerciseId": "jerk",
-            "targetReps": 2,
-            "damageCoefficient": 16,
-            "damageType": "per_rep",
-            "usesGearCount": 1
+            "usesGearCount": 2
           },
           {
             "id": "ravager-r3-deadlift",
-            "name": "Single Deadlift",
-            "libraryExerciseId": "floor-deadlift",
+            "name": "Double Deadlift",
+            "libraryExerciseId": "deadlift",
             "targetReps": 4,
             "damageCoefficient": 10,
             "damageType": "per_rep",
-            "usesGearCount": 1
+            "usesGearCount": 2
           },
           {
-            "id": "ravager-r3-clean-b",
-            "name": "Clean",
-            "libraryExerciseId": "clean",
+            "id": "ravager-r3-long-cycle-b",
+            "name": "Long Cycle",
+            "libraryExerciseId": "long-cycle",
             "targetReps": 2,
-            "damageCoefficient": 14,
+            "damageCoefficient": 30,
             "damageType": "per_rep",
-            "usesGearCount": 1
+            "usesGearCount": 2
           },
           {
-            "id": "ravager-r3-jerk-b",
-            "name": "Jerk",
-            "libraryExerciseId": "jerk",
-            "targetReps": 2,
-            "damageCoefficient": 16,
-            "damageType": "per_rep",
-            "usesGearCount": 1
-          },
-          {
-            "id": "ravager-r3-deep-snatch",
-            "name": "Deep Snatch",
-            "libraryExerciseId": "deep-snatch",
+            "id": "ravager-r3-long-hike-snatch",
+            "name": "Double Long-Hike Snatch",
+            "libraryExerciseId": "long-hike-snatch",
             "targetReps": 4,
             "damageCoefficient": 16,
             "damageType": "per_rep",
-            "usesGearCount": 1
+            "usesGearCount": 2
           },
           {
-            "id": "ravager-r3-clean-c",
-            "name": "Clean",
-            "libraryExerciseId": "clean",
+            "id": "ravager-r3-long-cycle-c",
+            "name": "Long Cycle",
+            "libraryExerciseId": "long-cycle",
             "targetReps": 2,
-            "damageCoefficient": 14,
+            "damageCoefficient": 30,
             "damageType": "per_rep",
-            "usesGearCount": 1
-          },
-          {
-            "id": "ravager-r3-jerk-c",
-            "name": "Jerk",
-            "libraryExerciseId": "jerk",
-            "targetReps": 2,
-            "damageCoefficient": 16,
-            "damageType": "per_rep",
-            "usesGearCount": 1
+            "usesGearCount": 2
           }
         ]
       },
       {
-        "label": "Round 4 - One Continuous Chain",
+        "label": "Set 4",
         "exercises": [
           {
             "id": "ravager-r4-burpee",
-            "name": "Burpee",
-            "libraryExerciseId": "burpee",
+            "name": "Burpee — Double KB",
+            "libraryExerciseId": "burpee-kettlebell",
             "targetReps": 4,
             "damageCoefficient": 12,
             "damageType": "per_rep",
-            "usesGearCount": 0
+            "usesGearCount": 2
           },
           {
-            "id": "ravager-r4-clean-a",
-            "name": "Clean",
-            "libraryExerciseId": "clean",
+            "id": "ravager-r4-long-cycle-a",
+            "name": "Long Cycle",
+            "libraryExerciseId": "long-cycle",
             "targetReps": 2,
-            "damageCoefficient": 14,
+            "damageCoefficient": 30,
             "damageType": "per_rep",
-            "usesGearCount": 1
-          },
-          {
-            "id": "ravager-r4-jerk-a",
-            "name": "Jerk",
-            "libraryExerciseId": "jerk",
-            "targetReps": 2,
-            "damageCoefficient": 16,
-            "damageType": "per_rep",
-            "usesGearCount": 1
+            "usesGearCount": 2
           },
           {
             "id": "ravager-r4-deadlift",
-            "name": "Single Deadlift",
-            "libraryExerciseId": "floor-deadlift",
+            "name": "Double Deadlift",
+            "libraryExerciseId": "deadlift",
             "targetReps": 4,
             "damageCoefficient": 10,
             "damageType": "per_rep",
-            "usesGearCount": 1
+            "usesGearCount": 2
           },
           {
-            "id": "ravager-r4-clean-b",
-            "name": "Clean",
-            "libraryExerciseId": "clean",
+            "id": "ravager-r4-long-cycle-b",
+            "name": "Long Cycle",
+            "libraryExerciseId": "long-cycle",
             "targetReps": 2,
-            "damageCoefficient": 14,
+            "damageCoefficient": 30,
             "damageType": "per_rep",
-            "usesGearCount": 1
+            "usesGearCount": 2
           },
           {
-            "id": "ravager-r4-jerk-b",
-            "name": "Jerk",
-            "libraryExerciseId": "jerk",
-            "targetReps": 2,
-            "damageCoefficient": 16,
-            "damageType": "per_rep",
-            "usesGearCount": 1
-          },
-          {
-            "id": "ravager-r4-deep-snatch",
-            "name": "Deep Snatch",
-            "libraryExerciseId": "deep-snatch",
+            "id": "ravager-r4-long-hike-snatch",
+            "name": "Double Long-Hike Snatch",
+            "libraryExerciseId": "long-hike-snatch",
             "targetReps": 4,
             "damageCoefficient": 16,
             "damageType": "per_rep",
-            "usesGearCount": 1
+            "usesGearCount": 2
           },
           {
-            "id": "ravager-r4-clean-c",
-            "name": "Clean",
-            "libraryExerciseId": "clean",
+            "id": "ravager-r4-long-cycle-c",
+            "name": "Long Cycle",
+            "libraryExerciseId": "long-cycle",
             "targetReps": 2,
-            "damageCoefficient": 14,
+            "damageCoefficient": 30,
             "damageType": "per_rep",
-            "usesGearCount": 1
-          },
-          {
-            "id": "ravager-r4-jerk-c",
-            "name": "Jerk",
-            "libraryExerciseId": "jerk",
-            "targetReps": 2,
-            "damageCoefficient": 16,
-            "damageType": "per_rep",
-            "usesGearCount": 1
+            "usesGearCount": 2
           }
         ]
       },
       {
-        "label": "Round 5 - One Continuous Chain",
+        "label": "Set 5",
         "exercises": [
           {
             "id": "ravager-r5-burpee",
-            "name": "Burpee",
-            "libraryExerciseId": "burpee",
+            "name": "Burpee — Double KB",
+            "libraryExerciseId": "burpee-kettlebell",
             "targetReps": 4,
             "damageCoefficient": 12,
             "damageType": "per_rep",
-            "usesGearCount": 0
+            "usesGearCount": 2
           },
           {
-            "id": "ravager-r5-clean-a",
-            "name": "Clean",
-            "libraryExerciseId": "clean",
+            "id": "ravager-r5-long-cycle-a",
+            "name": "Long Cycle",
+            "libraryExerciseId": "long-cycle",
             "targetReps": 2,
-            "damageCoefficient": 14,
+            "damageCoefficient": 30,
             "damageType": "per_rep",
-            "usesGearCount": 1
-          },
-          {
-            "id": "ravager-r5-jerk-a",
-            "name": "Jerk",
-            "libraryExerciseId": "jerk",
-            "targetReps": 2,
-            "damageCoefficient": 16,
-            "damageType": "per_rep",
-            "usesGearCount": 1
+            "usesGearCount": 2
           },
           {
             "id": "ravager-r5-deadlift",
-            "name": "Single Deadlift",
-            "libraryExerciseId": "floor-deadlift",
+            "name": "Double Deadlift",
+            "libraryExerciseId": "deadlift",
             "targetReps": 4,
             "damageCoefficient": 10,
             "damageType": "per_rep",
-            "usesGearCount": 1
+            "usesGearCount": 2
           },
           {
-            "id": "ravager-r5-clean-b",
-            "name": "Clean",
-            "libraryExerciseId": "clean",
+            "id": "ravager-r5-long-cycle-b",
+            "name": "Long Cycle",
+            "libraryExerciseId": "long-cycle",
             "targetReps": 2,
-            "damageCoefficient": 14,
+            "damageCoefficient": 30,
             "damageType": "per_rep",
-            "usesGearCount": 1
+            "usesGearCount": 2
           },
           {
-            "id": "ravager-r5-jerk-b",
-            "name": "Jerk",
-            "libraryExerciseId": "jerk",
-            "targetReps": 2,
-            "damageCoefficient": 16,
-            "damageType": "per_rep",
-            "usesGearCount": 1
-          },
-          {
-            "id": "ravager-r5-deep-snatch",
-            "name": "Deep Snatch",
-            "libraryExerciseId": "deep-snatch",
+            "id": "ravager-r5-long-hike-snatch",
+            "name": "Double Long-Hike Snatch",
+            "libraryExerciseId": "long-hike-snatch",
             "targetReps": 4,
             "damageCoefficient": 16,
             "damageType": "per_rep",
-            "usesGearCount": 1
+            "usesGearCount": 2
           },
           {
-            "id": "ravager-r5-clean-c",
-            "name": "Clean",
-            "libraryExerciseId": "clean",
+            "id": "ravager-r5-long-cycle-c",
+            "name": "Long Cycle",
+            "libraryExerciseId": "long-cycle",
             "targetReps": 2,
-            "damageCoefficient": 14,
+            "damageCoefficient": 30,
             "damageType": "per_rep",
-            "usesGearCount": 1
-          },
-          {
-            "id": "ravager-r5-jerk-c",
-            "name": "Jerk",
-            "libraryExerciseId": "jerk",
-            "targetReps": 2,
-            "damageCoefficient": 16,
-            "damageType": "per_rep",
-            "usesGearCount": 1
+            "usesGearCount": 2
           }
         ]
       }

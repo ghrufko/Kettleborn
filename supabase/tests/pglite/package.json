@@ -1,0 +1,15 @@
+{
+  "name": "kettleborn-supabase-pglite-tests",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Real-Postgres (PGlite/WASM) execution harness for supabase/migrations. Not a Supabase integration test — see README.md in this directory for exactly what it does and does not validate.",
+  "type": "module",
+  "scripts": {
+    "apply": "node apply_migrations.mjs",
+    "test": "node run_suite.mjs",
+    "test:edge": "node run_edge.mjs"
+  },
+  "dependencies": {
+    "@electric-sql/pglite": "^0.5.8"
+  }
+}

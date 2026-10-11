@@ -32,7 +32,8 @@ import { getWorkoutRoundExercises, groupWorkoutStructure, isAlternatingHandChain
 import { triggerHaptic } from '../../utils/haptics';
 import { audioEngine } from '../../../engines/audio/AudioEngine';
 import * as Haptics from 'expo-haptics';
-import { Monster, Workout } from '../../models';
+import { Monster, Workout, ExtraExerciseSet, ExtraExerciseId } from '../../models';
+import { EXTRA_EXERCISE_DEFINITIONS, getExtraExerciseName } from '../../constants/extraExercises';
 import { colors, fontFamily, fontSize, radii, spacing, glow } from '../../theme';
 
 type Props = NativeStackScreenProps<HuntStackParamList, 'ActiveHunt'>;
@@ -162,6 +163,13 @@ export function ActiveHuntScreen({ route, navigation }: Props) {
   const getBestTimeSeconds = useAppStore((state) => state.getBestTimeSeconds);
   const getResultsForHunt = useAppStore((state) => state.getResultsForHunt);
   const [isSaving, setIsSaving] = useState(false);
+  // Phase 2.7: a completeHunt() persistence failure previously threw
+  // silently — isSaving reset via `finally`, button went back to
+  // "Finish Hunt", but nothing told the player why nothing happened. No
+  // false success screen (navigate() only ever ran after a successful
+  // await), but also no feedback at all. Same setError(null)/catch
+  // pattern ForgeScreen and SettingsScreen already use elsewhere.
+  const [saveError, setSaveError] = useState<string | null>(null);
   const [previousBestSeconds, setPreviousBestSeconds] = useState<number | null>(null);
 
   useEffect(() => {
@@ -290,8 +298,10 @@ export function ActiveHuntScreen({ route, navigation }: Props) {
       targetSeconds={isLocked ? lockState.targetSeconds : null}
       targetRounds={isLocked ? lockState.targetRounds : null}
       isSaving={isSaving}
-      onFinish={async (elapsedSeconds, battleStats, rungLaps) => {
+      saveError={saveError}
+      onFinish={async (elapsedSeconds, battleStats, rungLaps, extraSets) => {
         setIsSaving(true);
+        setSaveError(null);
         try {
           // Encounter Lock: order>=2 must beat lockState.targetSeconds to
           // "count" at all. A slower attempt is never saved, never awards
@@ -367,8 +377,11 @@ export function ActiveHuntScreen({ route, navigation }: Props) {
                 : customRepsOverrides
               : undefined,
             encounterTargetSeconds: isLocked ? lockState.targetSeconds : undefined,
+            extraSets,
           });
           navigation.navigate('HuntComplete', { monsterId, huntId, workoutId });
+        } catch {
+          setSaveError('Could not save your Hunt result. Try Finish Hunt again.');
         } finally {
           setIsSaving(false);
         }
@@ -401,11 +414,14 @@ interface ActiveHuntSessionProps {
   targetSeconds: number | null;
   targetRounds: number | null;
   isSaving: boolean;
+  saveError: string | null;
   onFinish: (
     elapsedSeconds: number,
     battleStats: { totalDamageDealt: number; criticalHits: number },
     /** Sprint 23: per-rung lap times, only passed for `stepLabel: "Rung"` workouts. */
-    rungLaps?: RoundLap[]
+    rungLaps?: RoundLap[],
+    /** Optional post-Hunt exercises the player added on the "Workout Complete" card, before confirming. */
+    extraSets?: ExtraExerciseSet[]
   ) => void;
   onQuit: (stoppedAtRound: number) => void;
 }
@@ -419,11 +435,31 @@ function ActiveHuntSession({
   targetSeconds,
   targetRounds,
   isSaving,
+  saveError,
   onFinish,
   onQuit,
 }: ActiveHuntSessionProps) {
   const keepScreenAwake = useAppStore((state) => state.settings?.keepScreenAwake ?? false);
   useConditionalKeepAwake(keepScreenAwake);
+  // Optional post-Hunt exercises: local to this screen instance, never
+  // touches session/battle state — only read once, when Finish Hunt is
+  // pressed (see the onFinish call below). Each added set gets its own
+  // id so the list can be rendered/removed by key, same convention as
+  // every other `${prefix}-${Date.now()}` id in this codebase.
+  const [extraSets, setExtraSets] = useState<ExtraExerciseSet[]>([]);
+  const [pendingExtraExerciseId, setPendingExtraExerciseId] = useState<ExtraExerciseId>(
+    EXTRA_EXERCISE_DEFINITIONS[0].id
+  );
+  const [pendingExtraReps, setPendingExtraReps] = useState(10);
+  const addExtraSet = useCallback(() => {
+    setExtraSets((prev) => [
+      ...prev,
+      { id: `extra-${Date.now()}`, exerciseId: pendingExtraExerciseId, reps: pendingExtraReps },
+    ]);
+  }, [pendingExtraExerciseId, pendingExtraReps]);
+  const removeExtraSet = useCallback((id: string) => {
+    setExtraSets((prev) => prev.filter((set) => set.id !== id));
+  }, []);
   const [quitDialogVisible, setQuitDialogVisible] = useState(false);
   const [quitRound, setQuitRound] = useState(1);
   const requestQuit = useCallback((round: number) => {
@@ -499,6 +535,16 @@ function ActiveHuntSession({
   // is measured), so it's captured the same way rather than adding a
   // second tracking path.
   const capturesRoundLaps = isRungWorkout || !!workout.emomSeconds;
+  // A ladder/"Rung" workout's rest (Minotaur, The Descent) is a nominal
+  // 3-second content value, not a real prescribed recovery window — the
+  // player actually rests as long as they choose, then presses Continue
+  // whenever ready. A countdown against that nominal value hits 00:00
+  // almost immediately and stops meaning anything. Showing the same
+  // restElapsedSeconds the "Recovery so far" line below already reads
+  // from — counting UP instead — answers the question that actually
+  // matters here ("how long have I been resting?") without touching any
+  // other workout's real, meaningful rest countdown.
+  const restDisplayClock = isRungWorkout ? formatClock(session.restElapsedSeconds) : restClock;
   // Task 8 (dynamic exercise list density): purely structural, driven by
   // how many exercise rows the *current* round/section is actually about
   // to render — the exact thing that causes "excessive scrolling" for a
@@ -968,6 +1014,7 @@ function ActiveHuntSession({
         ) : null}
 
         {session.phase === 'complete' ? (
+          <>
           <GlassCard style={styles.completeCard} glow="lg">
             <Text style={styles.completeTitle}>Workout Complete</Text>
             <Text style={styles.completeCaption}>
@@ -980,6 +1027,87 @@ function ActiveHuntSession({
                 : ''}
             </Text>
           </GlassCard>
+
+          {/*
+            Optional post-Hunt exercises — reuses the same compact
+            stepper chrome HuntOverviewScreen's WeightStepper and
+            CustomWorkoutBuilderScreen's exercise rows already established
+            (small +/- buttons, trash-outline remove icon), rather than
+            inventing a new pattern. Purely additive: adding nothing here
+            and pressing Finish Hunt behaves exactly as it always has.
+          */}
+          <GlassCard style={styles.extraExercisesCard}>
+            <Text style={styles.sectionLabel}>Extra Exercises (Optional)</Text>
+            {extraSets.length > 0 ? (
+              <View style={styles.extraSetList}>
+                {extraSets.map((set) => (
+                  <View key={set.id} style={styles.extraSetRow}>
+                    <Text style={styles.extraSetText}>
+                      {getExtraExerciseName(set.exerciseId)} · {set.reps} reps
+                    </Text>
+                    <Pressable
+                      onPress={() => removeExtraSet(set.id)}
+                      hitSlop={8}
+                      accessibilityRole="button"
+                      accessibilityLabel={`Remove ${getExtraExerciseName(set.exerciseId)} set`}
+                    >
+                      <Ionicons name="trash-outline" size={18} color={colors.text.muted} />
+                    </Pressable>
+                  </View>
+                ))}
+              </View>
+            ) : null}
+
+            <View style={styles.extraExercisePickerRow}>
+              {EXTRA_EXERCISE_DEFINITIONS.map((def) => (
+                <Pressable
+                  key={def.id}
+                  onPress={() => setPendingExtraExerciseId(def.id)}
+                  style={[
+                    styles.extraExerciseChip,
+                    pendingExtraExerciseId === def.id && styles.extraExerciseChipActive,
+                  ]}
+                >
+                  <Text
+                    style={[
+                      styles.extraExerciseChipText,
+                      pendingExtraExerciseId === def.id && styles.extraExerciseChipTextActive,
+                    ]}
+                  >
+                    {def.name}
+                  </Text>
+                </Pressable>
+              ))}
+            </View>
+
+            <View style={styles.extraRepsRow}>
+              <Text style={styles.extraSetText}>Reps</Text>
+              <View style={styles.extraRepsStepperRow}>
+                <Pressable
+                  onPress={() => setPendingExtraReps((r) => Math.max(1, r - 1))}
+                  hitSlop={8}
+                  style={styles.extraRepsStepButton}
+                  accessibilityRole="button"
+                  accessibilityLabel="Decrease reps"
+                >
+                  <Ionicons name="remove" size={14} color={colors.bronze.base} />
+                </Pressable>
+                <Text style={styles.extraRepsValue}>{pendingExtraReps}</Text>
+                <Pressable
+                  onPress={() => setPendingExtraReps((r) => Math.min(100, r + 1))}
+                  hitSlop={8}
+                  style={styles.extraRepsStepButton}
+                  accessibilityRole="button"
+                  accessibilityLabel="Increase reps"
+                >
+                  <Ionicons name="add" size={14} color={colors.bronze.base} />
+                </Pressable>
+              </View>
+            </View>
+
+            <Button label="+ Add Set" variant="secondary" onPress={addExtraSet} style={styles.extraAddButton} />
+          </GlassCard>
+          </>
         ) : session.phase === 'countdown' ? (
           <GlassCard style={styles.exerciseCard} glow="md">
             <Text style={styles.sectionLabel}>Get Ready</Text>
@@ -1063,7 +1191,7 @@ function ActiveHuntSession({
                       nestedScrollEnabled
                       showsVerticalScrollIndicator
                     >
-                      {workout.sequenceType === 'chain' && currentRoundStructure.length ? (
+                      {currentRoundStructure.length > 0 ? (
                         <WorkoutStructure groups={currentRoundStructure} compact onExercisePress={onExercisePress} />
                       ) : (
                         <RoundExerciseList exercises={currentRoundExercises} compact onExercisePress={onExercisePress} />
@@ -1076,10 +1204,18 @@ function ActiveHuntSession({
                   <Text style={styles.sectionLabel}>
                     {workout.sections?.[session.currentRound - 1]?.label ?? stepLabel + ' ' + session.currentRound}
                   </Text>
-                  {workout.sequenceType === 'chain' && currentRoundStructure.length ? (
-                    <WorkoutStructure groups={currentRoundStructure} onExercisePress={onExercisePress} />
+                  {currentRoundStructure.length > 0 ? (
+                    <WorkoutStructure
+                      groups={currentRoundStructure}
+                      compact={exerciseListDensity !== 'normal'}
+                      onExercisePress={onExercisePress}
+                    />
                   ) : (
-                    <RoundExerciseList exercises={currentRoundExercises} onExercisePress={onExercisePress} />
+                    <RoundExerciseList
+                      exercises={currentRoundExercises}
+                      compact={exerciseListDensity !== 'normal'}
+                      onExercisePress={onExercisePress}
+                    />
                   )}
                 </>
               )}
@@ -1123,9 +1259,9 @@ function ActiveHuntSession({
             <View style={styles.actionButtonWrap}>
               {session.isResting ? (
                 <TimerWidget
-                  label="Rest"
-                  minutes={restClock.minutes}
-                  seconds={restClock.seconds}
+                  label={isRungWorkout ? 'Resting' : 'Rest'}
+                  minutes={restDisplayClock.minutes}
+                  seconds={restDisplayClock.seconds}
                   isRunning={session.status === 'active'}
                   gridCell
                 />
@@ -1188,12 +1324,14 @@ function ActiveHuntSession({
                       totalDamageDealt: battle.totalDamageDealt,
                       criticalHits: battle.criticalHitCount,
                     },
-                    capturesRoundLaps ? session.laps : undefined
+                    capturesRoundLaps ? session.laps : undefined,
+                    extraSets.length > 0 ? extraSets : undefined
                   )
                 }
                 disabled={isSaving}
                 style={styles.actionButton}
               />
+              {saveError ? <Text style={styles.saveErrorText}>{saveError}</Text> : null}
             </View>
           ) : (
             <>
@@ -1663,6 +1801,84 @@ const styles = StyleSheet.create({
     marginTop: spacing.xs,
     textAlign: 'center',
   },
+  // Optional post-Hunt exercises — same compact stepper/chip chrome
+  // already established on HuntOverviewScreen/CustomWorkoutBuilderScreen.
+  extraExercisesCard: {
+    width: '100%',
+    marginTop: spacing.sm,
+  },
+  extraSetList: {
+    gap: spacing.xxs,
+    marginBottom: spacing.sm,
+  },
+  extraSetRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: spacing.xxs,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border.hairline,
+  },
+  extraSetText: {
+    fontFamily: fontFamily.bodyRegular,
+    fontSize: fontSize.sm,
+    color: colors.text.primary,
+  },
+  extraExercisePickerRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.xs,
+    marginTop: spacing.xs,
+  },
+  extraExerciseChip: {
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xxs,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: colors.border.hairlineStrong,
+  },
+  extraExerciseChipActive: {
+    backgroundColor: colors.bronze.base,
+    borderColor: colors.bronze.base,
+  },
+  extraExerciseChipText: {
+    fontFamily: fontFamily.monoRegular,
+    fontSize: fontSize.xs,
+    color: colors.text.secondary,
+  },
+  extraExerciseChipTextActive: {
+    color: colors.text.onBronze,
+  },
+  extraRepsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: spacing.sm,
+  },
+  extraRepsStepperRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+  },
+  extraRepsStepButton: {
+    width: 28,
+    height: 28,
+    borderRadius: radii.sm,
+    borderWidth: 1,
+    borderColor: colors.border.hairlineStrong,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  extraRepsValue: {
+    fontFamily: fontFamily.monoBold,
+    fontSize: fontSize.base,
+    color: colors.text.primary,
+    minWidth: 32,
+    textAlign: 'center',
+  },
+  extraAddButton: {
+    marginTop: spacing.sm,
+  },
   exerciseCard: {
     width: '100%',
     alignItems: 'center',
@@ -1792,5 +2008,12 @@ const styles = StyleSheet.create({
   actionButton: {
     width: '100%',
     paddingHorizontal: spacing.xs,
+  },
+  saveErrorText: {
+    marginTop: spacing.sm,
+    fontFamily: fontFamily.bodyRegular,
+    fontSize: fontSize.sm,
+    color: colors.ember.base,
+    textAlign: 'center',
   },
 });

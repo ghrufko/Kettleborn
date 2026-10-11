@@ -7,3 +7,4 @@ export { TimerRepository } from './timerRepository';
 export { CustomHuntPresetRepository } from './customHuntPresetRepository';
 export { CustomWorkoutRepository } from './customWorkoutRepository';
 export { StopwatchRepository } from './stopwatchRepository';
+export { AchievementRepository } from './achievementRepository';

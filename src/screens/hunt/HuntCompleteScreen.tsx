@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet, Animated, TextInput } from 'react-native';
+import { View, Text, StyleSheet, Animated, TextInput, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
@@ -12,6 +12,7 @@ import { ProgressBar } from '../../components/progress';
 import { getAtmosphericColor } from '../../utils/bossPersonality';
 import { contentEngine } from '../../../engines/content';
 import { getMonsterPortrait } from '../../constants/monsterPortraits';
+import { getExtraExerciseName } from '../../constants/extraExercises';
 import { useAppStore } from '../../store';
 import { getLevelProgress } from '../../../engines/progress/progressionEngine';
 import { isCampaignComplete } from '../../utils/campaignState';
@@ -22,6 +23,23 @@ import { convertKgToDisplay, formatWeightPair } from '../../utils/weight';
 import { colors, fontFamily, fontSize, spacing, glow } from '../../theme';
 
 type Props = NativeStackScreenProps<HuntStackParamList, 'HuntComplete'>;
+
+/**
+ * Steps/distance are not reps — preserving that distinction instead of
+ * fabricating a rep count. Same fallback order ChronicleScreen's lifetime
+ * Exercise Stats card already uses (reps, then distance, then steps), kept
+ * consistent rather than inventing a second convention here.
+ */
+function formatBreakdownQuantity(entry: {
+  totalReps: number;
+  totalDistanceFt?: number;
+  totalSteps?: number;
+}): string {
+  if (entry.totalReps > 0) return `${entry.totalReps} reps`;
+  if (entry.totalDistanceFt) return `${entry.totalDistanceFt} ft`;
+  if (entry.totalSteps) return `${entry.totalSteps} steps`;
+  return `${entry.totalReps} reps`;
+}
 
 const RPE_OPTIONS: { value: number; label: string }[] = [
   { value: 1, label: 'Easy' },
@@ -422,16 +440,58 @@ export function HuntCompleteScreen({ route, navigation }: Props) {
         {exerciseBreakdown.length > 0 ? (
           <GlassCard style={styles.card}>
             <Text style={styles.sectionLabel}>Exercise Breakdown</Text>
-            {exerciseBreakdown.map((entry, index) => (
+            {exerciseBreakdown.map((entry, index) => {
+              // Reuse the Exercise Library's existing lookup mechanism —
+              // entry.exerciseId is already resolved by getExerciseBreakdown
+              // when the content exercise carries a libraryExerciseId;
+              // otherwise fall back to the same name-based lookup Hunt
+              // Overview/Active Hunt already use elsewhere. No duplicate
+              // library data, no invented entries — an exercise with
+              // genuinely no match just renders as plain, non-interactive
+              // text instead of breaking the breakdown.
+              const libraryEntry = entry.exerciseId
+                ? contentEngine.getExerciseLibraryEntry(entry.exerciseId)
+                : contentEngine.getExerciseLibraryEntryByName(entry.name);
+              const nameText = (
+                <Text style={styles.breakdownEntryName}>{entry.displayName ?? entry.name}</Text>
+              );
+              return (
+                <View
+                  key={entry.name}
+                  style={[styles.breakdownEntry, index > 0 && styles.breakdownEntryDivider]}
+                >
+                  {libraryEntry ? (
+                    <Pressable
+                      onPress={() => navigation.navigate('ExerciseDetail', { exerciseId: libraryEntry.id })}
+                      accessibilityRole="link"
+                      style={styles.breakdownEntryNamePressable}
+                    >
+                      {nameText}
+                      <Ionicons name="information-circle-outline" size={14} color={colors.text.muted} />
+                    </Pressable>
+                  ) : (
+                    nameText
+                  )}
+                  <View style={styles.breakdownEntryStats}>
+                    <Text style={styles.breakdownEntryReps}>{formatBreakdownQuantity(entry)}</Text>
+                    <Text style={styles.breakdownEntryVolume}>{Math.round(entry.volumeKg)} kg</Text>
+                  </View>
+                </View>
+              );
+            })}
+          </GlassCard>
+        ) : null}
+
+        {summary.extraSets && summary.extraSets.length > 0 ? (
+          <GlassCard style={styles.card}>
+            <Text style={styles.sectionLabel}>Extra Exercises</Text>
+            {summary.extraSets.map((set, index) => (
               <View
-                key={entry.name}
+                key={set.id}
                 style={[styles.breakdownEntry, index > 0 && styles.breakdownEntryDivider]}
               >
-                <Text style={styles.breakdownEntryName}>{entry.displayName ?? entry.name}</Text>
-                <View style={styles.breakdownEntryStats}>
-                  <Text style={styles.breakdownEntryReps}>{entry.totalReps} reps</Text>
-                  <Text style={styles.breakdownEntryVolume}>{Math.round(entry.volumeKg)} kg</Text>
-                </View>
+                <Text style={styles.breakdownEntryName}>{getExtraExerciseName(set.exerciseId)}</Text>
+                <Text style={styles.breakdownEntryReps}>{set.reps} reps</Text>
               </View>
             ))}
           </GlassCard>
@@ -514,6 +574,19 @@ export function HuntCompleteScreen({ route, navigation }: Props) {
           />
         </GlassCard>
 
+        {/* Custom Hunt results never reach the cloud leaderboard (see
+            sync_leaderboard_entry() — is_custom_hunt is excluded before
+            eligibility is even checked), so this button only appears for
+            a canonical result to avoid implying otherwise. */}
+        {!summary.isCustomHunt ? (
+          <Button
+            label="View Leaderboard"
+            variant="secondary"
+            onPress={() => navigation.navigate('Leaderboard', { workoutId, monsterId })}
+            style={styles.leaderboardButton}
+          />
+        ) : null}
+
         <Button
           label="Return to Map"
           onPress={() => {
@@ -553,6 +626,10 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   nextButton: {
+    width: '100%',
+    marginTop: spacing.md,
+  },
+  leaderboardButton: {
     width: '100%',
     marginTop: spacing.md,
   },
@@ -731,6 +808,12 @@ const styles = StyleSheet.create({
     color: colors.text.secondary,
     flexShrink: 1,
     paddingRight: spacing.sm,
+  },
+  breakdownEntryNamePressable: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xxs,
+    flexShrink: 1,
   },
   breakdownEntryStats: {
     alignItems: 'flex-end',

@@ -1,5 +1,6 @@
-import { WorkoutResult, Workout } from '../models';
-import { HuntRank, getHuntRank } from './huntRank';
+import type { WorkoutResult, Workout } from '../models';
+import { getHuntRank } from './huntRank';
+import type { HuntRank } from './huntRank';
 
 export interface RankedResult {
   result: WorkoutResult;

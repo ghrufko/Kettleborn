@@ -106,6 +106,13 @@ export function useWorkoutSession(
   const [emomRemainingSeconds, setEmomRemainingSeconds] = useState<number | null>(
     workout.emomSeconds ?? null
   );
+  // null = not in grace. The Breaking (and any other EMOM workout): the
+  // window hitting 0 without a Complete Round press no longer ends the
+  // attempt immediately — a short grace window, the same
+  // ROUND_TRANSITION_SECONDS beat used for the ordinary round->round
+  // transition elsewhere in this engine, still lets the player lock in a
+  // round they'd essentially finished before the attempt actually ends.
+  const [emomGraceSecondsLeft, setEmomGraceSecondsLeft] = useState<number | null>(null);
   const [laps, setLaps] = useState<RoundLap[]>([]);
   const [restLaps, setRestLaps] = useState<RestLap[]>([]);
 
@@ -141,24 +148,40 @@ export function useWorkoutSession(
       setElapsedSeconds((s) => s + 1);
       setCurrentRoundElapsedSeconds((s) => s + 1);
       if (workout.emomSeconds) {
-        setEmomRemainingSeconds((remaining) => {
-          const next = (remaining ?? workout.emomSeconds!) - 1;
-          if (next <= 0) {
-            // Window expired before the player pressed Complete Round —
-            // the in-progress round is never added to `laps` (it only
-            // gets pushed inside completeRound, which wasn't called),
-            // so it's correctly not counted. The attempt ends the exact
-            // same way a normal fixed-round workout's final round does
-            // (phase/status -> 'complete', onWorkoutComplete fires) —
-            // no separate failure path, since reaching the window limit
-            // is simply how every EMOM attempt is expected to end.
-            setPhase('complete');
-            setStatus('complete');
-            callbacksRef.current.onWorkoutComplete?.({ elapsedSeconds: elapsedSeconds + 1 });
-            return 0;
-          }
-          return next;
-        });
+        if (emomGraceSecondsLeft !== null) {
+          // Already in the post-window grace beat — still ticking down,
+          // Complete Round (completeRound, below) still works normally
+          // during it. Only once grace itself runs out does the attempt
+          // actually end, the same way a normal fixed-round workout's
+          // final round does (phase/status -> 'complete',
+          // onWorkoutComplete fires) — no separate failure path, since
+          // reaching the window limit is simply how every EMOM attempt is
+          // expected to end.
+          setEmomGraceSecondsLeft((grace) => {
+            const nextGrace = (grace ?? ROUND_TRANSITION_SECONDS) - 1;
+            if (nextGrace <= 0) {
+              setPhase('complete');
+              setStatus('complete');
+              callbacksRef.current.onWorkoutComplete?.({ elapsedSeconds: elapsedSeconds + 1 });
+              return 0;
+            }
+            return nextGrace;
+          });
+        } else {
+          setEmomRemainingSeconds((remaining) => {
+            const next = (remaining ?? workout.emomSeconds!) - 1;
+            if (next <= 0) {
+              // Window expired before the player pressed Complete Round —
+              // start the grace beat instead of ending immediately. The
+              // in-progress round is never added to `laps` (it only gets
+              // pushed inside completeRound) unless the player locks it
+              // in during grace.
+              setEmomGraceSecondsLeft(ROUND_TRANSITION_SECONDS);
+              return 0;
+            }
+            return next;
+          });
+        }
       }
       return;
     }
@@ -210,12 +233,14 @@ export function useWorkoutSession(
     if (workout.emomSeconds) {
       // Open-ended EMOM: no predetermined final round (per the brief —
       // "do not invent a maximum number of rounds"), so `workout.rounds`
-      // is never checked here as a cap. Completing within the window
-      // always advances straight into the next one, with no rest phase
-      // in between — the next window starts immediately.
+      // is never checked here as a cap. Completing within the window (or
+      // during the post-window grace beat, above) always advances
+      // straight into the next one, with no rest phase in between — the
+      // next window starts immediately, and any in-progress grace clears.
       setCurrentRound(round + 1);
       setCurrentRoundElapsedSeconds(0);
       setEmomRemainingSeconds(workout.emomSeconds);
+      setEmomGraceSecondsLeft(null);
       setPhase('round');
       return;
     }

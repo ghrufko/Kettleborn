@@ -9,6 +9,7 @@ import { getHuntRank } from '../utils/huntRank';
 import { getHunterTitle } from '../utils/hunterTitle';
 import { calculateHuntXP, getLevelForTotalXP } from '../../engines/progress/progressionEngine';
 import { getExerciseBreakdown } from '../utils/exerciseBreakdown';
+import { getWorkoutActualExercises } from '../utils/workoutPresentation';
 import {
   getEncounterOutcome,
   reconstructEncounterConfig,
@@ -19,6 +20,8 @@ import {
   findExerciseStats,
   getWeaknessProfile as computeWeaknessProfile,
 } from '../utils/exerciseStats';
+import { detectAllQualifyingMilestones } from '../utils/milestones';
+import { isCampaignComplete } from '../utils/campaignState';
 
 export const createWorkoutSlice: StateCreator<AppStore, [], [], WorkoutSlice> = (set, get) => ({
   lastResult: null,
@@ -41,6 +44,7 @@ export const createWorkoutSlice: StateCreator<AppStore, [], [], WorkoutSlice> = 
     structuralValueUsed,
     repsOverridesUsed,
     encounterTargetSeconds,
+    extraSets,
   }) => {
     const monster = contentEngine.getMonster(monsterId);
     const canonicalWorkout = contentEngine.getWorkout(workoutId);
@@ -180,13 +184,13 @@ export const createWorkoutSlice: StateCreator<AppStore, [], [], WorkoutSlice> = 
     );
     // XP continues to count completed workout-step reps. A combo step is
     // one prescribed rep even though its exercise statistics expand it
-    // into one rep for each constituent movement.
-    const workoutTotalReps = workout.sections
-      ? workout.sections.reduce(
-          (sum, section) => sum + section.exercises.reduce((sectionSum, exercise) => sectionSum + (exercise.targetReps ?? 0), 0),
-          0
-        )
-      : workout.exercises.reduce((sum, exercise) => sum + (exercise.targetReps ?? 0), 0) * actualRounds;
+    // into one rep for each constituent movement. Statistics audit:
+    // resolved per round via getWorkoutActualExercises (shared with
+    // getExerciseBreakdown above) rather than a separate flat-list-times-
+    // rounds sum, so a "legacy repeated Chain" workout (e.g. Atlas) no
+    // longer double-counts — identical output for every other workout.
+    const actualExercises = getWorkoutActualExercises(workout, actualRounds);
+    const workoutTotalReps = actualExercises.reduce((sum, exercise) => sum + (exercise.targetReps ?? 0), 0);
     const xp = calculateHuntXP({
       difficulty: workout.difficulty,
       actualWeightKg: weightKg,
@@ -221,6 +225,12 @@ export const createWorkoutSlice: StateCreator<AppStore, [], [], WorkoutSlice> = 
       restSecondsUsed: isCustomHunt ? restSecondsUsed ?? null : null,
       structuralValueUsed: isCustomHunt ? structuralValueUsed ?? null : null,
       repsOverridesUsed: isCustomHunt ? repsOverridesUsed ?? null : null,
+      // Optional post-Hunt exercises: stored exactly as the player built
+      // them, with zero influence on any calculation above this line
+      // (rank, xp, volume, exerciseBreakdown are all already computed by
+      // this point). Empty array normalized to null — see
+      // WorkoutResult.extraSets.
+      extraSets: extraSets && extraSets.length > 0 ? extraSets : null,
     };
     await WorkoutRepository.saveResult(result);
 
@@ -298,7 +308,12 @@ export const createWorkoutSlice: StateCreator<AppStore, [], [], WorkoutSlice> = 
     const previousTitle = getHunterTitle(previousLevel);
     const title = getHunterTitle(newLevel);
 
-    const totalExercises = workout.rounds * workout.exercises.length;
+    // Statistics audit: actualExercises (built above for workoutTotalReps)
+    // is already the exact per-round-resolved list — reused here instead
+    // of `workout.rounds * workout.exercises.length`, which overcounted a
+    // "legacy repeated Chain" workout and ignored an open-ended EMOM
+    // attempt's real round count.
+    const totalExercises = actualExercises.length;
 
     set((state) => ({
       lastResult: result,
@@ -339,11 +354,51 @@ export const createWorkoutSlice: StateCreator<AppStore, [], [], WorkoutSlice> = 
         encounterOutcome,
         encounterTargetSeconds: encounterTargetSeconds ?? null,
         isCustomHunt: isCustomHunt ?? false,
+        extraSets: result.extraSets,
       },
       monsterProgress: { ...state.monsterProgress, [monsterId]: updatedProgress },
       chronicle: updatedChronicle,
       user: updatedUser ?? state.user,
     }));
+
+    // Phase 2.11: persistent achievements. Checks ALL milestone
+    // conditions independently (detectAllQualifyingMilestones), not just
+    // the single one the Victory screen's banner will show — several of
+    // these conditions (isFirstClear in particular) are never true again
+    // on a later replay, so relying on the single-winner banner function
+    // here could permanently miss a genuinely-earned achievement that a
+    // higher-priority banner shadowed. unlockAchievements itself never
+    // throws (storage errors are swallowed there, logged as "not
+    // unlocked" rather than claimed) — this try/catch is defense in
+    // depth only, so a completely unexpected failure here can never take
+    // down an otherwise-successful Hunt completion.
+    try {
+      if (hunt) {
+        const campaign = contentEngine.getCampaignForMonster(monsterId);
+        const monsterProgressAfterThisHunt = { ...get().monsterProgress, [monsterId]: updatedProgress };
+        const justCompletedCampaign = campaign
+          ? isCampaignComplete(campaign, monsterProgressAfterThisHunt)
+          : false;
+        const qualifyingMilestones = detectAllQualifyingMilestones({
+          isFirstClear,
+          leveledUp: newLevel > previousLevel,
+          previousLevel,
+          rank,
+          chronicle: updatedChronicle,
+          huntOrder: hunt.order,
+          monsterHuntCount: huntsTotal,
+          justCompletedCampaign,
+          priorResults,
+          getWorkout: (id) => contentEngine.getWorkout(id),
+        });
+        if (qualifyingMilestones.length > 0) {
+          await get().unlockAchievements(qualifyingMilestones, result.completedAt);
+        }
+      }
+    } catch {
+      // See comment above — never let achievement bookkeeping fail an
+      // otherwise-successful Hunt completion.
+    }
 
     return result;
   },

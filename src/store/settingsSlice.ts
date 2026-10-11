@@ -1,8 +1,8 @@
-import { StateCreator } from 'zustand';
+import type { StateCreator } from 'zustand';
 import { SettingsRepository } from '../services';
 import { LOCAL_USER_ID } from '../constants/localUser';
-import { AppStore, SettingsSlice } from './types';
-import { Settings } from '../models';
+import type { AppStore, SettingsSlice } from './types';
+import type { Settings } from '../models';
 
 const DEFAULT_EQUIPMENT: Array<{ id: string; weight: number; label: string }> = [
   { id: 'kb-1', weight: 16, label: '16 KG' },
@@ -43,6 +43,27 @@ export const createSettingsSlice: StateCreator<AppStore, [], [], SettingsSlice> 
         });
       }
     }
+    const equipment = await SettingsRepository.getEquipmentForUser(LOCAL_USER_ID);
+    set({ equipment });
+  },
+
+  saveEquipment: async ({ id, type, weightKg, label }) => {
+    const equipmentId = id ?? `equipment-${Date.now()}`;
+    await SettingsRepository.upsertEquipment({
+      id: equipmentId,
+      userId: LOCAL_USER_ID,
+      type,
+      weight: weightKg,
+      unit: 'kg', // always stored in kg, same convention as every other weight field in this codebase; display conversion happens in the UI via convertKgToDisplay.
+      label,
+      owned: true,
+    });
+    const equipment = await SettingsRepository.getEquipmentForUser(LOCAL_USER_ID);
+    set({ equipment });
+  },
+
+  deleteEquipment: async (id) => {
+    await SettingsRepository.deleteEquipment(id);
     const equipment = await SettingsRepository.getEquipmentForUser(LOCAL_USER_ID);
     set({ equipment });
   },

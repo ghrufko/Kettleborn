@@ -1,5 +1,6 @@
 import { WorkoutResult, Workout, ExerciseLibraryEntry } from '../models';
 import { getExerciseMovements, resolveExerciseWeightKg } from './exerciseBreakdown';
+import { getWorkoutRoundExercises } from './workoutPresentation';
 
 export interface ExerciseStats {
   exerciseId: string;
@@ -57,32 +58,28 @@ export function getAllExerciseStats(
     // Sections carry a distinct exercise list per round (e.g. Behemoth's
     // three phases) — the same canonical source Hunt Brief, Active Hunt,
     // and Exercise Breakdown already read from. A workout without sections
-    // still resolves to exactly one group (the flat list), so unsectioned
-    // workouts' stats are unchanged.
+    // is resolved per round via getWorkoutRoundExercises (statistics
+    // audit): correct for an ordinary flat workout (same full list every
+    // round, same final totals as the old flat-list-times-rounds math)
+    // AND for a workout using the "legacy repeated Chain stored as
+    // consecutive blocks" fallback (e.g. Atlas), which the old blind
+    // multiply double-counted. Task 3 (EMOM): an open-ended workout's
+    // actual round count can differ from workout.rounds (a reference
+    // value only for those, never a cap) — this result's own
+    // rungLaps.length is what actually happened.
+    const actualRounds = result.rungLaps?.length ?? workout.rounds;
     const exerciseGroups = workout.sections
       ? workout.sections.map((section) => section.exercises)
-      : [workout.exercises];
+      : Array.from({ length: actualRounds }, (_, i) => getWorkoutRoundExercises(workout, i + 1));
 
     exerciseGroups.forEach((exerciseList) => {
       exerciseList.forEach((exercise) => {
-        // Sprint 27 (Aggregate Volume fix): a section is already one
-        // round's worth of exercises (no multiplier needed), but the flat
-        // fallback list is only ever written once in content and repeats
-        // every round — same distinction getExerciseBreakdown already
-        // makes, kept consistent here rather than reusing that helper
-        // directly, since this function counts each movement once per
-        // completed workout (including distance-only exercises) while
-        // breakdown output omits entries with no reps or distance.
-        // Task 3 (EMOM): an open-ended workout's actual round count can
-        // differ from workout.rounds (a reference value only for those,
-        // never a cap) — this result's own rungLaps.length is what
-        // actually happened. For every other workout (no rungLaps saved)
-        // this is unchanged; for a ladder workout the two already
-        // coincide, so this changes nothing there either.
-        const actualRounds = result.rungLaps?.length ?? workout.rounds;
-        const reps = (exercise.targetReps ?? 0) * (workout.sections ? 1 : actualRounds);
-        const distanceFt = (exercise.targetDistanceFt ?? 0) * (workout.sections ? 1 : actualRounds);
-        const steps = (exercise.targetSteps ?? 0) * (workout.sections ? 1 : actualRounds);
+        // Each group above is already exactly one round's worth of
+        // exercises (a section, or one resolved round block) — no further
+        // multiplier needed here.
+        const reps = exercise.targetReps ?? 0;
+        const distanceFt = exercise.targetDistanceFt ?? 0;
+        const steps = exercise.targetSteps ?? 0;
         getExerciseMovements(exercise, getLibraryEntryById).forEach((movement) => {
           const entry = movement.libraryExerciseId
             ? getLibraryEntryById?.(movement.libraryExerciseId) ?? getLibraryEntry(movement.name)

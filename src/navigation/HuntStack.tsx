@@ -11,6 +11,7 @@ import { HuntCompleteScreen } from '../screens/hunt/HuntCompleteScreen';
 import { HuntFailedScreen } from '../screens/hunt/HuntFailedScreen';
 import { ExerciseLibraryScreen } from '../screens/hunt/ExerciseLibraryScreen';
 import { ExerciseDetailScreen } from '../screens/hunt/ExerciseDetailScreen';
+import { LeaderboardScreen } from '../screens/hunt/LeaderboardScreen';
 import { screenOptions } from './screenOptions';
 
 const Stack = createNativeStackNavigator<HuntStackParamList>();
@@ -39,6 +40,7 @@ export function HuntStack() {
       />
       <Stack.Screen name="ExerciseLibrary" component={ExerciseLibraryScreen} />
       <Stack.Screen name="ExerciseDetail" component={ExerciseDetailScreen} />
+      <Stack.Screen name="Leaderboard" component={LeaderboardScreen} />
       {/*
         Home is kept registered (Sprint 21: removed from the main Hunt flow,
         not deleted — campaigns are the product, not a stats dashboard) so

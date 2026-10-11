@@ -367,6 +367,44 @@ const migration15: Migration = {
   ],
 };
 
+/**
+ * Phase 2.11: persistent achievements. One row per milestone type ever
+ * unlocked for this user — `PRIMARY KEY (user_id, milestone_type)` is
+ * what makes unlocking idempotent at the schema level: an `INSERT OR
+ * IGNORE` for a milestone type that's already unlocked is a silent
+ * no-op, never a duplicate row or an overwritten (and therefore wrong)
+ * original unlock timestamp. No new concept otherwise — same
+ * per-user-scoped small table shape as monster_progress/
+ * campaign_progress (migration1).
+ */
+const migration16: Migration = {
+  version: 16,
+  statements: [
+    `CREATE TABLE IF NOT EXISTS achievement (
+      user_id TEXT NOT NULL,
+      milestone_type TEXT NOT NULL,
+      unlocked_at TEXT NOT NULL,
+      PRIMARY KEY (user_id, milestone_type)
+    );`,
+  ],
+};
+
+/**
+ * Optional post-Hunt exercises: a nullable JSON-array column, same
+ * "JSON blob for variable-shaped, optional data on a result" convention
+ * already used by rung_times_json (migration5), reps_overrides_used_json
+ * (migration11), and exercise_breakdown_json (migration12) — a variable
+ * number of {id, exerciseId, reps} sets, not a fixed set of scalar
+ * columns. NULL for every row saved before this migration and for any
+ * result the player didn't add extras to; never written as an empty
+ * array (see WorkoutResult.extraSets). Does not touch duration, rounds,
+ * XP, rank, or any existing column — purely additive.
+ */
+const migration17: Migration = {
+  version: 17,
+  statements: [`ALTER TABLE workout_result ADD COLUMN extra_sets_json TEXT;`],
+};
+
 export const migrations: Migration[] = [
   migration1,
   migration2,
@@ -383,4 +421,6 @@ export const migrations: Migration[] = [
   migration13,
   migration14,
   migration15,
+  migration16,
+  migration17,
 ];

@@ -68,6 +68,8 @@ export type HuntStackParamList = {
   };
   ExerciseLibrary: undefined;
   ExerciseDetail: { exerciseId: string };
+  /** Phase 2.2: read-only, per-workout cloud leaderboard. See src/screens/hunt/LeaderboardScreen.tsx. */
+  Leaderboard: { workoutId: string; monsterId: string };
 };
 
 export type ChronicleStackParamList = {
@@ -76,11 +78,15 @@ export type ChronicleStackParamList = {
 
 export type HunterStackParamList = {
   Hunter: undefined;
+  Achievements: undefined;
 };
 
 export type ForgeStackParamList = {
   Forge: undefined;
   Settings: undefined;
+  /** Phase 2.2: optional cloud account entry point, reachable from Settings. */
+  SignIn: undefined;
+  CreateAccount: undefined;
 };
 
 export type TimerStackParamList = {

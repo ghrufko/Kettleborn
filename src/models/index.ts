@@ -11,3 +11,4 @@ export * from './Equipment';
 export * from './CustomHuntPreset';
 export * from './CustomWorkout';
 export * from './StopwatchResult';
+export * from './Achievement';

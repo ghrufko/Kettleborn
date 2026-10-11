@@ -6,6 +6,92 @@ import { Header, GlassCard, Button, ConfirmDialog } from '../../components/core'
 import { useAppStore } from '../../store';
 import { colors, fontFamily, fontSize, spacing } from '../../theme';
 
+function AccountSection({ navigation }: { navigation: Props['navigation'] }) {
+  const authStatus = useAppStore((state) => state.authStatus);
+  const authUser = useAppStore((state) => state.authUser);
+  const authError = useAppStore((state) => state.authError);
+  const authSignOut = useAppStore((state) => state.authSignOut);
+  const [isSigningOut, setIsSigningOut] = useState(false);
+  const [signOutError, setSignOutError] = useState<string | null>(null);
+
+  if (authStatus === 'unavailable') {
+    return (
+      <GlassCard style={styles.card}>
+        <Text style={styles.sectionLabel}>Account</Text>
+        <Text style={styles.footnote}>Cloud accounts aren't available in this build.</Text>
+      </GlassCard>
+    );
+  }
+
+  if (authStatus === 'hydrating') {
+    // Phase 2.4.3: distinguished from signed_out specifically so a user
+    // with a real persisted session doesn't briefly see "Sign In /
+    // Create Account" while bootstrap's non-blocking initializeAuth()
+    // is still restoring it — session restoration is typically fast,
+    // but this card must not claim "signed out" before that's actually
+    // known one way or the other.
+    return (
+      <GlassCard style={styles.card}>
+        <Text style={styles.sectionLabel}>Account</Text>
+        <Text style={styles.footnote}>Checking account status…</Text>
+      </GlassCard>
+    );
+  }
+
+  if (authStatus === 'signed_in' && authUser) {
+    const handleSignOut = async () => {
+      setSignOutError(null);
+      setIsSigningOut(true);
+      const result = await authSignOut();
+      setIsSigningOut(false);
+      // Does not assume success — a real failure leaves the user signed
+      // in (see authSlice.ts) and is reported here, not silently treated
+      // as a successful sign-out.
+      if (!result.ok) {
+        setSignOutError(result.error.message);
+      }
+    };
+
+    return (
+      <GlassCard style={styles.card}>
+        <Text style={styles.sectionLabel}>Account</Text>
+        <View style={styles.row}>
+          <Text style={styles.rowLabel}>Signed in as</Text>
+          <Text style={styles.accountEmail}>{authUser.email ?? authUser.id}</Text>
+        </View>
+        <Button
+          label={isSigningOut ? 'Signing Out…' : 'Sign Out'}
+          variant="secondary"
+          onPress={handleSignOut}
+          disabled={isSigningOut}
+          style={styles.accountButton}
+        />
+        {signOutError ? <Text style={styles.resetError}>{signOutError}</Text> : null}
+      </GlassCard>
+    );
+  }
+
+  // signed_out / signing_in / signing_up / signing_out: local training is
+  // fully available regardless — this card never blocks it, it only
+  // offers the optional cloud entry point.
+  return (
+    <GlassCard style={styles.card}>
+      <Text style={styles.sectionLabel}>Account</Text>
+      <Text style={styles.footnote}>
+        Sign in to start tracking leaderboard results. Your local training works the same either way.
+      </Text>
+      {authError ? <Text style={styles.resetError}>{authError.message}</Text> : null}
+      <Button label="Sign In" onPress={() => navigation.navigate('SignIn')} style={styles.accountButton} />
+      <Button
+        label="Create Account"
+        variant="secondary"
+        onPress={() => navigation.navigate('CreateAccount')}
+        style={styles.accountButton}
+      />
+    </GlassCard>
+  );
+}
+
 type Props = NativeStackScreenProps<ForgeStackParamList, 'Settings'>;
 
 function ToggleRow({
@@ -67,6 +153,8 @@ export function SettingsScreen({ navigation }: Props) {
     <View style={styles.container}>
       <Header title="Settings" onBack={() => navigation.goBack()} />
       <ScrollView contentContainerStyle={styles.content}>
+        <AccountSection navigation={navigation} />
+
         <GlassCard style={styles.card}>
           <Text style={styles.sectionLabel}>Units</Text>
           <View style={styles.unitRow}>
@@ -222,5 +310,13 @@ const styles = StyleSheet.create({
     color: colors.ember.base,
     fontFamily: fontFamily.bodyRegular,
     fontSize: fontSize.sm,
+  },
+  accountButton: {
+    marginTop: spacing.sm,
+  },
+  accountEmail: {
+    fontFamily: fontFamily.monoBold,
+    fontSize: fontSize.sm,
+    color: colors.text.primary,
   },
 });

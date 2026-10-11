@@ -16,7 +16,8 @@
           "image": "./assets/images/splash.png",
           "resizeMode": "cover"
         }
-      ]
+      ],
+      "expo-secure-store"
     ],
     "assetBundlePatterns": [
       "**/*"

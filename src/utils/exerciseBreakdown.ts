@@ -1,4 +1,5 @@
 import { Exercise, ExerciseLibraryEntry, Workout } from '../models';
+import { getWorkoutActualExercises } from './workoutPresentation';
 
 export interface ExerciseBreakdownEntry {
   exerciseId?: string;
@@ -181,16 +182,15 @@ export function getExerciseBreakdown(
     });
   }
 
-  if (workout.sections) {
-    // Each section is one round's worth of exercises, already distinct
-    // per round — no rounds multiplier, every section is one pass.
-    workout.sections.forEach((section) => {
-      section.exercises.forEach((exercise) => addExercise(exercise, 1));
-    });
-  } else {
-    // The same exercise list repeats every round.
-    workout.exercises.forEach((exercise) => addExercise(exercise, totalRounds));
-  }
+  // Sprint (statistics audit): resolved per round via
+  // getWorkoutActualExercises, so a workout using the "legacy repeated
+  // Chain stored as consecutive blocks" fallback (e.g. Atlas) credits
+  // each round's actual 5-exercise block instead of the whole 30-exercise
+  // flat list repeated `totalRounds` times. Mathematically identical
+  // output for every ordinary flat or sectioned workout — each exercise
+  // is simply added once per round (multiplier 1) instead of once with a
+  // `totalRounds` multiplier.
+  getWorkoutActualExercises(workout, totalRounds).forEach((exercise) => addExercise(exercise, 1));
 
   return order
     .map((key) => {

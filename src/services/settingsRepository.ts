@@ -129,4 +129,10 @@ export const SettingsRepository = {
       equipment.owned ? 1 : 0
     );
   },
+
+  /** Phase 2.6: real removal, not a soft "owned=false" toggle — nothing else in the schema references equipment.id, so there's no orphaned-reference risk. */
+  async deleteEquipment(id: string): Promise<void> {
+    const db = await getDatabase();
+    await db.runAsync('DELETE FROM equipment WHERE id = ?;', id);
+  },
 };

@@ -1,13 +1,83 @@
-import { User, Settings, Chronicle, MonsterProgress, WorkoutResult, Equipment, TimerPreset, TimerResult, TimerRound, CustomHuntPreset, Workout, CustomWorkout, CustomWorkoutExercise, CustomWorkoutResult, StopwatchResult } from '../models';
+import { User, Settings, Chronicle, MonsterProgress, WorkoutResult, Equipment, TimerPreset, TimerResult, TimerRound, CustomHuntPreset, Workout, CustomWorkout, CustomWorkoutExercise, CustomWorkoutResult, StopwatchResult, Achievement, ExtraExerciseSet } from '../models';
 import { HuntRank } from '../utils/huntRank';
 import { XPBreakdown } from '../../engines/progress/progressionEngine';
 import { ExerciseStats, WeaknessProfile } from '../utils/exerciseStats';
 import { RoundLap } from '../../engines/session/useWorkoutSession';
 import { ExerciseBreakdownEntry } from '../utils/exerciseBreakdown';
+import { AppAuthUser, AuthFailure, AuthResult, SignUpResult } from '../services/supabase/auth';
 
 export interface UserSlice {
   user: User | null;
   initializeUser: () => Promise<void>;
+}
+
+/**
+ * Phase 2.2 — cloud account state. Deliberately separate from UserSlice
+ * (the local, always-present `User` row) and from every workout/campaign
+ * slice — this is remote identity only, never a substitute for local
+ * progress. See supabase/PHASE_2_1_AUTH_ARCHITECTURE.md §9 for the design
+ * rationale and supabase/PHASE_2_2_IMPLEMENTATION.md for what's actually
+ * wired up.
+ *
+ * Status is a single closed union, not separate booleans, specifically so
+ * "signed in" and "signed out" (or "hydrating" and "signed in") can never
+ * both be true at once — the invalid states simply don't have a
+ * representation.
+ */
+export type AuthStatus =
+  | 'hydrating'
+  | 'unavailable'
+  | 'signed_out'
+  | 'signing_in'
+  | 'signing_up'
+  | 'signing_out'
+  | 'signed_in';
+
+export interface AuthSlice {
+  authStatus: AuthStatus;
+  authUser: AppAuthUser | null;
+  /** The most recent recoverable failure, or null. Cleared by clearAuthError() or the start of a new attempt. */
+  authError: AuthFailure | null;
+  /**
+   * Phase 2.4: true from the moment the `kettleborn://reset-password`
+   * deep link establishes a recovery session (GoTrue's `PASSWORD_RECOVERY`
+   * event) until the new password is set or the flow is cancelled.
+   * Deliberately separate from `authStatus` — the user IS signed in
+   * during recovery (a real session exists), but the app must show
+   * UpdatePasswordScreen instead of normal navigation, which a boolean
+   * flag App.tsx checks expresses more directly than overloading
+   * authStatus with a state that isn't really about sign-in/out.
+   */
+  passwordRecoveryPending: boolean;
+  /**
+   * Runs once at bootstrap: checks for an existing session and subscribes
+   * to future auth-state changes. Never throws, never blocks local
+   * startup — see store/bootstrap.ts. Safe to call more than once; a
+   * second call is a no-op if a listener is already registered.
+   */
+  initializeAuth: () => Promise<void>;
+  /** Called from App.tsx's deep-link handler with the `code` query param from `kettleborn://reset-password?code=...`. */
+  handlePasswordRecoveryLink: (code: string) => Promise<AuthResult<AppAuthUser>>;
+  /**
+   * Called from App.tsx's deep-link handler with the `code` query param
+   * from `kettleborn://confirm-email?code=...` (the signup-confirmation
+   * email's link). Unlike handlePasswordRecoveryLink, this never sets
+   * passwordRecoveryPending — GoTrue fires a plain SIGNED_IN event (not
+   * PASSWORD_RECOVERY) for this exchange, so the existing
+   * onAuthStateChange listener already routes it to normal signed-in
+   * state on its own; this action exists so the deep link resolves even
+   * faster than waiting on that listener, same reasoning as
+   * handlePasswordRecoveryLink setting state immediately too.
+   */
+  handleEmailConfirmationLink: (code: string) => Promise<AuthResult<AppAuthUser>>;
+  /** Sets the new password and clears passwordRecoveryPending on success — the failure path leaves it true so the user can retry. */
+  completePasswordRecovery: (newPassword: string) => Promise<AuthResult<void>>;
+  /** Clears passwordRecoveryPending without changing the password — e.g. the user backs out of UpdatePasswordScreen. Does not sign out; the recovery session is still a real session. */
+  cancelPasswordRecovery: () => void;
+  authSignUp: (email: string, password: string) => Promise<AuthResult<SignUpResult>>;
+  authSignIn: (email: string, password: string) => Promise<AuthResult<AppAuthUser>>;
+  authSignOut: () => Promise<AuthResult<void>>;
+  clearAuthError: () => void;
 }
 
 export interface SettingsSlice {
@@ -16,6 +86,19 @@ export interface SettingsSlice {
   initializeSettings: () => Promise<void>;
   updateSettings: (patch: Partial<Settings>) => Promise<void>;
   loadEquipment: () => Promise<void>;
+  /**
+   * Phase 2.6: creates (when `id` is omitted) or updates (when present)
+   * one kettlebell. The Forge screen is the only caller today — this is
+   * deliberately generic enough to cover `type: 'other'` equipment too,
+   * even though no current screen creates that type yet.
+   */
+  saveEquipment: (input: {
+    id?: string;
+    type: 'kettlebell' | 'other';
+    weightKg: number;
+    label: string;
+  }) => Promise<void>;
+  deleteEquipment: (id: string) => Promise<void>;
 }
 
 export interface ChronicleSlice {
@@ -128,6 +211,8 @@ export interface HuntSummary {
   encounterTargetSeconds: number | null;
   /** Whether THIS result used Custom Hunt — surfaced so Victory can label a baseline/target correctly ("Custom Baseline Established" vs "Baseline Established"). */
   isCustomHunt: boolean;
+  /** Optional post-Hunt exercises the player added — same value as the persisted WorkoutResult.extraSets, surfaced here so HuntCompleteScreen can show them without a separate read. Empty/absent means none were added. */
+  extraSets: ExtraExerciseSet[] | null;
 }
 
 export interface HunterSummary {
@@ -191,6 +276,15 @@ export interface WorkoutSlice {
      * re-checked. Omitted/undefined for Encounter 1 or an unlocked Hunt.
      */
     encounterTargetSeconds?: number | null;
+    /**
+     * Optional post-Hunt exercises the player added after the main timer
+     * stopped, before confirming the result (ActiveHuntScreen's "Workout
+     * Complete" card). Stored as-is on the result; never read by any
+     * rank/XP/duration/achievement calculation above it in completeHunt.
+     * Omitted/undefined (or an empty array) means no extras — identical
+     * to every pre-existing call site, which still works unchanged.
+     */
+    extraSets?: ExtraExerciseSet[];
   }) => Promise<WorkoutResult>;
   /** Encounter Lock: all results for one specific Hunt (encounter) — see WorkoutRepository.getResultsForHunt for why this differs from getBestTimeSeconds/getBestResult (workoutId-scoped, shared across Level 1/2/3). */
   getResultsForHunt: (huntId: string) => Promise<WorkoutResult[]>;
@@ -320,6 +414,28 @@ export interface StopwatchSlice {
   getAllStopwatchResults: () => Promise<StopwatchResult[]>;
 }
 
+/**
+ * Phase 2.11: persistent achievement unlocks, backed by the `achievement`
+ * table (migration16). `achievements` is loaded once at bootstrap and
+ * kept in sync in-memory on every unlock — the Achievements screen reads
+ * it directly via a selector, no per-screen fetch needed.
+ */
+export interface AchievementSlice {
+  achievements: Achievement[];
+  loadAchievements: () => Promise<void>;
+  /**
+   * Persists every milestone type in `types` that isn't already unlocked
+   * for this user — idempotent (AchievementRepository.unlock is a no-op
+   * for an already-unlocked type, enforced by the table's own PRIMARY
+   * KEY), safe to call with a type that's already unlocked, and safe to
+   * call with duplicates in the same array. Called from completeHunt
+   * (workoutSlice.ts) with the result of
+   * `detectAllQualifyingMilestones` — never invents an unlock from
+   * anywhere else.
+   */
+  unlockAchievements: (types: Achievement['milestoneType'][], unlockedAt: string) => Promise<void>;
+}
+
 export type AppStore = UserSlice &
   SettingsSlice &
   ChronicleSlice &
@@ -328,4 +444,6 @@ export type AppStore = UserSlice &
   TimerSlice &
   CustomHuntSlice &
   CustomWorkoutSlice &
-  StopwatchSlice;
+  StopwatchSlice &
+  AchievementSlice &
+  AuthSlice;

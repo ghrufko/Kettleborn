@@ -22,6 +22,7 @@ import { flavorTextFor } from '../../utils/flavorText';
 import { groupWorkoutPresentation, groupWorkoutStructure } from '../../utils/workoutPresentation';
 import { WorkoutResult, CustomHuntPreset } from '../../models';
 import { convertKgToDisplay, convertDisplayToKg, formatWeightPair } from '../../utils/weight';
+import { getHeaviestOwnedKettlebellKg, getHeaviestMatchedKettlebellPairKg } from '../../utils/equipment';
 import { colors, fontFamily, fontSize, radii, spacing } from '../../theme';
 
 type Props = NativeStackScreenProps<HuntStackParamList, 'HuntOverview'>;
@@ -190,6 +191,10 @@ export function HuntOverviewScreen({ route, navigation }: Props) {
   const saveCustomHuntPreset = useAppStore((state) => state.saveCustomHuntPreset);
   const getResultsForHunt = useAppStore((state) => state.getResultsForHunt);
   const unitPreference = useAppStore((state) => state.settings?.unitPreference ?? 'kg');
+  // Phase 2.7: Forge equipment integration — read once per screen, not
+  // inside the init effect's deps (see below), so editing this value
+  // mid-session never overwrites a weight the player already typed.
+  const equipment = useAppStore((state) => state.equipment);
   const [personalBestResult, setPersonalBestResult] = useState<WorkoutResult | null>(null);
   const [weightInput, setWeightInput] = useState('');
   // Kettlebell weight audit: the second bell's own weight — genuinely
@@ -295,8 +300,20 @@ export function HuntOverviewScreen({ route, navigation }: Props) {
         setStructuralValue(preset.customStructureValue ?? structuralControl?.canonical ?? 0);
         setRepsOverrides(preset.repsOverrides ?? {});
       } else {
-        setWeightInput(String(convertKgToDisplay(workout.gearWeightKg, unitPreference)));
-        setWeightBInput(String(convertKgToDisplay(workout.gearWeightKg, unitPreference)));
+        // Phase 2.7: single-kettlebell canonical workout gets an
+        // equipment-driven default — the heaviest kettlebell owned.
+        // Phase 2.8: double-kettlebell canonical workout gets one too,
+        // but only from an actual matched pair (two owned kettlebells at
+        // the same weight) — never two arbitrary heaviest bells assumed
+        // to match. Either way, no owned equipment (or no matched pair
+        // for gearCount:2) falls back to the untouched
+        // workout.gearWeightKg default, exactly as before this feature.
+        const heaviestOwnedKg = workout.gearCount === 1 ? getHeaviestOwnedKettlebellKg(equipment) : null;
+        const heaviestMatchedPairKg = workout.gearCount === 2 ? getHeaviestMatchedKettlebellPairKg(equipment) : null;
+        const defaultWeightKg = heaviestOwnedKg ?? heaviestMatchedPairKg ?? workout.gearWeightKg;
+        const defaultWeightBKg = heaviestMatchedPairKg ?? workout.gearWeightKg;
+        setWeightInput(String(convertKgToDisplay(defaultWeightKg, unitPreference)));
+        setWeightBInput(String(convertKgToDisplay(defaultWeightBKg, unitPreference)));
         setGearCount(workout.gearCount);
         setRestSeconds(hunt?.restSecondsOverride ?? workout.restSeconds);
         setStructuralValue(structuralControl?.canonical ?? 0);
@@ -304,6 +321,12 @@ export function HuntOverviewScreen({ route, navigation }: Props) {
       }
       setIsCustomMode(false);
     });
+    // `equipment` is deliberately excluded here — this effect should only
+    // compute the default weight once per Hunt-setup open, never re-run
+    // and clobber a weight the player already typed just because the
+    // Forge equipment list happens to change (it can't change while this
+    // screen is mounted anyway, but the exclusion is intentional either
+    // way — see "respect explicit selection" in the Phase 2.7 brief).
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [workout, getBestResult, getCustomHuntPreset, unitPreference, isProgressionLocked, lockedConfig]);
 
@@ -663,7 +686,7 @@ export function HuntOverviewScreen({ route, navigation }: Props) {
                           ]}
                         >
                           {exercise.targetReps
-                            ? exercise.targetReps
+                            ? `${exercise.targetReps} rep${exercise.targetReps === 1 ? '' : 's'}`
                             : exercise.targetSteps
                             ? `${exercise.targetSteps} steps`
                             : exercise.targetDistanceFt
@@ -1161,6 +1184,8 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.monoRegular,
     fontSize: fontSize.sm,
     color: colors.bronze.base,
+    width: 72,
+    textAlign: 'right',
   },
   finisherRow: {
     flexDirection: 'row',

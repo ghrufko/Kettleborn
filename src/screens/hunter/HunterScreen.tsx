@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Animated } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Animated, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useFocusEffect } from '@react-navigation/native';
+import { NavigationProp, useFocusEffect, useNavigation } from '@react-navigation/native';
 import { Header, GlassCard, AppBackground } from '../../components/core';
 import { ProgressBar } from '../../components/progress';
 import { useAppStore } from '../../store';
@@ -13,7 +13,9 @@ import { isCampaignComplete, getCampaignState } from '../../utils/campaignState'
 import { getNextObjective } from '../../utils/nextObjective';
 import { computeHistoricalRanks, rankDistribution } from '../../utils/rankHistory';
 import { HuntRank } from '../../utils/huntRank';
+import { MILESTONE_DISPLAY_ORDER } from '../../utils/milestones';
 import { WorkoutResult } from '../../models';
+import { HunterStackParamList } from '../../navigation/types';
 import { colors, fontFamily, fontSize, spacing, glow } from '../../theme';
 
 function formatTime(minutesSeconds: { timeMinutes: number; timeSeconds: number }): string {
@@ -27,9 +29,11 @@ function formatSecondsClock(totalSeconds: number): string {
 }
 
 export function HunterScreen() {
+  const navigation = useNavigation<NavigationProp<HunterStackParamList>>();
   const user = useAppStore((state) => state.user);
   const chronicle = useAppStore((state) => state.chronicle);
   const monsterProgress = useAppStore((state) => state.monsterProgress);
+  const achievements = useAppStore((state) => state.achievements);
   const getHunterSummary = useAppStore((state) => state.getHunterSummary);
   const getAllResults = useAppStore((state) => state.getAllResults);
 
@@ -80,6 +84,9 @@ export function HunterScreen() {
     allMonsters.length > 0 ? Math.round((totalBossesDefeated / allMonsters.length) * 100) : 0;
   const objective = getNextObjective(allCampaigns, (id) => contentEngine.getMonster(id), monsterProgress);
   const currentCampaignName = objective?.campaign.name ?? null;
+  const unlockedAchievementCount = MILESTONE_DISPLAY_ORDER.filter((type) =>
+    achievements.some((a) => a.milestoneType === type)
+  ).length;
 
   return (
     <AppBackground style={styles.container}>
@@ -209,6 +216,20 @@ export function HunterScreen() {
             })}
           </View>
         </GlassCard>
+
+        <Pressable onPress={() => navigation.navigate('Achievements')} accessibilityRole="button">
+          <GlassCard style={styles.card}>
+            <View style={styles.achievementsLinkRow}>
+              <View>
+                <Text style={styles.sectionLabel}>Achievements</Text>
+                <Text style={styles.achievementsLinkValue}>
+                  {unlockedAchievementCount} / {MILESTONE_DISPLAY_ORDER.length} Unlocked
+                </Text>
+              </View>
+              <Ionicons name="chevron-forward" size={20} color={colors.text.muted} />
+            </View>
+          </GlassCard>
+        </Pressable>
 
         {recentResult ? (
           <GlassCard style={styles.card}>
@@ -342,6 +363,16 @@ const styles = StyleSheet.create({
     color: colors.text.secondary,
   },
   statValue: {
+    fontFamily: fontFamily.monoBold,
+    fontSize: fontSize.base,
+    color: colors.text.primary,
+  },
+  achievementsLinkRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  achievementsLinkValue: {
     fontFamily: fontFamily.monoBold,
     fontSize: fontSize.base,
     color: colors.text.primary,

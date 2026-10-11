@@ -3,6 +3,21 @@ export interface RungLap {
   durationSeconds: number;
 }
 
+/**
+ * Optional post-Hunt exercises — a small, fixed starting set. Not part of
+ * the content Exercise Library (src/constants/extraExercises.ts holds the
+ * definitions): these are a simple player-logged addition, not
+ * damage/XP-bearing workout content, so they don't need that system's
+ * description/muscles/benefits authoring.
+ */
+export type ExtraExerciseId = 'double-kb-pushup' | 'single-kb-pushup' | 'vertical-pullup';
+
+export interface ExtraExerciseSet {
+  id: string;
+  exerciseId: ExtraExerciseId;
+  reps: number;
+}
+
 export interface WorkoutResult {
   id: string;
   userId: string;
@@ -76,4 +91,14 @@ export interface WorkoutResult {
    * same snapshot-not-live-preset reasoning as restSecondsUsed above.
    */
   repsOverridesUsed: Record<string, number> | null;
+  /**
+   * Optional extra exercises logged after the main Hunt timer stopped,
+   * before this result was saved — purely additive, never read by
+   * duration/rank/XP/achievement calculations. `null` for every result
+   * saved before this feature existed, and for any result the player
+   * didn't add extras to; an empty array is never stored (there's no
+   * meaningful difference between "no extras" and "empty list," so only
+   * one representation — null — is ever written, keeping reads simple).
+   */
+  extraSets: ExtraExerciseSet[] | null;
 }
