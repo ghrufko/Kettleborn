@@ -14,6 +14,7 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { ForgeStackParamList } from '../../navigation/types';
 import { Header, GlassCard, Button, AppBackground } from '../../components/core';
 import { useAppStore } from '../../store';
+import { resendConfirmation } from '../../services/supabase';
 import { colors, fontFamily, fontSize, spacing } from '../../theme';
 
 type Props = NativeStackScreenProps<ForgeStackParamList, 'CreateAccount'>;
@@ -38,8 +39,26 @@ export function CreateAccountScreen({ navigation }: Props) {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [localError, setLocalError] = useState<string | null>(null);
   const [confirmationNeeded, setConfirmationNeeded] = useState(false);
+  const [isResending, setIsResending] = useState(false);
+  const [resendMessage, setResendMessage] = useState<string | null>(null);
+  const [resendError, setResendError] = useState<string | null>(null);
 
   const isSubmitting = authStatus === 'signing_up';
+
+  const handleResend = async () => {
+    setResendMessage(null);
+    setResendError(null);
+    setIsResending(true);
+    const result = await resendConfirmation(email.trim());
+    setIsResending(false);
+    if (result.ok) {
+      // Supabase does not reveal whether a signup is pending for this
+      // address, so this only claims the request was accepted.
+      setResendMessage('If a confirmation is pending for this email, a new link is on its way.');
+    } else {
+      setResendError(result.error.message);
+    }
+  };
 
   const handleSubmit = async () => {
     setLocalError(null);
@@ -65,8 +84,11 @@ export function CreateAccountScreen({ navigation }: Props) {
       return;
     }
     if (result.data.emailConfirmationRequired) {
-      // No false assumption of an authenticated session here — this
-      // project requires confirming the email before a session exists.
+      // No false assumption of an authenticated session — or of a new
+      // account: with email confirmation on, Supabase returns this same
+      // response for an address that is already registered (by design,
+      // to prevent account enumeration), so the screen below is worded
+      // to be true either way.
       setConfirmationNeeded(true);
       return;
     }
@@ -83,10 +105,36 @@ export function CreateAccountScreen({ navigation }: Props) {
           <GlassCard style={styles.card}>
             <Text style={styles.confirmTitle}>Check your email</Text>
             <Text style={styles.confirmBody}>
-              We sent a confirmation link to {email.trim()}. Confirm your email, then sign in.
+              If {email.trim()} can be registered, a confirmation link is on its way. Open it on this
+              device to finish signing in.
             </Text>
+            <Text style={[styles.confirmBody, styles.confirmNote]}>
+              Already have an account with this email? Sign in instead, or use Forgot password? on the
+              Sign In screen.
+            </Text>
+            {resendError ? <Text style={styles.errorText}>{resendError}</Text> : null}
+            {resendMessage ? <Text style={styles.confirmNote}>{resendMessage}</Text> : null}
             <Button label="Done" onPress={() => navigation.goBack()} style={styles.submitButton} />
           </GlassCard>
+          <Pressable
+            onPress={handleResend}
+            disabled={isResending}
+            style={styles.switchLink}
+            accessibilityRole="button"
+            accessibilityLabel="Resend confirmation email"
+          >
+            <Text style={styles.switchLinkText}>
+              {isResending ? 'Sending…' : "Didn't get it? Resend confirmation email"}
+            </Text>
+          </Pressable>
+          <Pressable
+            onPress={() => navigation.navigate('SignIn')}
+            style={styles.switchLink}
+            accessibilityRole="button"
+            accessibilityLabel="Sign in to an existing account"
+          >
+            <Text style={styles.switchLinkText}>Already have an account? Sign in</Text>
+          </Pressable>
         </View>
       </AppBackground>
     );
@@ -247,6 +295,12 @@ const styles = StyleSheet.create({
   confirmBody: {
     fontFamily: fontFamily.bodyRegular,
     fontSize: fontSize.base,
+    color: colors.text.secondary,
+  },
+  confirmNote: {
+    marginTop: spacing.sm,
+    fontFamily: fontFamily.bodyRegular,
+    fontSize: fontSize.sm,
     color: colors.text.secondary,
   },
 });

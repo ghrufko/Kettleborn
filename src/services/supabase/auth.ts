@@ -1,7 +1,19 @@
 import type { AuthError, Session } from '@supabase/supabase-js';
-import { isAuthApiError, isAuthRetryableFetchError } from '@supabase/supabase-js';
+import { isAuthError, isAuthRetryableFetchError } from '@supabase/supabase-js';
 import { getSupabaseClient } from './client';
 import { isSupabaseConfigured } from './config';
+import {
+  getInitialWebUrl,
+  getWebOrigin,
+  isAppActive,
+  isWebPlatform,
+  replaceWebUrlWithRoot,
+  subscribeToAppActive,
+} from './platform';
+import { parseAuthCallbackUrl, type AuthCallback } from '../../utils/authCallback';
+
+export { onSessionStorageFailure } from './storageHealth';
+export type { SessionStorageOperation } from './storageHealth';
 
 /**
  * Closed set of application-facing failure reasons. UI code switches on
@@ -15,6 +27,13 @@ export type AuthErrorReason =
   | 'email_not_confirmed'
   | 'already_registered'
   | 'rate_limited'
+  | 'link_expired'
+  | 'link_invalid'
+  | 'email_not_authorized'
+  | 'signups_disabled'
+  | 'same_password'
+  | 'session_expired'
+  | 'reauthentication_needed'
   | 'network_error'
   | 'not_configured'
   | 'unknown';
@@ -50,6 +69,13 @@ const REASON_MESSAGES: Record<AuthErrorReason, string> = {
   email_not_confirmed: 'Confirm your email address before signing in.',
   already_registered: 'An account with this email already exists.',
   rate_limited: 'Too many attempts. Try again in a few minutes.',
+  link_expired: 'This link has expired or was already used. Request a new one.',
+  link_invalid: 'This link is invalid or can no longer be used. Request a new one.',
+  email_not_authorized: "We can't send email to this address right now. Try again later.",
+  signups_disabled: "New accounts can't be created right now.",
+  same_password: 'Choose a password different from your current one.',
+  session_expired: 'Your session has expired. Sign in again.',
+  reauthentication_needed: 'For security, sign in again before changing your password.',
   network_error: 'Could not reach the server. Check your connection and try again.',
   not_configured: 'Cloud accounts are not available right now.',
   unknown: 'Something went wrong. Try again.',
@@ -69,7 +95,12 @@ function mapAuthError(error: unknown): AuthFailure {
   if (isAuthRetryableFetchError(error)) {
     return failure('network_error');
   }
-  if (isAuthApiError(error)) {
+  // Every AuthError, not only AuthApiError: client-side SDK errors carry
+  // codes too — e.g. AuthPKCECodeVerifierMissingError is a CustomAuthError
+  // with code 'pkce_code_verifier_not_found' (a link opened on a device
+  // or app install that didn't request it). Codes below are taken from
+  // the installed SDK's lib/error-codes.d.ts.
+  if (isAuthError(error)) {
     const err = error as AuthError;
     switch (err.code) {
       case 'invalid_credentials':
@@ -88,9 +119,39 @@ function mapAuthError(error: unknown): AuthFailure {
       case 'over_email_send_rate_limit':
       case 'over_sms_send_rate_limit':
         return failure('rate_limited');
+      case 'otp_expired':
+      case 'flow_state_expired':
+        return failure('link_expired');
+      case 'flow_state_not_found':
+      case 'bad_code_verifier':
+      case 'pkce_code_verifier_not_found':
+      case 'bad_oauth_callback':
+        return failure('link_invalid');
+      case 'email_address_not_authorized':
+        return failure('email_not_authorized');
+      case 'signup_disabled':
+      case 'email_provider_disabled':
+        return failure('signups_disabled');
+      case 'same_password':
+        return failure('same_password');
+      case 'session_not_found':
+      case 'session_expired':
+      case 'refresh_token_not_found':
+      case 'refresh_token_already_used':
+        return failure('session_expired');
+      case 'reauthentication_needed':
+        return failure('reauthentication_needed');
       default:
-        return failure('unknown');
+        break;
     }
+    // Codeless SDK callback errors (raised while reading a redirect URL).
+    if (err.name === 'AuthPKCEGrantCodeExchangeError' || err.name === 'AuthImplicitGrantRedirectError') {
+      return failure('link_invalid');
+    }
+    if (err.status === 429) {
+      return failure('rate_limited');
+    }
+    return failure('unknown');
   }
   // A plain network-level throw (e.g. fetch rejecting with no AuthError
   // wrapper at all) — treat as network_error rather than unknown, since
@@ -111,19 +172,42 @@ function toAppAuthUser(session: Session | null): AppAuthUser | null {
 /** Re-exported so callers can check availability without importing config.ts directly. */
 export { isSupabaseConfigured as isAuthAvailable };
 
-/**
- * Root-cause fix: this call previously passed no `options.emailRedirectTo`
- * at all, so Supabase fell back to the project's Dashboard-configured
- * Site URL for the confirmation email's link — which defaults to
- * `http://localhost:3000` on a fresh project (confirmed in
- * supabase/PHASE_2_4_AUTH_IMPLEMENTATION.md's Dashboard audit) and is
- * exactly the `localhost:3000/#error...` redirect reported. Mirrors
- * PASSWORD_RESET_REDIRECT_URL below it: same custom-scheme pattern, same
- * Dashboard allow-list requirement (see that constant's own comment and
- * the Phase report for this fix for the exact Dashboard step).
- */
-const EMAIL_CONFIRMATION_REDIRECT_URL = 'kettleborn://confirm-email';
+export type AuthRedirectRoute = 'confirm-email' | 'reset-password';
 
+/**
+ * Where an auth email's link returns the player, per platform:
+ * - Native: the app's custom scheme (app.json `"scheme": "kettleborn"`),
+ *   e.g. `kettleborn://reset-password`, received by App.tsx via Linking.
+ * - Web: the site's own origin — whatever origin is actually serving the
+ *   app (the Netlify URL in production, a deploy preview, or localhost),
+ *   e.g. `https://animated-pixie-b97fbb.netlify.app/reset-password`.
+ *   A browser user is never sent to the native-only scheme.
+ *
+ * Every one of these must be allow-listed in the Supabase Dashboard
+ * (Authentication → URL Configuration → Redirect URLs), or Supabase
+ * ignores it and falls back to the project's Site URL — the source of
+ * the `localhost:3000/#error...` redirect reported earlier.
+ */
+export function getAuthRedirectUrl(route: AuthRedirectRoute): string | undefined {
+  if (isWebPlatform()) {
+    const origin = getWebOrigin();
+    // No resolvable origin is not expected in a browser; let Supabase
+    // fall back to the Dashboard Site URL rather than send a bad URL.
+    return origin ? `${origin}/${route}` : undefined;
+  }
+  return `kettleborn://${route}`;
+}
+
+/**
+ * With "Confirm email" enabled (the live project's setting), Supabase
+ * deliberately returns the same shape — a user object and a null session,
+ * no error — whether or not the address already has an account, so the
+ * endpoint can't be used to discover registered emails. This function
+ * does not try to tell those cases apart; `emailConfirmationRequired`
+ * only means "no session was issued", and the UI words its message so it
+ * is true in both cases. `already_registered` is still mapped for a
+ * project with confirmations off, where Supabase does return an error.
+ */
 export async function signUp(email: string, password: string): Promise<AuthResult<SignUpResult>> {
   const client = getSupabaseClient();
   if (!client) {
@@ -133,7 +217,7 @@ export async function signUp(email: string, password: string): Promise<AuthResul
     const { data, error } = await client.auth.signUp({
       email,
       password,
-      options: { emailRedirectTo: EMAIL_CONFIRMATION_REDIRECT_URL },
+      options: { emailRedirectTo: getAuthRedirectUrl('confirm-email') },
     });
     if (error) {
       return { ok: false, error: mapAuthError(error) };
@@ -148,6 +232,32 @@ export async function signUp(email: string, password: string): Promise<AuthResul
         emailConfirmationRequired: data.session === null,
       },
     };
+  } catch (error) {
+    return { ok: false, error: mapAuthError(error) };
+  }
+}
+
+/**
+ * Re-sends the signup confirmation email, with the same per-platform
+ * redirect as signUp(). Like signUp, Supabase does not reveal whether the
+ * address has a pending signup, so success means "request accepted", not
+ * "an email was definitely sent".
+ */
+export async function resendConfirmation(email: string): Promise<AuthResult<void>> {
+  const client = getSupabaseClient();
+  if (!client) {
+    return { ok: false, error: failure('not_configured') };
+  }
+  try {
+    const { error } = await client.auth.resend({
+      type: 'signup',
+      email,
+      options: { emailRedirectTo: getAuthRedirectUrl('confirm-email') },
+    });
+    if (error) {
+      return { ok: false, error: mapAuthError(error) };
+    }
+    return { ok: true, data: undefined };
   } catch (error) {
     return { ok: false, error: mapAuthError(error) };
   }
@@ -174,6 +284,12 @@ export async function signIn(email: string, password: string): Promise<AuthResul
  * (e.g. network failure revoking the remote session) is returned as such,
  * never swallowed into an ok:true result. Called with no configured client
  * is itself a success: there is no remote session to destroy.
+ *
+ * Note (verified in auth-js 2.117.3's _signOut): when the server call
+ * fails for any reason other than 401/403/404, the SDK has ALREADY
+ * removed the local session (and its PKCE verifiers) before returning the
+ * error. An error here therefore does not mean "still signed in on this
+ * device" — authSlice re-checks getSession() to report the real state.
  */
 export async function signOut(): Promise<AuthResult<void>> {
   const client = getSupabaseClient();
@@ -214,32 +330,15 @@ export async function getSession(): Promise<AuthResult<AppAuthUser | null>> {
 }
 
 /**
- * The custom URL scheme (app.json's `"scheme": "kettleborn"`) the
- * password-reset email link redirects back into on a native device.
- * Must also be added to the real project's Auth → URL Configuration →
- * Redirect URLs allow-list in the Dashboard, or Supabase will reject
- * the redirect — see supabase/PHASE_2_4_AUTH_IMPLEMENTATION.md's
- * "Dashboard configuration required" section. Not used on web (the
- * web app's own origin is used there instead, which Supabase projects
- * allow by default for local/preview URLs — still subject to the same
- * allow-list rule for a real deployed web origin).
- */
-const PASSWORD_RESET_REDIRECT_URL = 'kettleborn://reset-password';
-
-/**
- * Initiates password recovery. Supabase emails a reset link using
- * `PASSWORD_RESET_REDIRECT_URL` as the redirect target — this requires
- * that exact URL to be allow-listed in the real project's Dashboard
- * (Authentication → URL Configuration → Redirect URLs), which is a
- * manual step only the project owner can perform; see
- * supabase/PHASE_2_4_AUTH_IMPLEMENTATION.md. Confirmed this phase that
- * the *request* itself reaches the real GoTrue endpoint successfully
- * (tested against the real `kettleborn-dev` project); actual email
- * delivery and the redirect landing correctly were NOT verified — no
- * inbox access exists in this environment. Deliberately does not
- * reveal whether the email address has an account (always reports
- * success on a valid-looking address) — standard practice to avoid
- * using this endpoint to enumerate registered emails.
+ * Initiates password recovery. The emailed link returns to
+ * getAuthRedirectUrl('reset-password') — the app scheme on native, the
+ * site's own origin on web — which must be allow-listed in the Dashboard
+ * (Authentication → URL Configuration → Redirect URLs). On native (PKCE)
+ * the SDK stores this request's code verifier marked as a recovery flow,
+ * so exchanging the returned code emits PASSWORD_RECOVERY. Deliberately
+ * does not reveal whether the email address has an account (Supabase
+ * reports success either way) — standard practice to avoid using this
+ * endpoint to enumerate registered emails.
  */
 export async function requestPasswordReset(email: string): Promise<AuthResult<void>> {
   const client = getSupabaseClient();
@@ -248,7 +347,7 @@ export async function requestPasswordReset(email: string): Promise<AuthResult<vo
   }
   try {
     const { error } = await client.auth.resetPasswordForEmail(email, {
-      redirectTo: PASSWORD_RESET_REDIRECT_URL,
+      redirectTo: getAuthRedirectUrl('reset-password'),
     });
     if (error) {
       return { ok: false, error: mapAuthError(error) };
@@ -260,13 +359,20 @@ export async function requestPasswordReset(email: string): Promise<AuthResult<vo
 }
 
 /**
- * Completes the password-reset deep link: exchanges the PKCE `code`
- * param carried on `kettleborn://reset-password?code=...` (the link the
- * user's email redirects to) for a real session. Supabase's
- * `onAuthStateChange` listener (see onAuthStateChange() below) then
- * fires a `PASSWORD_RECOVERY` event for that session — App.tsx uses
- * that event to route to UpdatePasswordScreen, not this function's
- * return value directly.
+ * Completes a native PKCE deep link (`kettleborn://reset-password?code=…`
+ * or `kettleborn://confirm-email?code=…`): exchanges the code for a real
+ * session using the verifier this device stored when it requested the
+ * email. The SDK emits PASSWORD_RECOVERY for a reset exchange and
+ * SIGNED_IN for a confirmation. Fails with `link_invalid` when the link
+ * was opened on another device/install (verifier missing) or was already
+ * used, and `link_expired` for an expired flow.
+ *
+ * Without a `sb_flow_id` param (the SDK only adds one under an
+ * experimental flag this app does not enable), the SDK reads the single
+ * legacy verifier slot, which mirrors the MOST RECENT email request on
+ * this device — so only the latest link requested here can be completed
+ * in-app. An older confirmation link still confirmed the email
+ * server-side before redirecting; the player can then sign in normally.
  */
 export async function exchangeCodeForSession(code: string): Promise<AuthResult<AppAuthUser>> {
   const client = getSupabaseClient();
@@ -343,4 +449,49 @@ export function onAuthStateChange(listener: AuthChangeListener): Unsubscribe {
     listener(KNOWN_EVENTS.has(event) ? (event as AuthChangeEvent) : 'OTHER', toAppAuthUser(session));
   });
   return () => data.subscription.unsubscribe();
+}
+
+/**
+ * Native token-refresh lifecycle, per the SDK's own guidance for React
+ * Native (GoTrueClient.startAutoRefresh docs): outside a browser the SDK
+ * runs its refresh ticker unconditionally, and JS timers don't run while
+ * the app is backgrounded — so on return to the foreground the access
+ * token may already be stale. Starting the ticker on `active` makes the
+ * SDK check and refresh immediately; stopping it in the background avoids
+ * refresh attempts the OS would suspend mid-request.
+ *
+ * No-op on web, where the SDK already does the equivalent itself via
+ * `visibilitychange`, and when Supabase isn't configured.
+ */
+export function startAutoRefreshLifecycle(): Unsubscribe {
+  const client = getSupabaseClient();
+  if (!client || isWebPlatform()) {
+    return () => undefined;
+  }
+  const apply = (active: boolean) => {
+    const action = active ? client.auth.startAutoRefresh() : client.auth.stopAutoRefresh();
+    Promise.resolve(action).catch(() => undefined);
+  };
+  apply(isAppActive());
+  return subscribeToAppActive(apply);
+}
+
+/**
+ * Web only: the auth callback (if any) the page was opened with, parsed
+ * from the URL captured at app start — see platform.ts for why it has to
+ * be captured before the Supabase client initializes. Null on native,
+ * and null when the page wasn't opened from an auth email link.
+ */
+export function getInitialWebAuthCallback(): AuthCallback | null {
+  if (!isWebPlatform()) {
+    return null;
+  }
+  return parseAuthCallbackUrl(getInitialWebUrl());
+}
+
+/** Web only: removes a handled callback from the address bar so a reload can't replay it. */
+export function clearWebAuthCallbackUrl(): void {
+  if (isWebPlatform()) {
+    replaceWebUrlWithRoot();
+  }
 }

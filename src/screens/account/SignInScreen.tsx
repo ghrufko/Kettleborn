@@ -14,7 +14,7 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { ForgeStackParamList } from '../../navigation/types';
 import { Header, GlassCard, Button, AppBackground } from '../../components/core';
 import { useAppStore } from '../../store';
-import { requestPasswordReset } from '../../services/supabase';
+import { requestPasswordReset, resendConfirmation } from '../../services/supabase';
 import { colors, fontFamily, fontSize, spacing } from '../../theme';
 
 type Props = NativeStackScreenProps<ForgeStackParamList, 'SignIn'>;
@@ -75,7 +75,25 @@ export function SignInScreen({ navigation }: Props) {
     }
   };
 
+  const handleResendConfirmation = async () => {
+    setLocalError(null);
+    setResetMessage(null);
+    const trimmedEmail = email.trim();
+    if (!EMAIL_PATTERN.test(trimmedEmail)) {
+      setLocalError('Enter your email above first.');
+      return;
+    }
+    const result = await resendConfirmation(trimmedEmail);
+    if (result.ok) {
+      clearAuthError();
+      setResetMessage('If a confirmation is pending for this email, a new link has been sent.');
+    } else {
+      setLocalError(result.error.message);
+    }
+  };
+
   const displayedError = localError ?? authError?.message ?? null;
+  const showResendConfirmation = !localError && authError?.reason === 'email_not_confirmed';
 
   return (
     <AppBackground style={styles.container}>
@@ -134,6 +152,17 @@ export function SignInScreen({ navigation }: Props) {
             </Pressable>
 
             {displayedError ? <Text style={styles.errorText}>{displayedError}</Text> : null}
+            {showResendConfirmation ? (
+              <Pressable
+                onPress={handleResendConfirmation}
+                disabled={isSubmitting}
+                style={styles.forgotLink}
+                accessibilityRole="button"
+                accessibilityLabel="Resend confirmation email"
+              >
+                <Text style={styles.forgotLinkText}>Resend confirmation email</Text>
+              </Pressable>
+            ) : null}
             {resetMessage ? <Text style={styles.successText}>{resetMessage}</Text> : null}
 
             <Button

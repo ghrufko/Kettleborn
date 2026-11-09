@@ -1,16 +1,14 @@
+import { parseAuthCallbackUrl } from './authCallback';
+
 /**
  * Extracts the PKCE `code` param from a `kettleborn://confirm-email?code=...`
- * deep link — the link Supabase's signup-confirmation email now redirects
- * to (see signUp()'s emailRedirectTo in services/supabase/auth.ts). Same
- * plain-string-match approach as extractResetPasswordCode (no `URL`
- * constructor dependency; not guaranteed present on Hermes/React Native),
- * and the same `confirm-email` substring gate so this never mistakes an
- * ordinary link, or a password-reset link, for a signup confirmation.
+ * deep link — the link Supabase's signup-confirmation email redirects to
+ * on native (see signUp()'s emailRedirectTo in services/supabase/auth.ts).
+ * Thin wrapper over parseAuthCallbackUrl, same as extractResetPasswordCode,
+ * gated on the `confirm-email` route so a password-reset link is never
+ * mistaken for a signup confirmation.
  */
 export function extractEmailConfirmationCode(url: string): string | null {
-  if (!url.includes('confirm-email')) {
-    return null;
-  }
-  const match = url.match(/code=([^&]+)/);
-  return match ? decodeURIComponent(match[1]) : null;
+  const callback = parseAuthCallbackUrl(url);
+  return callback?.kind === 'pkce' && callback.route === 'confirm-email' ? callback.code : null;
 }

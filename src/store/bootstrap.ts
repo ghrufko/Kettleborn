@@ -9,12 +9,25 @@ import { useAppStore } from './index';
  * ProgressSlice can determine each monster's huntsTotal.
  */
 export async function bootstrapApp(): Promise<void> {
+  const store = useAppStore.getState();
+
+  // Started FIRST and deliberately NOT awaited. Session restoration is a
+  // cloud concern with no dependency on local SQLite, and it must not
+  // depend on it: previously it ran only after every local step below,
+  // so a database failure (e.g. web storage unavailable) meant auth never
+  // initialized at all — no session restore, and an email link's
+  // callback never completed. Never awaited either way, so a slow or
+  // unreachable network can't delay local-first startup. initializeAuth()
+  // memoizes its own promise, so a bootstrap retry (ErrorScreen onRetry)
+  // reuses it rather than registering anything twice. The .catch() is
+  // defense-in-depth — initializeAuth() itself never rejects.
+  store.initializeAuth().catch(() => undefined);
+
   await getDatabase();
 
   contentEngine.load();
   audioEngine.preload().catch(() => undefined);
 
-  const store = useAppStore.getState();
   await store.initializeUser();
   await store.initializeSettings();
   await store.loadEquipment();
@@ -23,14 +36,4 @@ export async function bootstrapApp(): Promise<void> {
   await store.loadTimerPresets();
   await store.loadCustomWorkouts();
   await store.loadAchievements();
-
-  // Phase 2.2: deliberately NOT awaited. Session hydration is a cloud
-  // concern with no bearing on local-first startup — the local app above
-  // is already fully initialized by this point regardless of whether
-  // this ever resolves, rejects, or hangs on a slow/unreachable network.
-  // initializeAuth() itself never throws (see authSlice.ts/auth.ts), but
-  // the extra .catch() here is defense-in-depth against bootstrapApp()
-  // ever being awaited somewhere that would otherwise surface a stray
-  // rejection as an unrelated startup failure.
-  store.initializeAuth().catch(() => undefined);
 }

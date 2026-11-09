@@ -9,7 +9,7 @@ let warnedInvalid = false;
 
 /**
  * Lazily constructs (and memoizes) the Supabase client on first call.
- * As of Phase 2.4, real call paths exist — App.tsx's deep-link handler
+ * Real call paths exist — App.tsx's deep-link handler
  * and bootstrap.ts's non-blocking `initializeAuth()` both reach this
  * indirectly via authSlice.ts — but the construction itself is still
  * fully lazy and still returns `null` without throwing when
@@ -52,11 +52,24 @@ export function getSupabaseClient(): SupabaseClient<Database> | null {
       // actively wrong, not just redundant.
       persistSession: true,
       autoRefreshToken: true,
-      // Web: lets supabase-js pick up a PKCE `code`/session fragment
-      // from the URL itself (e.g. after a password-reset redirect).
-      // Native: deep links are handled explicitly via `Linking` in
-      // App.tsx instead — there is no "URL" to detect a session in on
-      // a native app, so this is always false there.
+      // Auth flow, set explicitly per platform (the SDK default is
+      // 'implicit' everywhere — verified in @supabase/auth-js 2.117.3's
+      // DEFAULT_OPTIONS — which is what previously left native email
+      // links arriving as `#access_token=...` fragments that App.tsx's
+      // `?code=` handler could never match):
+      // - Native: 'pkce'. Email links return to kettleborn://…?code=…,
+      //   exchanged in-app with the verifier this device stored in
+      //   SecureStore when it requested the email. Tokens never travel
+      //   in the deep link itself.
+      // - Web: 'implicit'. The link returns to the site's own origin with
+      //   the session in the fragment, consumed by detectSessionInUrl.
+      //   Unlike PKCE it needs no verifier from the browser that made the
+      //   request, so a reset requested on a laptop can be completed from
+      //   a phone's mail app.
+      flowType: Platform.OS === 'web' ? 'implicit' : 'pkce',
+      // Web: lets supabase-js consume the callback fragment from the URL
+      // itself. Native: deep links are handled explicitly via `Linking`
+      // in App.tsx instead, so this is always false there.
       detectSessionInUrl: Platform.OS === 'web',
       ...(Platform.OS === 'web' ? {} : { storage: secureSessionStorage }),
     },

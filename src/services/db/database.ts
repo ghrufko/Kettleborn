@@ -40,15 +40,34 @@ async function runMigrations(db: SQLite.SQLiteDatabase): Promise<void> {
  * Returns the shared SQLite database instance, opening it and running any
  * pending migrations on first call. Safe to call from multiple repositories
  * concurrently — the underlying promise is memoized.
+ *
+ * A failed open/migration is NOT memoized: the cached promise is cleared
+ * on rejection so the next call (App.tsx's ErrorScreen "Retry" re-running
+ * bootstrapApp) genuinely tries again, instead of returning the same
+ * rejected promise forever. Each migration runs in its own transaction
+ * and is recorded in schema_migrations, so a retry resumes safely.
  */
 export function getDatabase(): Promise<SQLite.SQLiteDatabase> {
   if (!databasePromise) {
-    databasePromise = (async () => {
+    const attempt = (async () => {
       const db = await SQLite.openDatabaseAsync(DATABASE_NAME);
-      await db.execAsync('PRAGMA journal_mode = WAL;');
-      await runMigrations(db);
-      return db;
+      try {
+        await db.execAsync('PRAGMA journal_mode = WAL;');
+        await runMigrations(db);
+        return db;
+      } catch (error) {
+        // Release the handle before a retry reopens it — on web,
+        // expo-sqlite's storage holds exclusive file access handles.
+        await db.closeAsync().catch(() => undefined);
+        throw error;
+      }
     })();
+    databasePromise = attempt;
+    attempt.catch(() => {
+      if (databasePromise === attempt) {
+        databasePromise = null;
+      }
+    });
   }
   return databasePromise;
 }

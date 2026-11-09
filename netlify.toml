@@ -1,0 +1,27 @@
+# Netlify build for the Expo web app.
+#
+# Redirects and headers are NOT declared here on purpose: `expo export`
+# copies public/_redirects (SPA fallback, also what serves the
+# /reset-password and /confirm-email auth callback paths) and
+# public/_headers (the COOP/COEP headers expo-sqlite's web worker needs
+# for SharedArrayBuffer) into dist/, and Netlify applies them from there.
+#
+# Required build environment variables (Site configuration → Environment
+# variables), inlined into the bundle at build time — a change needs a
+# new deploy:
+#   EXPO_PUBLIC_SUPABASE_URL
+#   EXPO_PUBLIC_SUPABASE_ANON_KEY   (the public sb_publishable_... key — never a secret/service_role key)
+# Without them the site still builds and runs in local guest mode, with
+# cloud accounts shown as unavailable.
+#
+# `--clear` resets Metro's transform cache. EXPO_PUBLIC_* values are
+# inlined when a file is transformed, and a cached transform keeps
+# whatever the variables were at the time: a local export without
+# --clear produced a bundle with Supabase compiled out as "unconfigured"
+# even though .env.local was loaded. The cache lives in the OS temp dir,
+# so a fresh Netlify container normally has none; --clear makes that
+# guaranteed rather than assumed.
+
+[build]
+  command = "npx expo export --platform web --clear"
+  publish = "dist"

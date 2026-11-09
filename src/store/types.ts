@@ -34,11 +34,35 @@ export type AuthStatus =
   | 'signing_out'
   | 'signed_in';
 
+/**
+ * A one-off message about something that happened outside any screen the
+ * player was looking at — an email link that expired, a confirmation that
+ * just signed them in, a sign-in this device couldn't save. App.tsx shows
+ * it as a dismissible dialog. Only one at a time; a newer one replaces it.
+ */
+export interface AuthNotice {
+  tone: 'info' | 'error';
+  title: string;
+  message: string;
+}
+
 export interface AuthSlice {
   authStatus: AuthStatus;
   authUser: AppAuthUser | null;
   /** The most recent recoverable failure, or null. Cleared by clearAuthError() or the start of a new attempt. */
   authError: AuthFailure | null;
+  authNotice: AuthNotice | null;
+  dismissAuthNotice: () => void;
+  /**
+   * Native: handles any URL the app was opened with (App.tsx's Linking
+   * listener). Parses it (utils/authCallback.ts), ignores non-auth URLs,
+   * handles each URL at most once, waits for initializeAuth to finish
+   * first (so session restoration can't overwrite the link's result), then
+   * routes to handlePasswordRecoveryLink / handleEmailConfirmationLink or
+   * reports an expired/invalid link via authNotice. Web callbacks are
+   * handled inside initializeAuth instead.
+   */
+  handleAuthCallbackUrl: (url: string) => Promise<void>;
   /**
    * Phase 2.4: true from the moment the `kettleborn://reset-password`
    * deep link establishes a recovery session (GoTrue's `PASSWORD_RECOVERY`
@@ -51,10 +75,13 @@ export interface AuthSlice {
    */
   passwordRecoveryPending: boolean;
   /**
-   * Runs once at bootstrap: checks for an existing session and subscribes
-   * to future auth-state changes. Never throws, never blocks local
-   * startup — see store/bootstrap.ts. Safe to call more than once; a
-   * second call is a no-op if a listener is already registered.
+   * Runs at bootstrap, BEFORE (and independently of) the local SQLite
+   * database: checks for an existing session, subscribes to auth-state
+   * changes, starts the native token-refresh lifecycle, and on web
+   * finishes any email-link callback the page was opened with. Never
+   * throws, never blocks local startup — see store/bootstrap.ts. Safe to
+   * call more than once: every call returns the same in-flight/settled
+   * promise, so a bootstrap retry never re-registers listeners.
    */
   initializeAuth: () => Promise<void>;
   /** Called from App.tsx's deep-link handler with the `code` query param from `kettleborn://reset-password?code=...`. */

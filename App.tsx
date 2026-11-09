@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { View, Linking } from 'react-native';
+import { View, Linking, Platform } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import * as SplashScreen from 'expo-splash-screen';
 import { NavigationContainer, DarkTheme, Theme as NavigationTheme } from '@react-navigation/native';
@@ -24,12 +24,11 @@ import { RootNavigator } from './src/navigation/RootNavigator';
 import { ErrorScreen } from './src/screens/shared/ErrorScreen';
 import { OnboardingScreen } from './src/screens/onboarding/OnboardingScreen';
 import { UpdatePasswordScreen } from './src/screens/account/UpdatePasswordScreen';
+import { AuthNoticeDialog } from './src/screens/account/AuthNoticeDialog';
 import { hasCompletedOnboarding, markOnboardingComplete } from './src/utils/onboardingStorage';
 import { colors } from './src/theme';
 import { bootstrapApp } from './src/store/bootstrap';
 import { useAppStore } from './src/store';
-import { extractResetPasswordCode } from './src/utils/resetPasswordLink';
-import { extractEmailConfirmationCode } from './src/utils/emailConfirmationLink';
 
 SplashScreen.preventAutoHideAsync().catch(() => {
   // Splash was already hidden or preventAutoHideAsync isn't supported
@@ -63,39 +62,27 @@ export default function App() {
   const [showOnboarding, setShowOnboarding] = useState<boolean | null>(null);
   const passwordRecoveryPending = useAppStore((state) => state.passwordRecoveryPending);
 
-  // Phase 2.4: handles the kettleborn://reset-password?code=... deep link
-  // the password-reset email redirects to. Covers both cold start
-  // (getInitialURL, app wasn't running) and warm start (the 'url' event,
-  // app was already running in the background) — independent of
-  // bootstrap/onboarding state, since the store's initializeAuth() call
-  // in bootstrap.ts is what actually makes the Supabase client available
-  // for this to call into; this effect only reacts to the incoming URL,
-  // it doesn't gate on bootstrap having finished (handlePasswordRecoveryLink
-  // itself safely no-ops via 'not_configured' if Supabase isn't ready).
+  // Native auth email links: kettleborn://reset-password?code=... and
+  // kettleborn://confirm-email?code=... (PKCE), or an error redirect such
+  // as kettleborn://reset-password#error_code=otp_expired&... Covers cold
+  // start (getInitialURL) and warm start (the 'url' event). All parsing,
+  // de-duplication and ordering against session restoration live in
+  // handleAuthCallbackUrl (authSlice.ts) — independent of SQLite
+  // bootstrap and onboarding state.
   //
-  // Email-confirmation fix: also handles the
-  // kettleborn://confirm-email?code=... link signUp()'s emailRedirectTo
-  // now points to. extractResetPasswordCode/extractEmailConfirmationCode
-  // each gate on their own distinct path segment, so a given URL only
-  // ever matches one of them — never both, never neither for a link this
-  // app actually sent.
+  // Not on web: there the "deep link" is the page URL itself, which
+  // supabase-js consumes during client initialization (detectSessionInUrl)
+  // and initializeAuth finishes — running this handler too would race it.
   useEffect(() => {
-    const handleUrl = (url: string) => {
-      const resetCode = extractResetPasswordCode(url);
-      if (resetCode) {
-        useAppStore.getState().handlePasswordRecoveryLink(resetCode);
-        return;
-      }
-      const confirmationCode = extractEmailConfirmationCode(url);
-      if (confirmationCode) {
-        useAppStore.getState().handleEmailConfirmationLink(confirmationCode);
+    if (Platform.OS === 'web') {
+      return undefined;
+    }
+    const handleUrl = (url: string | null) => {
+      if (url) {
+        useAppStore.getState().handleAuthCallbackUrl(url).catch(() => undefined);
       }
     };
-    Linking.getInitialURL().then((url) => {
-      if (url) {
-        handleUrl(url);
-      }
-    });
+    Linking.getInitialURL().then(handleUrl).catch(() => undefined);
     const subscription = Linking.addEventListener('url', ({ url }) => handleUrl(url));
     return () => subscription.remove();
   }, []);
@@ -116,17 +103,35 @@ export default function App() {
 
   const ready = fontsReady && appReady && showOnboarding !== null;
 
+  const recoveryVisible = passwordRecoveryPending && fontsReady;
+
   useEffect(() => {
-    if (ready || bootstrapError) {
+    if (ready || bootstrapError || recoveryVisible) {
       SplashScreen.hideAsync().catch(() => undefined);
     }
-  }, [ready, bootstrapError]);
+  }, [ready, bootstrapError, recoveryVisible]);
 
   const onLayoutRootView = useCallback(async () => {
-    if (ready || bootstrapError) {
+    if (ready || bootstrapError || recoveryVisible) {
       await SplashScreen.hideAsync().catch(() => undefined);
     }
-  }, [ready, bootstrapError]);
+  }, [ready, bootstrapError, recoveryVisible]);
+
+  // A password-reset link must be completable even when the local
+  // database failed to open (auth no longer depends on it — see
+  // bootstrap.ts): the recovery screen takes priority over the error
+  // screen, and only needs fonts, not bootstrap.
+  if (recoveryVisible) {
+    return (
+      <SafeAreaProvider>
+        <View style={{ flex: 1, backgroundColor: colors.void.base }} onLayout={onLayoutRootView}>
+          <StatusBar style="light" />
+          <UpdatePasswordScreen />
+          <AuthNoticeDialog />
+        </View>
+      </SafeAreaProvider>
+    );
+  }
 
   if (bootstrapError) {
     return (
@@ -134,6 +139,7 @@ export default function App() {
         <View style={{ flex: 1, backgroundColor: colors.void.base }} onLayout={onLayoutRootView}>
           <StatusBar style="light" />
           <ErrorScreen onRetry={runBootstrap} />
+          <AuthNoticeDialog />
         </View>
       </SafeAreaProvider>
     );
@@ -147,9 +153,8 @@ export default function App() {
     <SafeAreaProvider>
       <View style={{ flex: 1, backgroundColor: colors.void.base }} onLayout={onLayoutRootView}>
         <StatusBar style="light" />
-        {passwordRecoveryPending ? (
-          <UpdatePasswordScreen />
-        ) : showOnboarding ? (
+        <AuthNoticeDialog />
+        {showOnboarding ? (
           <OnboardingScreen
             onDone={() => {
               setShowOnboarding(false);

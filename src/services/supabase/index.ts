@@ -9,8 +9,10 @@ export {
   onAuthStateChange,
   isAuthAvailable,
   requestPasswordReset,
+  resendConfirmation,
   exchangeCodeForSession,
   updatePassword,
+  getAuthRedirectUrl,
 } from './auth';
 export type {
   AuthErrorReason,

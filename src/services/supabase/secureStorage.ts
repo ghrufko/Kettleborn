@@ -1,5 +1,6 @@
 import * as SecureStore from 'expo-secure-store';
 import type { SupportedStorage } from '@supabase/supabase-js';
+import { reportSessionStorageFailure, type SessionStorageOperation } from './storageHealth';
 
 /**
  * `expo-secure-store`-backed session storage adapter (iOS Keychain /
@@ -9,28 +10,33 @@ import type { SupportedStorage } from '@supabase/supabase-js';
  * `client.ts`, which only passes this adapter when `Platform.OS !==
  * 'web'`.
  *
- * Known limitation, not addressed here: some Android Keystore
- * configurations cap a single stored value around 2048 bytes. A
- * Supabase session is usually well under that, but if it ever isn't,
- * `setItem` below fails safely (caught, logged, swallowed) rather than
- * crashing the app — the session simply won't persist that one time,
- * the same practical outcome `persistSession: false` already had.
- * Supabase's own docs describe a chunked/encrypted "LargeSecureStore"
- * wrapper (via `aes-js`) for this exact edge case; not implemented
- * here, since it requires a new dependency whose necessity cannot be
- * verified without a real device test — see
- * supabase/PHASE_2_4_AUTH_IMPLEMENTATION.md for this trade-off and
- * what would trigger revisiting it.
+ * Holds the Supabase session blob and the SDK's PKCE code verifiers
+ * (`<storageKey>-code-verifier`, `<storageKey>-flow-<hex>-code-verifier`)
+ * — all SecureStore-valid keys. Nothing else is ever written here.
  *
- * Never used to store anything but the Supabase session blob itself —
- * no password, no privileged key, nothing else is ever written here.
+ * Size: expo-secure-store 57.0.4 (installed) no longer carries the old
+ * 2048-byte value warning in its JS layer — re-checked against
+ * node_modules this phase, superseding the Phase 2.4 note. Still
+ * unverified on a physical device.
+ *
+ * Failures are caught (a storage error must never crash sign-in) but are
+ * NOT silent: each one is reported through storageHealth.ts, and
+ * authSlice tells the player their sign-in may not be remembered. The
+ * console line carries only the operation and the error's message —
+ * never the key's value (session tokens) or the value being written.
  */
+function handleFailure(operation: SessionStorageOperation, error: unknown): void {
+  const reason = error instanceof Error ? error.message : 'unknown error';
+  console.warn(`[secureStorage] ${operation} failed: ${reason}`);
+  reportSessionStorageFailure(operation);
+}
+
 export const secureSessionStorage: SupportedStorage = {
   getItem: async (key: string) => {
     try {
       return await SecureStore.getItemAsync(key);
     } catch (error) {
-      console.warn('[secureStorage] getItem failed', error);
+      handleFailure('read', error);
       return null;
     }
   },
@@ -38,14 +44,14 @@ export const secureSessionStorage: SupportedStorage = {
     try {
       await SecureStore.setItemAsync(key, value);
     } catch (error) {
-      console.warn('[secureStorage] setItem failed — session will not persist this time', error);
+      handleFailure('write', error);
     }
   },
   removeItem: async (key: string) => {
     try {
       await SecureStore.deleteItemAsync(key);
     } catch (error) {
-      console.warn('[secureStorage] removeItem failed', error);
+      handleFailure('remove', error);
     }
   },
 };
