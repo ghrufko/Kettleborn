@@ -1,10 +1,18 @@
-import { StateCreator } from 'zustand';
-import { WorkoutRepository, ProgressRepository, ChronicleRepository, UserRepository } from '../services';
+import type { StateCreator } from 'zustand';
+import {
+  WorkoutRepository,
+  FirstClearRepository,
+  ProgressRepository,
+  SyncStateRepository,
+  firstClearStageKey,
+  persistHuntCompletion,
+} from '../services';
+import { newUuid } from '../utils/uuid';
 import { contentEngine } from '../../engines/content';
 import { LOCAL_USER_ID } from '../constants/localUser';
 import { APP_VERSION } from '../constants/version';
-import { AppStore, WorkoutSlice } from './types';
-import { MonsterProgress, Chronicle, WorkoutResult } from '../models';
+import type { AppStore, WorkoutSlice } from './types';
+import type { MonsterProgress, Chronicle, WorkoutResult } from '../models';
 import { getHuntRank } from '../utils/huntRank';
 import { getHunterTitle } from '../utils/hunterTitle';
 import { calculateHuntXP, getLevelForTotalXP } from '../../engines/progress/progressionEngine';
@@ -27,11 +35,44 @@ import {
 import { detectAllQualifyingMilestones } from '../utils/milestones';
 import { isCampaignComplete } from '../utils/campaignState';
 
+/** Thrown by completeHunt when it is called again while a completion is still being saved. Nothing is written. */
+export class HuntCompletionInProgressError extends Error {
+  constructor() {
+    super('completeHunt: a Hunt completion is already being saved');
+    this.name = 'HuntCompletionInProgressError';
+  }
+}
+
+/**
+ * Cloud Save Phase 1.2: lets only one call of `task` run at a time. A call
+ * made while one is in flight is rejected immediately, before it reads or
+ * writes anything. A plain variable, set synchronously on entry — not
+ * React/store state, which updates asynchronously — so two calls in the
+ * same tick can't both get through. Released in `finally`, so a failed
+ * completion stays retryable.
+ */
+function oneAtATime<Args extends unknown[], Result>(
+  task: (...args: Args) => Promise<Result>
+): (...args: Args) => Promise<Result> {
+  let inFlight = false;
+  return async (...args) => {
+    if (inFlight) {
+      throw new HuntCompletionInProgressError();
+    }
+    inFlight = true;
+    try {
+      return await task(...args);
+    } finally {
+      inFlight = false;
+    }
+  };
+}
+
 export const createWorkoutSlice: StateCreator<AppStore, [], [], WorkoutSlice> = (set, get) => ({
   lastResult: null,
   lastHuntSummary: null,
 
-  completeHunt: async ({
+  completeHunt: oneAtATime(async ({
     monsterId,
     huntId,
     workoutId,
@@ -49,6 +90,8 @@ export const createWorkoutSlice: StateCreator<AppStore, [], [], WorkoutSlice> = 
     repsOverridesUsed,
     encounterTargetSeconds,
     extraSets,
+    startedUnderEpoch,
+    startedUnderMonsterResetCount,
   }) => {
     const monster = contentEngine.getMonster(monsterId);
     const canonicalWorkout = contentEngine.getWorkout(workoutId);
@@ -96,7 +139,28 @@ export const createWorkoutSlice: StateCreator<AppStore, [], [], WorkoutSlice> = 
     // customWorkout) are completely unaffected — those never changed
     // achievable damage/duration, so they were always fairly comparable
     // and still are.
-    const isFirstClear = !customWorkout && priorResults.length === 0;
+    //
+    // Cloud Save Phase 1 (Decision 2): a stage's first-clear bonus is
+    // granted at most once per progression epoch. priorResults now only
+    // holds active (non-voided) results, so after a per-monster reset the
+    // history looks empty again — the claim check is what stops that reset
+    // from re-granting the bonus. A full campaign reset starts a new epoch
+    // (and zeroes XP), so a genuinely restarted player earns it again,
+    // exactly as before.
+    // Cloud Save P3 (D5/D6): the epoch and monster reset count the hunt
+    // STARTED under. Locally nothing can reset mid-hunt, so these equal the
+    // values at completion; they matter once another device's reset can
+    // arrive during a hunt.
+    const progressionEpoch = startedUnderEpoch ?? get().user?.progressionEpoch ?? 0;
+    const monsterResetCount =
+      startedUnderMonsterResetCount !== undefined
+        ? startedUnderMonsterResetCount
+        : await ProgressRepository.getMonsterResetCount(LOCAL_USER_ID, monsterId, progressionEpoch);
+    const stageKey = firstClearStageKey(workoutId);
+    const isFirstClear =
+      !customWorkout &&
+      priorResults.length === 0 &&
+      !(await FirstClearRepository.hasClaim(LOCAL_USER_ID, stageKey, progressionEpoch));
     const priorBestSeconds = priorResults.length
       ? Math.min(...priorResults.map((r) => r.timeMinutes * 60 + r.timeSeconds))
       : null;
@@ -207,8 +271,23 @@ export const createWorkoutSlice: StateCreator<AppStore, [], [], WorkoutSlice> = 
       isFirstClear,
     });
 
-    const result: WorkoutResult = {
+    const result: WorkoutResult & { uuid: string } = {
       id: `${workoutId}-${Date.now()}`,
+      uuid: newUuid(),
+      firstClearBonusXp: xp.firstClearBonus,
+      voidedAt: null,
+      // Facts completed below, once volume/streak are known (Cloud Save P3).
+      progressionEpoch,
+      monsterResetCount,
+      volumeKg: null,
+      trainingMinutes: null,
+      streakAfter: null,
+      tzOffsetMinutes: null,
+      originDeviceUuid: null,
+      originOrder: null,
+      prBonusXp: xp.personalRecordBonus,
+      repeatMultiplier: xp.repeatMultiplier,
+      priorClearsSeen: priorResults.length,
       userId: LOCAL_USER_ID,
       workoutId,
       monsterId,
@@ -236,7 +315,6 @@ export const createWorkoutSlice: StateCreator<AppStore, [], [], WorkoutSlice> = 
       // WorkoutResult.extraSets.
       extraSets: extraSets && extraSets.length > 0 ? extraSets : null,
     };
-    await WorkoutRepository.saveResult(result);
 
     const huntsTotal = monster.hunts.length;
     const existingProgress = get().monsterProgress[monsterId] ?? {
@@ -254,7 +332,6 @@ export const createWorkoutSlice: StateCreator<AppStore, [], [], WorkoutSlice> = 
       huntsTotal,
       defeated: huntsCompleted >= huntsTotal,
     };
-    await ProgressRepository.upsertMonsterProgress(updatedProgress);
 
     // Kettlebell weight audit: sums the SAME per-exercise breakdown
     // (exerciseBreakdown, computed above for XP/HuntSummary) rather than
@@ -300,14 +377,44 @@ export const createWorkoutSlice: StateCreator<AppStore, [], [], WorkoutSlice> = 
       currentStreakDays,
       updatedAt: now.toISOString(),
     };
-    await ChronicleRepository.upsert(updatedChronicle);
 
     const previousUser = get().user;
     const previousXP = previousUser?.totalXP ?? 0;
     const previousLevel = previousUser?.level ?? 1;
-    const newXP = previousXP + xp.total;
+    // D3: on an account-linked install the first-clear bonus is pending —
+    // recorded on the result and its claim, but not added to confirmed XP
+    // (or the level) until the server accepts the claim. Unlinked installs
+    // are unchanged: the bonus counts immediately.
+    const installIsLinked = isFirstClear ? await SyncStateRepository.isLinked() : false;
+    const pendingFirstClearBonus = installIsLinked ? xp.firstClearBonus : 0;
+    const confirmedGain = xp.total - pendingFirstClearBonus;
+    const newXP = previousXP + confirmedGain;
     const newLevel = getLevelForTotalXP(newXP);
-    const updatedUser = await UserRepository.addXPAndSetLevel(LOCAL_USER_ID, xp.total, newLevel);
+
+    // Cloud Save Phase 1: result + monster progression + Chronicle +
+    // XP/level (+ first-clear claim) commit in ONE SQLite transaction. If
+    // any write fails, all of them roll back and this throws before any
+    // in-memory state below changes — the database and the store can no
+    // longer disagree after a crash or error mid-completion.
+    // The exact amounts this hunt adds to the Chronicle, and the streak it
+    // produced — stored on the result so totals can be rebuilt (D14).
+    result.volumeKg = volumeKg;
+    result.trainingMinutes = Math.round(elapsedSeconds / 60);
+    result.streakAfter = currentStreakDays;
+    result.tzOffsetMinutes = now.getTimezoneOffset();
+
+    const { user: updatedUser, origin } = await persistHuntCompletion({
+      result,
+      monsterProgress: updatedProgress,
+      chronicle: updatedChronicle,
+      xpGained: confirmedGain,
+      newLevel,
+      firstClear: isFirstClear
+        ? { stageKey, epoch: progressionEpoch, status: installIsLinked ? 'pending' : 'local_final' }
+        : null,
+    });
+
+    const savedResult: WorkoutResult = { ...result, originDeviceUuid: origin.deviceUuid, originOrder: origin.order };
 
     const previousTitle = getHunterTitle(previousLevel);
     const title = getHunterTitle(newLevel);
@@ -320,7 +427,7 @@ export const createWorkoutSlice: StateCreator<AppStore, [], [], WorkoutSlice> = 
     const totalExercises = actualExercises.length;
 
     set((state) => ({
-      lastResult: result,
+      lastResult: savedResult,
       lastHuntSummary: {
         rank,
         xp,
@@ -334,6 +441,7 @@ export const createWorkoutSlice: StateCreator<AppStore, [], [], WorkoutSlice> = 
         titleChanged: title !== previousTitle,
         isPersonalRecord,
         isFirstClear,
+        pendingFirstClearBonus,
         totalDamageDealt,
         criticalHits,
         totalRounds: workout.rounds,
@@ -404,7 +512,15 @@ export const createWorkoutSlice: StateCreator<AppStore, [], [], WorkoutSlice> = 
       // otherwise-successful Hunt completion.
     }
 
-    return result;
+    // Cloud Save: back it up soon (a no-op unless this install is linked and sync is enabled).
+    get().requestSync?.();
+    return savedResult;
+  }),
+
+  getHuntStartContext: async (monsterId: string) => {
+    const epoch = get().user?.progressionEpoch ?? 0;
+    const monsterResetCount = await ProgressRepository.getMonsterResetCount(LOCAL_USER_ID, monsterId, epoch);
+    return { epoch, monsterResetCount };
   },
 
   getResultsForHunt: async (huntId: string) => {

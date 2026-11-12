@@ -1,5 +1,7 @@
 import { getDatabase } from './db';
-import { CustomHuntPreset } from '../models';
+import { runInTransaction } from './db/transaction';
+import { enqueueRecord } from './sync/outbox';
+import type { CustomHuntPreset } from '../models';
 
 interface CustomHuntPresetRow {
   user_id: string;
@@ -40,6 +42,12 @@ export const CustomHuntPresetRepository = {
 
   async upsert(preset: CustomHuntPreset): Promise<void> {
     const db = await getDatabase();
+    await runInTransaction(db, async () => {
+    const existing = await db.getFirstAsync<{ found: number }>(
+      'SELECT 1 AS found FROM custom_hunt_preset WHERE user_id = ? AND workout_id = ?;',
+      preset.userId,
+      preset.workoutId
+    );
     await db.runAsync(
       `INSERT INTO custom_hunt_preset
         (user_id, workout_id, weight_kg, weight_b_kg, gear_count, rest_seconds, custom_structure_value, reps_overrides_json, updated_at)
@@ -64,5 +72,7 @@ export const CustomHuntPresetRepository = {
         : null,
       preset.updatedAt
     );
+    await enqueueRecord(db, preset.userId, 'custom_hunt_preset', preset.workoutId, existing ? 'update' : 'insert');
+    });
   },
 };

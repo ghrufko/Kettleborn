@@ -1,5 +1,5 @@
 import { getDatabase } from './db';
-import { MonsterProgress, CampaignProgress } from '../models';
+import type { MonsterProgress, CampaignProgress } from '../models';
 
 interface MonsterProgressRow {
   user_id: string;
@@ -98,18 +98,54 @@ export const ProgressRepository = {
   },
 
   /**
-   * Campaign Reset (Settings): wipes per-monster hunt/defeated state so the
-   * caller can rebuild fresh rows via loadAllMonsterProgress, same as a new
-   * player's first launch.
+   * Campaign Reset (Settings): returns every monster's hunt/defeated state
+   * to a never-fought state. Rows are zeroed, not deleted — the reset's
+   * snapshot (progress_reset) keeps their previous values.
    */
-  async clearMonsterProgress(userId: string): Promise<void> {
+  async zeroAllMonsterProgress(userId: string): Promise<void> {
     const db = await getDatabase();
-    await db.runAsync('DELETE FROM monster_progress WHERE user_id = ?;', userId);
+    await db.runAsync(
+      'UPDATE monster_progress SET hunts_completed = 0, defeated = 0 WHERE user_id = ?;',
+      userId
+    );
   },
 
-  /** Campaign Reset (Settings): wipes campaign-level completion records. */
-  async clearCampaignProgress(userId: string): Promise<void> {
+  /** Campaign Reset (Settings): zeroes campaign-level completion records (nothing writes this table today; kept consistent anyway). */
+  async zeroAllCampaignProgress(userId: string): Promise<void> {
     const db = await getDatabase();
-    await db.runAsync('DELETE FROM campaign_progress WHERE user_id = ?;', userId);
+    await db.runAsync('UPDATE campaign_progress SET hunts_completed = 0 WHERE user_id = ?;', userId);
+  },
+
+  /**
+   * D6: how many times this monster has been reset in the given epoch (its
+   * reset "era" number). null when migration 19 could not reconstruct the
+   * reset history for this install (C1) — then the count is unknown and is
+   * recorded as NULL rather than guessed.
+   */
+  async getMonsterResetCount(userId: string, monsterId: string, epoch: number): Promise<number | null> {
+    const db = await getDatabase();
+    const blocked = await db.getFirstAsync<{ reason: string | null }>(
+      'SELECT sync_blocked_reason AS reason FROM sync_state WHERE id = 1;'
+    );
+    if (!blocked || blocked.reason !== null) {
+      return null;
+    }
+    const row = await db.getFirstAsync<{ n: number | null }>(
+      `SELECT MAX(count_after) AS n FROM progress_reset
+       WHERE user_id = ? AND scope = 'monster' AND monster_id = ? AND epoch = ?;`,
+      userId,
+      monsterId,
+      epoch
+    );
+    return row?.n ?? 0;
+  },
+
+  async getAllCampaignProgress(userId: string): Promise<CampaignProgress[]> {
+    const db = await getDatabase();
+    const rows = await db.getAllAsync<CampaignProgressRow>(
+      'SELECT * FROM campaign_progress WHERE user_id = ?;',
+      userId
+    );
+    return rows.map(toCampaignProgress);
   },
 };

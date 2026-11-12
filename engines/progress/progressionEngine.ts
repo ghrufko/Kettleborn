@@ -1,5 +1,5 @@
-import { DifficultyTier } from '../../src/models';
-import { HuntRank } from '../../src/utils/huntRank';
+import type { DifficultyTier } from '../../src/models';
+import type { HuntRank } from '../../src/utils/huntRank';
 
 /**
  * Centralized, tunable XP/level config. Nothing outside this file should

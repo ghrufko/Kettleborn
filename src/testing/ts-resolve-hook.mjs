@@ -8,6 +8,14 @@
 // by retrying a failed resolution with `.ts` appended before giving up.
 // See src/testing/README.md for how this is wired into the test runner.
 export async function resolve(specifier, context, nextResolve) {
+  // Metro (like every bundler) imports JSON content files without an
+  // import attribute (`import data from './x.json'`); Node's ESM loader
+  // requires `with { type: 'json' }`. Supplying the attribute here lets
+  // tests load the real content engine and its real JSON content.
+  if (/\.json$/.test(specifier) && !context.importAttributes?.type) {
+    const resolved = await nextResolve(specifier, context);
+    return { ...resolved, importAttributes: { ...resolved.importAttributes, type: 'json' } };
+  }
   try {
     return await nextResolve(specifier, context);
   } catch (err) {

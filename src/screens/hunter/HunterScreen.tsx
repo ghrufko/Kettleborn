@@ -17,6 +17,7 @@ import { MILESTONE_DISPLAY_ORDER } from '../../utils/milestones';
 import { WorkoutResult } from '../../models';
 import { HunterStackParamList } from '../../navigation/types';
 import { colors, fontFamily, fontSize, spacing, glow } from '../../theme';
+import { SyncStatusCard } from '../../components/sync/SyncStatusCard';
 
 function formatTime(minutesSeconds: { timeMinutes: number; timeSeconds: number }): string {
   return `${minutesSeconds.timeMinutes}:${minutesSeconds.timeSeconds.toString().padStart(2, '0')}`;
@@ -36,6 +37,10 @@ export function HunterScreen() {
   const achievements = useAppStore((state) => state.achievements);
   const getHunterSummary = useAppStore((state) => state.getHunterSummary);
   const getAllResults = useAppStore((state) => state.getAllResults);
+  // The unit the player picks in Settings (settings.unit_preference) — the
+  // same source every other weight display reads. The user row's own
+  // unit_preference copy is only ever written once, as 'kg', when it's created.
+  const unitPreference = useAppStore((state) => state.settings?.unitPreference ?? 'kg');
 
   const [favoriteMonsterName, setFavoriteMonsterName] = useState<string | null>(null);
   const [favoriteWorkoutName, setFavoriteWorkoutName] = useState<string | null>(null);
@@ -75,7 +80,6 @@ export function HunterScreen() {
   const recentMonster = recentResult ? contentEngine.getMonster(recentResult.monsterId) : undefined;
   const level = user?.level ?? 1;
   const levelProgress = getLevelProgress(user?.totalXP ?? 0);
-  const unitPreference = user?.unitPreference ?? 'kg';
 
   const allMonsters = contentEngine.getAllMonsters();
   const allCampaigns = contentEngine.getAllCampaigns();
@@ -112,6 +116,8 @@ export function HunterScreen() {
           </View>
           <ProgressBar progress={levelProgress.progress} fillColor={colors.gold} height={6} />
         </GlassCard>
+
+        <SyncStatusCard />
 
         <GlassCard style={styles.card}>
           <Text style={styles.sectionLabel}>Streak</Text>

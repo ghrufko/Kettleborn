@@ -5,12 +5,16 @@ import { ForgeStackParamList } from '../../navigation/types';
 import { Header, GlassCard, Button, ConfirmDialog } from '../../components/core';
 import { useAppStore } from '../../store';
 import { colors, fontFamily, fontSize, spacing } from '../../theme';
+import { SyncAccountPanel } from '../../components/sync/SyncAccountPanel';
+import { SYNC_TEXT } from '../../services/sync/syncMessages';
 
 function AccountSection({ navigation }: { navigation: Props['navigation'] }) {
   const authStatus = useAppStore((state) => state.authStatus);
   const authUser = useAppStore((state) => state.authUser);
   const authError = useAppStore((state) => state.authError);
   const authSignOut = useAppStore((state) => state.authSignOut);
+  const sync = useAppStore((state) => state.sync);
+  const [signOutWarningVisible, setSignOutWarningVisible] = useState(false);
   const [isSigningOut, setIsSigningOut] = useState(false);
   const [signOutError, setSignOutError] = useState<string | null>(null);
 
@@ -59,14 +63,31 @@ function AccountSection({ navigation }: { navigation: Props['navigation'] }) {
           <Text style={styles.rowLabel}>Signed in as</Text>
           <Text style={styles.accountEmail}>{authUser.email ?? authUser.id}</Text>
         </View>
+        <SyncAccountPanel />
         <Button
           label={isSigningOut ? 'Signing Out…' : 'Sign Out'}
           variant="secondary"
-          onPress={handleSignOut}
+          onPress={() =>
+            // Cloud Save D10: say so when changes haven't been backed up yet (they stay on this device).
+            sync.linked && sync.unsyncedChanges > 0 ? setSignOutWarningVisible(true) : handleSignOut()
+          }
           disabled={isSigningOut}
           style={styles.accountButton}
         />
         {signOutError ? <Text style={styles.resetError}>{signOutError}</Text> : null}
+        <ConfirmDialog
+          visible={signOutWarningVisible}
+          title="Sign Out?"
+          message={SYNC_TEXT.signOutUnsynced(sync.unsyncedChanges)}
+          cancelLabel="Cancel"
+          confirmLabel="Sign Out"
+          confirmVariant="primary"
+          onCancel={() => setSignOutWarningVisible(false)}
+          onConfirm={() => {
+            setSignOutWarningVisible(false);
+            void handleSignOut();
+          }}
+        />
       </GlassCard>
     );
   }
@@ -120,6 +141,7 @@ export function SettingsScreen({ navigation }: Props) {
   const settings = useAppStore((state) => state.settings);
   const updateSettings = useAppStore((state) => state.updateSettings);
   const resetCampaignProgress = useAppStore((state) => state.resetCampaignProgress);
+  const syncLinked = useAppStore((state) => state.sync.decision !== 'off' && state.sync.linked);
   const [isResetting, setIsResetting] = useState(false);
   const [resetDialogVisible, setResetDialogVisible] = useState(false);
   const [resetError, setResetError] = useState<string | null>(null);
@@ -226,7 +248,9 @@ export function SettingsScreen({ navigation }: Props) {
       <ConfirmDialog
         visible={resetDialogVisible}
         title="Reset Campaign Progress?"
-        message="This will erase your campaign progress and Personal Best records, and start Campaign I over as a new player. This cannot be undone."
+        message={`This will erase your campaign progress and Personal Best records, and start Campaign I over as a new player. This cannot be undone.${
+          syncLinked ? ` ${SYNC_TEXT.resetAllDevices}` : ''
+        }`}
         cancelLabel="Cancel"
         confirmLabel="Reset"
         confirmDisabled={isResetting}

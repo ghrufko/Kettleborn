@@ -178,6 +178,12 @@ export interface HuntSummary {
   titleChanged: boolean;
   isPersonalRecord: boolean;
   isFirstClear: boolean;
+  /**
+   * Cloud Save D3: on an account-linked install, the first-clear bonus is
+   * pending until the server confirms the claim — shown separately and NOT
+   * included in newXP / newLevel. Always 0 on an unlinked install.
+   */
+  pendingFirstClearBonus?: number;
   totalDamageDealt: number;
   criticalHits: number;
   totalRounds: number;
@@ -313,7 +319,17 @@ export interface WorkoutSlice {
      * to every pre-existing call site, which still works unchanged.
      */
     extraSets?: ExtraExerciseSet[];
+    /**
+     * Cloud Save P3 (D5/D6): the campaign epoch and this monster's reset
+     * count captured when the hunt STARTED (ActiveHuntScreen, via
+     * getHuntStartContext). Omitted → read at completion, which is the
+     * same value whenever nothing reset the campaign or monster mid-hunt.
+     */
+    startedUnderEpoch?: number;
+    startedUnderMonsterResetCount?: number | null;
   }) => Promise<WorkoutResult>;
+  /** D5/D6: the epoch and this monster's reset count at this moment — ActiveHuntScreen captures it when a hunt starts. */
+  getHuntStartContext: (monsterId: string) => Promise<{ epoch: number; monsterResetCount: number | null }>;
   /** Encounter Lock: all results for one specific Hunt (encounter) — see WorkoutRepository.getResultsForHunt for why this differs from getBestTimeSeconds/getBestResult (workoutId-scoped, shared across Level 1/2/3). */
   getResultsForHunt: (huntId: string) => Promise<WorkoutResult[]>;
   getBestTimeSeconds: (workoutId: string) => Promise<number | null>;
@@ -467,6 +483,42 @@ export interface AchievementSlice {
   unlockAchievements: (types: Achievement['milestoneType'][], unlockedAt: string) => Promise<void>;
 }
 
+/** Cloud Save P8: what the screens need to know about sync. */
+export interface SyncStatus {
+  /** 'off' = feature disabled or not configured; 'signed_out' = paused; otherwise the link decision (services/sync/linking.ts). */
+  decision: 'off' | 'signed_out' | 'resume' | 'other_account' | 'blocked' | 'offer_link' | 'auto_link' | 'offer_restore' | 'refused';
+  syncing: boolean;
+  /** This install belongs to an account (D10) — e.g. a campaign reset then applies on all devices. */
+  linked: boolean;
+  lastSyncedAt: string | null;
+  /** First-clear bonuses waiting for the server (D3) — never part of confirmed XP. */
+  pendingXP: number;
+  /** Changes on this device not yet backed up. */
+  unsyncedChanges: number;
+  blockedReason: string | null;
+  conflicts: Array<{ conflictUuid: string; entityType: string; entityKey: string; field: string | null; localValue: any; serverValue: any; detectedAt: string }>;
+  notices: Array<{ id: number; kind: string; data: any; createdAt: string }>;
+  lastError: string | null;
+}
+
+export interface SyncSlice {
+  sync: SyncStatus;
+  /** Called whenever the signed-in account changes (null = signed out). */
+  handleAuthUser: (userId: string | null) => Promise<void>;
+  /** "Back up this device's progress" — link this install to the empty account and upload it. */
+  confirmLink: () => Promise<void>;
+  /** "Restore your progress" — download the account onto this install that has no progress. */
+  confirmRestore: () => Promise<void>;
+  requestSync: () => void;
+  /** Stops background sync passes (sign-out handles this itself; account deletion uses it). */
+  stopSync: () => void;
+  refreshSyncStatus: () => Promise<void>;
+  resolveConflict: (conflictUuid: string, choice: 'keep_server' | 'use_local') => Promise<void>;
+  dismissNotice: (id: number) => Promise<void>;
+  /** Deletes the cloud account (P10). Local progress stays; this install becomes local-only. */
+  deleteCloudAccount: () => Promise<{ ok: true } | { ok: false; error: string }>;
+}
+
 export type AppStore = UserSlice &
   SettingsSlice &
   ChronicleSlice &
@@ -477,4 +529,5 @@ export type AppStore = UserSlice &
   CustomWorkoutSlice &
   StopwatchSlice &
   AchievementSlice &
-  AuthSlice;
+  AuthSlice &
+  SyncSlice;

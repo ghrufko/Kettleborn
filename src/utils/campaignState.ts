@@ -1,4 +1,4 @@
-import { MonsterProgress, Campaign } from '../models';
+import type { MonsterProgress, Campaign } from '../models';
 
 export type CampaignMonsterState = 'locked' | 'available' | 'defeated';
 

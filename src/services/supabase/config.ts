@@ -4,10 +4,12 @@
  * env var prefixed EXPO_PUBLIC_ — no extra babel/webpack config needed,
  * confirmed against this project's existing babel.config.js). Neither
  * value is a secret: EXPO_PUBLIC_SUPABASE_URL is a public project
- * endpoint, and EXPO_PUBLIC_SUPABASE_ANON_KEY is Supabase's
- * publishable/anon key, which is designed to be shipped in client code
- * and is meaningless without Row Level Security enforcing access — see
- * supabase/README.md's "Why public client keys are not secrets" section.
+ * endpoint, and EXPO_PUBLIC_SUPABASE_ANON_KEY holds Supabase's
+ * publishable key (`sb_publishable_...`), which is designed to be shipped
+ * in client code and is meaningless without Row Level Security enforcing
+ * access — see supabase/README.md's "Why public client keys are not
+ * secrets" section. The variable keeps its historical name; the legacy
+ * JWT-based anon key it used to hold is no longer accepted.
  *
  * This module never throws and never performs I/O — it only inspects
  * process.env synchronously, so calling it costs nothing and cannot fail
@@ -19,7 +21,8 @@ export type SupabaseConfigInvalidReason =
   | 'missing_anon_key'
   | 'malformed_url'
   | 'anon_key_too_short'
-  | 'secret_key_in_anon_key_slot';
+  | 'secret_key_in_anon_key_slot'
+  | 'legacy_jwt_key';
 
 export type SupabaseConfigState =
   | { status: 'unconfigured' }
@@ -62,6 +65,16 @@ function looksLikeSecretKey(key: string): boolean {
     }
   }
   return false;
+}
+
+/**
+ * The legacy JWT-based API keys (anon and service_role) are being retired
+ * in favour of `sb_publishable_` / `sb_secret_` keys, and this project is
+ * disabling them, so a JWT-shaped value here is a stale configuration: reject
+ * it rather than build a client that every request would fail with.
+ */
+function looksLikeLegacyJwtKey(key: string): boolean {
+  return /^eyJ[A-Za-z0-9_-]*\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]*$/.test(key);
 }
 
 /**
@@ -123,6 +136,15 @@ export function getSupabaseConfigState(): SupabaseConfigState {
       reason: 'secret_key_in_anon_key_slot',
       detail:
         'EXPO_PUBLIC_SUPABASE_ANON_KEY appears to be a service-role/secret key, not a publishable/anon key. Refusing to use a secret key client-side — see supabase/README.md.',
+    };
+  }
+
+  if (looksLikeLegacyJwtKey(anonKey)) {
+    return {
+      status: 'invalid',
+      reason: 'legacy_jwt_key',
+      detail:
+        'EXPO_PUBLIC_SUPABASE_ANON_KEY is a legacy JWT-based anon key. Use the project\'s publishable key (sb_publishable_...) instead — see supabase/README.md.',
     };
   }
 

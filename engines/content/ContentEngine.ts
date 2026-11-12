@@ -52,7 +52,7 @@ import descentLoreData from '../../content/lore/descent.lore.json';
 import ravagerLoreData from '../../content/lore/ravager.lore.json';
 import builtInTimerPresetsData from '../../content/timers/builtin-presets.json';
 import exerciseLibraryData from '../../content/exercises/library.json';
-import { Monster, Workout, Campaign, Hunt, Exercise, Lore, TimerPreset, ExerciseLibraryEntry } from '../../src/models';
+import type { Monster, Workout, Campaign, Hunt, Exercise, Lore, TimerPreset, ExerciseLibraryEntry } from '../../src/models';
 
 /**
  * Every monster/campaign/lore file needs one line here (Metro requires

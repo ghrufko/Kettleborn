@@ -15,6 +15,7 @@ import { useWorkoutSession } from '../../../engines/session/useWorkoutSession';
 import type { RoundLap } from '../../../engines/session/useWorkoutSession';
 import { useBattleEngine, phaseLabel } from '../../../engines/battle/useBattleEngine';
 import { useAppStore } from '../../store';
+import { setHuntActive } from '../../services/sync/engine';
 import { getMonsterPortrait } from '../../constants/monsterPortraits';
 import { scaleBattleConfigForCustomWorkout, buildCustomWorkout } from '../../utils/customWorkoutStructure';
 import {
@@ -170,6 +171,34 @@ export function ActiveHuntScreen({ route, navigation }: Props) {
   // await), but also no feedback at all. Same setError(null)/catch
   // pattern ForgeScreen and SettingsScreen already use elsewhere.
   const [saveError, setSaveError] = useState<string | null>(null);
+  // Cloud Save Phase 1.2: isSaving disables the button only after React
+  // re-renders, so a fast double tap can call onFinish twice. This ref is
+  // set synchronously, so the second call returns before doing anything;
+  // cleared in `finally`, so a failed save can be retried.
+  const finishInFlight = useRef(false);
+  // Cloud Save P3 (D5/D6): the campaign epoch and this monster's reset
+  // count are captured when the hunt starts (this screen mounts) and saved
+  // with the result — not read again at completion. Not visual.
+  const getHuntStartContext = useAppStore((state) => state.getHuntStartContext);
+  const huntStartRef = useRef<{ epoch: number; monsterResetCount: number | null } | null>(null);
+  useEffect(() => {
+    // Cloud Save P7: a sync waits while a hunt is in progress, so nothing changes under the player (D5).
+    setHuntActive(true);
+    return () => setHuntActive(false);
+  }, []);
+  useEffect(() => {
+    let active = true;
+    getHuntStartContext(monsterId)
+      .then((context) => {
+        if (active && huntStartRef.current === null) {
+          huntStartRef.current = context;
+        }
+      })
+      .catch(() => undefined); // completeHunt falls back to reading the same values at completion
+    return () => {
+      active = false;
+    };
+  }, [getHuntStartContext, monsterId]);
   const [previousBestSeconds, setPreviousBestSeconds] = useState<number | null>(null);
 
   useEffect(() => {
@@ -300,6 +329,10 @@ export function ActiveHuntScreen({ route, navigation }: Props) {
       isSaving={isSaving}
       saveError={saveError}
       onFinish={async (elapsedSeconds, battleStats, rungLaps, extraSets) => {
+        if (finishInFlight.current) {
+          return;
+        }
+        finishInFlight.current = true;
         setIsSaving(true);
         setSaveError(null);
         try {
@@ -378,11 +411,14 @@ export function ActiveHuntScreen({ route, navigation }: Props) {
               : undefined,
             encounterTargetSeconds: isLocked ? lockState.targetSeconds : undefined,
             extraSets,
+            startedUnderEpoch: huntStartRef.current?.epoch,
+            startedUnderMonsterResetCount: huntStartRef.current ? huntStartRef.current.monsterResetCount : undefined,
           });
           navigation.navigate('HuntComplete', { monsterId, huntId, workoutId });
         } catch {
           setSaveError('Could not save your Hunt result. Try Finish Hunt again.');
         } finally {
+          finishInFlight.current = false;
           setIsSaving(false);
         }
       }}

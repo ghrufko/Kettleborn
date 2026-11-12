@@ -1,5 +1,8 @@
 import { getDatabase } from './db';
-import { StopwatchResult } from '../models';
+import type { StopwatchResult } from '../models';
+import { newUuid } from '../utils/uuid';
+import { runInTransaction } from './db/transaction';
+import { enqueueRecord } from './sync/outbox';
 
 interface StopwatchResultRow {
   id: string;
@@ -23,17 +26,22 @@ function toStopwatchResult(row: StopwatchResultRow): StopwatchResult {
 export const StopwatchRepository = {
   async saveResult(userId: string, result: StopwatchResult): Promise<void> {
     const db = await getDatabase();
+    const uuid = newUuid();
+    await runInTransaction(db, async () => {
     await db.runAsync(
       `INSERT INTO stopwatch_result
-        (id, user_id, completed_at, elapsed_seconds, lap_seconds_json, note)
-       VALUES (?, ?, ?, ?, ?, ?);`,
+        (id, user_id, completed_at, elapsed_seconds, lap_seconds_json, note, uuid)
+       VALUES (?, ?, ?, ?, ?, ?, ?);`,
       result.id,
       userId,
       result.completedAt,
       result.elapsedSeconds,
       result.laps.length > 0 ? JSON.stringify(result.laps) : null,
-      result.note
+      result.note,
+      uuid
     );
+    await enqueueRecord(db, userId, 'stopwatch_result', uuid, 'insert');
+    });
   },
 
   /** Every Stopwatch result for this user, newest first — for the Chronicle "Stopwatch Sessions" section. */

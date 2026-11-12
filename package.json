@@ -9,7 +9,9 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "typecheck": "tsc --noEmit",
-    "test": "node --test --experimental-test-module-mocks --import ./src/testing/register-hooks.mjs \"src/**/__tests__/**/*.test.ts\""
+    "test": "node --test --experimental-test-module-mocks --import ./src/testing/register-hooks.mjs \"src/**/__tests__/**/*.test.ts\"",
+    "generate:sync-sql": "node --import ./src/testing/register-hooks.mjs scripts/generate-sync-sql.mjs",
+    "scan:bundles": "node --import ./src/testing/register-hooks.mjs scripts/scan-bundle-secrets.mjs"
   },
   "dependencies": {
     "@expo-google-fonts/cinzel": "^0.2.3",
@@ -25,6 +27,7 @@
     "expo-asset": "~57.0.16",
     "expo-audio": "~57.0.4",
     "expo-constants": "~57.0.17",
+    "expo-crypto": "~57.0.4",
     "expo-font": "~57.0.3",
     "expo-haptics": "~57.0.2",
     "expo-keep-awake": "~57.0.1",
@@ -42,6 +45,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.25.0",
+    "@electric-sql/pglite": "0.5.8",
     "@types/react": "~19.2.18",
     "babel-preset-expo": "~57.0.10",
     "supabase": "^2.120.0",

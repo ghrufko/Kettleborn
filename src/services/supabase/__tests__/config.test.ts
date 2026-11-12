@@ -105,11 +105,21 @@ test('legacy JWT with role=service_role is rejected', () => {
   });
 });
 
-test('legacy JWT with role=anon is accepted', () => {
+test('legacy JWT with role=anon is rejected as a legacy key (publishable keys only)', () => {
   const header = Buffer.from(JSON.stringify({ alg: 'HS256', typ: 'JWT' })).toString('base64url');
   const payload = Buffer.from(JSON.stringify({ role: 'anon', iss: 'supabase', iat: 0, exp: 9999999999 })).toString('base64url');
   withEnv('https://abc.supabase.co', `${header}.${payload}.fakesig`, () => {
     const s = getSupabaseConfigState();
-    assert.equal(s.status, 'configured');
+    assert.equal(s.status, 'invalid');
+    assert.equal(s.reason, 'legacy_jwt_key');
+    assert.ok(!s.detail.includes(payload), 'the detail never repeats the key');
+  });
+});
+
+test('an undecodable JWT-shaped value is still rejected as a legacy key', () => {
+  withEnv('https://abc.supabase.co', 'eyJhbGciOiJIUzI1NiJ9.not-json-payload.sig', () => {
+    const s = getSupabaseConfigState();
+    assert.equal(s.status, 'invalid');
+    assert.equal(s.reason, 'legacy_jwt_key');
   });
 });

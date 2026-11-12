@@ -1,5 +1,7 @@
 import { getDatabase } from './db';
-import { Achievement, AchievementMilestoneType } from '../models';
+import { runInTransaction } from './db/transaction';
+import { enqueueRecord } from './sync/outbox';
+import type { Achievement, AchievementMilestoneType } from '../models';
 
 interface AchievementRow {
   user_id: string;
@@ -33,11 +35,16 @@ export const AchievementRepository = {
    */
   async unlock(userId: string, milestoneType: AchievementMilestoneType, unlockedAt: string): Promise<void> {
     const db = await getDatabase();
-    await db.runAsync(
-      'INSERT OR IGNORE INTO achievement (user_id, milestone_type, unlocked_at) VALUES (?, ?, ?);',
-      userId,
-      milestoneType,
-      unlockedAt
-    );
+    await runInTransaction(db, async () => {
+      const { changes } = await db.runAsync(
+        'INSERT OR IGNORE INTO achievement (user_id, milestone_type, unlocked_at) VALUES (?, ?, ?);',
+        userId,
+        milestoneType,
+        unlockedAt
+      );
+      if (changes > 0) {
+        await enqueueRecord(db, userId, 'achievement', milestoneType, 'insert');
+      }
+    });
   },
 };

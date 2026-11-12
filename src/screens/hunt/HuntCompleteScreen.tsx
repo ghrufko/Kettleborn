@@ -20,6 +20,7 @@ import { useStaggeredReveal } from '../../utils/useStaggeredReveal';
 import { getRoundStats } from '../../utils/roundStats';
 import { convertKgToDisplay, formatWeightPair } from '../../utils/weight';
 import { colors, fontFamily, fontSize, spacing, glow } from '../../theme';
+import { SYNC_TEXT } from '../../services/sync/syncMessages';
 
 type Props = NativeStackScreenProps<HuntStackParamList, 'HuntComplete'>;
 
@@ -394,6 +395,10 @@ export function HuntCompleteScreen({ route, navigation }: Props) {
             ) : null}
             {summary.xp.firstClearBonus > 0 ? (
               <BreakdownLine label="First Clear" value={summary.xp.firstClearBonus} />
+            ) : null}
+            {summary.pendingFirstClearBonus ? (
+              // Cloud Save D3: only on an account-linked install — the bonus waits for the server.
+              <Text style={styles.pendingBonus}>{SYNC_TEXT.bonusPending(summary.pendingFirstClearBonus)}</Text>
             ) : null}
           </View>
         </GlassCard>
@@ -804,6 +809,12 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xxs,
   },
   levelLabel: { fontFamily: fontFamily.monoRegular, fontSize: fontSize.xs, color: colors.text.muted },
+  pendingBonus: {
+    marginTop: spacing.xs,
+    fontFamily: fontFamily.bodyRegular,
+    fontSize: fontSize.sm,
+    color: colors.text.muted,
+  },
   breakdown: {
     marginTop: spacing.md,
     borderTopWidth: 1,

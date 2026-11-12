@@ -28,6 +28,7 @@ import { AuthNoticeDialog } from './src/screens/account/AuthNoticeDialog';
 import { hasCompletedOnboarding, markOnboardingComplete } from './src/utils/onboardingStorage';
 import { colors } from './src/theme';
 import { bootstrapApp } from './src/store/bootstrap';
+import { startCloudSync } from './src/services/sync/appWiring';
 import { useAppStore } from './src/store';
 
 SplashScreen.preventAutoHideAsync().catch(() => {
@@ -90,7 +91,10 @@ export default function App() {
   const runBootstrap = useCallback(() => {
     setBootstrapError(null);
     bootstrapApp()
-      .then(() => setAppReady(true))
+      .then(() => {
+        setAppReady(true);
+        startCloudSync(); // inert unless the build enables cloud sync
+      })
       .catch((error: Error) => setBootstrapError(error));
   }, []);
 

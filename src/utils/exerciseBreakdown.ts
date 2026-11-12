@@ -1,4 +1,4 @@
-import { Exercise, ExerciseLibraryEntry, Workout } from '../models';
+import type { Exercise, ExerciseLibraryEntry, Workout } from '../models';
 import { getWorkoutActualExercises } from './workoutPresentation';
 
 export interface ExerciseBreakdownEntry {

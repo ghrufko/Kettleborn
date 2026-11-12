@@ -1,5 +1,5 @@
 import { getDatabase } from './db';
-import { User } from '../models';
+import type { User } from '../models';
 
 interface UserRow {
   id: string;
@@ -9,6 +9,7 @@ interface UserRow {
   total_xp: number;
   unit_preference: string;
   active_campaign_id: string | null;
+  progression_epoch: number | null;
 }
 
 function toUser(row: UserRow): User {
@@ -20,6 +21,7 @@ function toUser(row: UserRow): User {
     totalXP: row.total_xp,
     unitPreference: row.unit_preference === 'lb' ? 'lb' : 'kg',
     activeCampaignId: row.active_campaign_id,
+    progressionEpoch: row.progression_epoch ?? 0,
   };
 }
 
@@ -69,12 +71,19 @@ export const UserRepository = {
   },
 
   /**
-   * Campaign Reset (Settings): returns level/XP to a new-player state.
-   * Does not touch display_name, unit_preference, or any other user setting.
+   * Campaign Reset (Settings): returns level/XP to a new-player state and
+   * starts a new progression epoch, so each stage's first-clear bonus can
+   * be earned once more — as for a genuinely new player, which is what a
+   * campaign reset makes the player. The previous XP/level are kept in the
+   * reset's snapshot (progress_reset). Does not touch display_name,
+   * unit_preference, or any other user setting.
    */
   async resetProgression(userId: string): Promise<User | null> {
     const db = await getDatabase();
-    await db.runAsync('UPDATE user SET level = 1, total_xp = 0 WHERE id = ?;', userId);
+    await db.runAsync(
+      'UPDATE user SET level = 1, total_xp = 0, progression_epoch = progression_epoch + 1 WHERE id = ?;',
+      userId
+    );
     return this.getById(userId);
   },
 };

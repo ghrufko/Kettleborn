@@ -1,5 +1,11 @@
 import { getDatabase } from './db';
-import { CustomWorkout, CustomWorkoutExercise, CustomWorkoutResult } from '../models';
+import { runInTransaction } from './db/transaction';
+import type { CustomWorkout, CustomWorkoutExercise, CustomWorkoutResult } from '../models';
+import { newUuid } from '../utils/uuid';
+import { enqueueRecord } from './sync/outbox';
+
+/** Deleted rows (migration 18 deletion markers) are invisible to every read — the same set the UI saw when deletion was physical. */
+const NOT_DELETED = 'deleted_at IS NULL';
 
 interface CustomWorkoutRow {
   id: string;
@@ -67,7 +73,7 @@ export const CustomWorkoutRepository = {
   async getAll(userId: string): Promise<CustomWorkout[]> {
     const db = await getDatabase();
     const rows = await db.getAllAsync<CustomWorkoutRow>(
-      'SELECT * FROM custom_workout WHERE user_id = ? ORDER BY updated_at DESC;',
+      `SELECT * FROM custom_workout WHERE user_id = ? AND ${NOT_DELETED} ORDER BY updated_at DESC;`,
       userId
     );
     return rows.map(toCustomWorkout);
@@ -75,16 +81,23 @@ export const CustomWorkoutRepository = {
 
   async getById(id: string): Promise<CustomWorkout | null> {
     const db = await getDatabase();
-    const row = await db.getFirstAsync<CustomWorkoutRow>('SELECT * FROM custom_workout WHERE id = ?;', id);
+    const row = await db.getFirstAsync<CustomWorkoutRow>(
+      `SELECT * FROM custom_workout WHERE id = ? AND ${NOT_DELETED};`,
+      id
+    );
     return row ? toCustomWorkout(row) : null;
   },
 
+  /** A new row gets a fresh uuid; an existing row keeps the one it has (the ON CONFLICT branch never touches uuid). */
   async upsert(userId: string, workout: CustomWorkout): Promise<void> {
     const db = await getDatabase();
+    await runInTransaction(db, async () => {
+    const existing = await db.getFirstAsync<{ uuid: string }>('SELECT uuid FROM custom_workout WHERE id = ?;', workout.id);
+    const uuid = existing?.uuid ?? newUuid();
     await db.runAsync(
       `INSERT INTO custom_workout
-        (id, user_id, name, exercises_json, weight_kg, weight_b_kg, gear_count, rounds, rest_seconds, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        (id, user_id, name, exercises_json, weight_kg, weight_b_kg, gear_count, rounds, rest_seconds, created_at, updated_at, uuid)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
        ON CONFLICT (id) DO UPDATE SET
          name = excluded.name,
          exercises_json = excluded.exercises_json,
@@ -104,14 +117,42 @@ export const CustomWorkoutRepository = {
       workout.rounds,
       workout.restSeconds,
       workout.createdAt,
-      workout.updatedAt
+      workout.updatedAt,
+      uuid
     );
+    await enqueueRecord(db, userId, 'custom_workout', uuid, existing ? 'update' : 'insert');
+    });
   },
 
+  /**
+   * Marks the workout and its results deleted (migration 18) instead of
+   * removing them — the UI hides both exactly as before, but completed
+   * training history is never physically destroyed. One transaction, so
+   * the workout and its results can't end up half-deleted (queued behind
+   * any other transaction on the connection — see db/transaction.ts).
+   */
   async delete(id: string): Promise<void> {
     const db = await getDatabase();
-    await db.runAsync('DELETE FROM custom_workout WHERE id = ?;', id);
-    await db.runAsync('DELETE FROM custom_workout_result WHERE custom_workout_id = ?;', id);
+    const now = new Date().toISOString();
+    await runInTransaction(db, async () => {
+      const { changes } = await db.runAsync(
+        `UPDATE custom_workout SET deleted_at = ?, updated_at = ? WHERE id = ? AND ${NOT_DELETED};`,
+        now,
+        now,
+        id
+      );
+      // Results' deleted_at is a local cache of the parent's tombstone (D9):
+      // only the workout's deletion is queued; results are never re-sent.
+      await db.runAsync(
+        `UPDATE custom_workout_result SET deleted_at = ? WHERE custom_workout_id = ? AND ${NOT_DELETED};`,
+        now,
+        id
+      );
+      const row = await db.getFirstAsync<{ user_id: string; uuid: string }>('SELECT user_id, uuid FROM custom_workout WHERE id = ?;', id);
+      if (changes > 0 && row) {
+        await enqueueRecord(db, row.user_id, 'custom_workout', row.uuid, 'delete');
+      }
+    });
   },
 
   /**
@@ -123,11 +164,14 @@ export const CustomWorkoutRepository = {
    */
   async saveResult(userId: string, result: CustomWorkoutResult): Promise<void> {
     const db = await getDatabase();
+    const uuid = newUuid();
+    await runInTransaction(db, async () => {
     await db.runAsync(
       `INSERT INTO custom_workout_result
         (id, custom_workout_id, completed_at, elapsed_seconds, weight_kg, weight_b_kg, gear_count,
-         user_id, workout_name, rounds, rest_seconds, total_reps, exercise_breakdown_json)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
+         user_id, workout_name, rounds, rest_seconds, total_reps, exercise_breakdown_json, uuid, custom_workout_uuid)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
+               (SELECT w.uuid FROM custom_workout w WHERE w.id = ?));`,
       result.id,
       result.customWorkoutId,
       result.completedAt,
@@ -140,14 +184,18 @@ export const CustomWorkoutRepository = {
       result.rounds,
       result.restSeconds,
       result.totalReps,
-      result.exerciseBreakdown ? JSON.stringify(result.exerciseBreakdown) : null
+      result.exerciseBreakdown ? JSON.stringify(result.exerciseBreakdown) : null,
+      uuid,
+      result.customWorkoutId
     );
+    await enqueueRecord(db, userId, 'custom_workout_result', uuid, 'insert');
+    });
   },
 
   async getResultsFor(customWorkoutId: string): Promise<CustomWorkoutResult[]> {
     const db = await getDatabase();
     const rows = await db.getAllAsync<CustomWorkoutResultRow>(
-      'SELECT * FROM custom_workout_result WHERE custom_workout_id = ? ORDER BY completed_at DESC;',
+      `SELECT * FROM custom_workout_result WHERE custom_workout_id = ? AND ${NOT_DELETED} ORDER BY completed_at DESC;`,
       customWorkoutId
     );
     return rows.map(toCustomWorkoutResult);
@@ -157,7 +205,7 @@ export const CustomWorkoutRepository = {
   async getAllForUser(userId: string): Promise<CustomWorkoutResult[]> {
     const db = await getDatabase();
     const rows = await db.getAllAsync<CustomWorkoutResultRow>(
-      'SELECT * FROM custom_workout_result WHERE user_id = ? ORDER BY completed_at DESC;',
+      `SELECT * FROM custom_workout_result WHERE user_id = ? AND ${NOT_DELETED} ORDER BY completed_at DESC;`,
       userId
     );
     return rows.map(toCustomWorkoutResult);

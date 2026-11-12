@@ -1,4 +1,4 @@
-import { Hunt, Workout, WorkoutResult } from '../models';
+import type { Hunt, Workout, WorkoutResult } from '../models';
 
 /**
  * ENCOUNTER LOCK (merged with Custom Hunt) — see PROJECT_CONTEXT.md §16/§17.

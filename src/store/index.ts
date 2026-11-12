@@ -11,6 +11,7 @@ import { createCustomWorkoutSlice } from './customWorkoutSlice';
 import { createStopwatchSlice } from './stopwatchSlice';
 import { createAchievementSlice } from './achievementSlice';
 import { createAuthSlice } from './authSlice';
+import { createSyncSlice } from './syncSlice';
 
 export const useAppStore = create<AppStore>()((...api) => ({
   ...createUserSlice(...api),
@@ -24,6 +25,7 @@ export const useAppStore = create<AppStore>()((...api) => ({
   ...createStopwatchSlice(...api),
   ...createAchievementSlice(...api),
   ...createAuthSlice(...api),
+  ...createSyncSlice(...api),
 }));
 
 export type { AppStore } from './types';

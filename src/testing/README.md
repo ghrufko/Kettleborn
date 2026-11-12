@@ -32,7 +32,10 @@ node --test --experimental-test-module-mocks --import ./src/testing/register-hoo
   tsconfig's `"moduleResolution": "bundler"`, and what Metro/`tsc` both
   already resolve). The hook retries a failed resolution with `.ts` (or
   `/index.ts` for a directory import like `from '../models'`) appended,
-  so test files import production code directly — never a copy.
+  so test files import production code directly — never a copy. It also
+  adds the `type: 'json'` import attribute Node requires for JSON
+  imports (Metro needs none), so the real content engine loads its real
+  content files under test.
 
 ## A real limitation this surfaced: `import type`
 

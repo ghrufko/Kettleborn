@@ -8,3 +8,10 @@ export { CustomHuntPresetRepository } from './customHuntPresetRepository';
 export { CustomWorkoutRepository } from './customWorkoutRepository';
 export { StopwatchRepository } from './stopwatchRepository';
 export { AchievementRepository } from './achievementRepository';
+export { FirstClearRepository, firstClearStageKey } from './firstClearRepository';
+export { SyncStateRepository } from './syncStateRepository';
+export {
+  persistHuntCompletion,
+  resetCampaignProgressAtomically,
+  resetMonsterProgressAtomically,
+} from './progressionTransactions';

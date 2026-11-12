@@ -1,5 +1,5 @@
 import { getDatabase } from './db';
-import { Chronicle } from '../models';
+import type { Chronicle } from '../models';
 
 interface ChronicleRow {
   user_id: string;

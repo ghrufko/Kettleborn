@@ -1,8 +1,24 @@
 import { getDatabase } from './db';
-import { WorkoutResult } from '../models';
+import type { WorkoutResult } from '../models';
+import { newUuid } from '../utils/uuid';
+import { runInTransaction } from './db/transaction';
+import { enqueue } from './sync/outbox';
+
+/**
+ * Every read used for progression, personal bests, encounter locks and the
+ * existing history screens excludes voided rows — exactly the set of rows
+ * those screens saw before resets stopped deleting. Voided rows are only
+ * returned by getAllResultsIncludingVoided().
+ */
+const ACTIVE = 'voided_at IS NULL';
 
 interface WorkoutResultRow {
   id: string;
+  uuid: string | null;
+  updated_at: string | null;
+  voided_at: string | null;
+  void_reset_uuid: string | null;
+  first_clear_bonus_xp: number | null;
   user_id: string;
   workout_id: string;
   monster_id: string;
@@ -24,11 +40,36 @@ interface WorkoutResultRow {
   structural_value_used: number | null;
   reps_overrides_used_json: string | null;
   extra_sets_json: string | null;
+  progression_epoch: number | null;
+  monster_reset_count: number | null;
+  volume_kg: number | null;
+  training_minutes: number | null;
+  streak_after: number | null;
+  tz_offset_minutes: number | null;
+  origin_device_uuid: string | null;
+  origin_order: number | null;
+  pr_bonus_xp: number | null;
+  repeat_multiplier: number | null;
+  prior_clears_seen: number | null;
 }
 
 function toWorkoutResult(row: WorkoutResultRow): WorkoutResult {
   return {
     id: row.id,
+    uuid: row.uuid ?? undefined,
+    firstClearBonusXp: row.first_clear_bonus_xp,
+    voidedAt: row.voided_at,
+    progressionEpoch: row.progression_epoch,
+    monsterResetCount: row.monster_reset_count,
+    volumeKg: row.volume_kg,
+    trainingMinutes: row.training_minutes,
+    streakAfter: row.streak_after,
+    tzOffsetMinutes: row.tz_offset_minutes,
+    originDeviceUuid: row.origin_device_uuid,
+    originOrder: row.origin_order,
+    prBonusXp: row.pr_bonus_xp,
+    repeatMultiplier: row.repeat_multiplier,
+    priorClearsSeen: row.prior_clears_seen,
     userId: row.user_id,
     workoutId: row.workout_id,
     monsterId: row.monster_id,
@@ -53,6 +94,27 @@ function toWorkoutResult(row: WorkoutResultRow): WorkoutResult {
   };
 }
 
+/**
+ * RPE / notes edit: the field and its upload-queue entry (Cloud Save P5,
+ * inactive until sync is enabled) in one transaction. Never called from
+ * inside another transaction (runInTransaction is not re-entrant).
+ */
+async function updateResultField(resultId: string, field: 'rpe' | 'notes', value: number | string | null): Promise<void> {
+  const db = await getDatabase();
+  await runInTransaction(db, async () => {
+    await db.runAsync(
+      `UPDATE workout_result SET ${field} = ?, updated_at = ? WHERE id = ?;`,
+      value,
+      new Date().toISOString(),
+      resultId
+    );
+    const row = await db.getFirstAsync<{ uuid: string }>('SELECT uuid FROM workout_result WHERE id = ?;', resultId);
+    if (row) {
+      await enqueue(db, { entityType: 'hunt_result', entityKey: row.uuid, field, op: 'update', payload: { value } });
+    }
+  });
+}
+
 export const WorkoutRepository = {
   async saveResult(result: WorkoutResult): Promise<void> {
     const db = await getDatabase();
@@ -60,8 +122,12 @@ export const WorkoutRepository = {
       `INSERT INTO workout_result
         (id, user_id, workout_id, monster_id, hunt_id, completed_at, time_minutes, time_seconds,
          weight_value_a, weight_value_b, weight_unit, notes, xp_awarded, difficulty, app_version, rung_times_json, rpe, is_custom_hunt,
-         rest_seconds_used, structural_value_used, reps_overrides_used_json, extra_sets_json)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
+         rest_seconds_used, structural_value_used, reps_overrides_used_json, extra_sets_json,
+         uuid, updated_at, first_clear_bonus_xp,
+         progression_epoch, monster_reset_count, volume_kg, training_minutes, streak_after, tz_offset_minutes,
+         origin_device_uuid, origin_order, pr_bonus_xp, repeat_multiplier, prior_clears_seen)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
+               ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
       result.id,
       result.userId,
       result.workoutId,
@@ -83,14 +149,27 @@ export const WorkoutRepository = {
       result.restSecondsUsed,
       result.structuralValueUsed,
       result.repsOverridesUsed ? JSON.stringify(result.repsOverridesUsed) : null,
-      result.extraSets && result.extraSets.length > 0 ? JSON.stringify(result.extraSets) : null
+      result.extraSets && result.extraSets.length > 0 ? JSON.stringify(result.extraSets) : null,
+      result.uuid ?? newUuid(),
+      result.completedAt,
+      result.firstClearBonusXp ?? 0,
+      result.progressionEpoch ?? null,
+      result.monsterResetCount ?? null,
+      result.volumeKg ?? null,
+      result.trainingMinutes ?? null,
+      result.streakAfter ?? null,
+      result.tzOffsetMinutes ?? null,
+      result.originDeviceUuid ?? null,
+      result.originOrder ?? null,
+      result.prBonusXp ?? null,
+      result.repeatMultiplier ?? null,
+      result.priorClearsSeen ?? null
     );
   },
 
   /** Post-Hunt RPE, set after the row already exists — see WorkoutResult.rpe. */
   async updateRPE(resultId: string, rpe: number): Promise<void> {
-    const db = await getDatabase();
-    await db.runAsync('UPDATE workout_result SET rpe = ? WHERE id = ?;', rpe, resultId);
+    await updateResultField(resultId, 'rpe', rpe);
   },
 
   /**
@@ -103,11 +182,25 @@ export const WorkoutRepository = {
    * note — optional by construction.
    */
   async updateNotes(resultId: string, notes: string | null): Promise<void> {
-    const db = await getDatabase();
-    await db.runAsync('UPDATE workout_result SET notes = ? WHERE id = ?;', notes, resultId);
+    await updateResultField(resultId, 'notes', notes);
   },
 
   async getResultsForUser(userId: string): Promise<WorkoutResult[]> {
+    const db = await getDatabase();
+    const rows = await db.getAllAsync<WorkoutResultRow>(
+      `SELECT * FROM workout_result WHERE user_id = ? AND ${ACTIVE} ORDER BY completed_at DESC;`,
+      userId
+    );
+    return rows.map(toWorkoutResult);
+  },
+
+  /**
+   * Full history, including results a progress reset voided — for future
+   * sync and any historical-records view. Nothing in the current UI calls
+   * it, so the current screens look exactly as they did when resets
+   * deleted.
+   */
+  async getAllResultsIncludingVoided(userId: string): Promise<WorkoutResult[]> {
     const db = await getDatabase();
     const rows = await db.getAllAsync<WorkoutResultRow>(
       'SELECT * FROM workout_result WHERE user_id = ? ORDER BY completed_at DESC;',
@@ -119,7 +212,7 @@ export const WorkoutRepository = {
   async getResultsForWorkout(userId: string, workoutId: string): Promise<WorkoutResult[]> {
     const db = await getDatabase();
     const rows = await db.getAllAsync<WorkoutResultRow>(
-      'SELECT * FROM workout_result WHERE user_id = ? AND workout_id = ? ORDER BY completed_at DESC;',
+      `SELECT * FROM workout_result WHERE user_id = ? AND workout_id = ? AND ${ACTIVE} ORDER BY completed_at DESC;`,
       userId,
       workoutId
     );
@@ -135,7 +228,7 @@ export const WorkoutRepository = {
   async getResultsForHunt(userId: string, huntId: string): Promise<WorkoutResult[]> {
     const db = await getDatabase();
     const rows = await db.getAllAsync<WorkoutResultRow>(
-      'SELECT * FROM workout_result WHERE user_id = ? AND hunt_id = ? ORDER BY completed_at DESC;',
+      `SELECT * FROM workout_result WHERE user_id = ? AND hunt_id = ? AND ${ACTIVE} ORDER BY completed_at DESC;`,
       userId,
       huntId
     );
@@ -143,28 +236,42 @@ export const WorkoutRepository = {
   },
 
   /**
-   * Campaign Reset (Settings): wipes workout history for the user — this is
-   * the sole source Personal Best times are derived from (see
-   * workoutSlice.getBestTimeSeconds), so clearing it clears PBs too.
+   * Campaign Reset (Settings): voids — never deletes — every active result
+   * for the user. Personal bests are derived only from active results, so
+   * they clear exactly as before; the rows themselves, with their
+   * xp_awarded, stay in the database tagged with the reset that voided
+   * them. Returns how many rows were voided.
    */
-  async deleteAllForUser(userId: string): Promise<void> {
+  async voidAllForUser(userId: string, resetUuid: string, voidedAt: string): Promise<number> {
     const db = await getDatabase();
-    await db.runAsync('DELETE FROM workout_result WHERE user_id = ?;', userId);
+    const { changes } = await db.runAsync(
+      `UPDATE workout_result SET voided_at = ?, void_reset_uuid = ?, updated_at = ?
+       WHERE user_id = ? AND ${ACTIVE};`,
+      voidedAt,
+      resetUuid,
+      voidedAt,
+      userId
+    );
+    return changes;
   },
 
   /**
-   * Reset Progress (per-monster): wipes this one monster's Encounter
-   * results only — every WorkoutResult row is already scoped by
-   * monster_id (set at save time from the Hunt it belongs to), so this
-   * can't touch any other monster's history, Custom Workout results
-   * (a fully separate table, see migration10), or Timer results.
+   * Reset Progress (per-monster): voids this one monster's active results
+   * only — scoped by monster_id, so no other monster's history, Custom
+   * Workout results or Timer results are touched. Returns how many rows
+   * were voided.
    */
-  async deleteResultsForMonster(userId: string, monsterId: string): Promise<void> {
+  async voidResultsForMonster(userId: string, monsterId: string, resetUuid: string, voidedAt: string): Promise<number> {
     const db = await getDatabase();
-    await db.runAsync(
-      'DELETE FROM workout_result WHERE user_id = ? AND monster_id = ?;',
+    const { changes } = await db.runAsync(
+      `UPDATE workout_result SET voided_at = ?, void_reset_uuid = ?, updated_at = ?
+       WHERE user_id = ? AND monster_id = ? AND ${ACTIVE};`,
+      voidedAt,
+      resetUuid,
+      voidedAt,
       userId,
       monsterId
     );
+    return changes;
   },
 };

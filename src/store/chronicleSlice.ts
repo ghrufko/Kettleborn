@@ -1,7 +1,7 @@
-import { StateCreator } from 'zustand';
+import type { StateCreator } from 'zustand';
 import { ChronicleRepository } from '../services';
 import { LOCAL_USER_ID } from '../constants/localUser';
-import { AppStore, ChronicleSlice } from './types';
+import type { AppStore, ChronicleSlice } from './types';
 
 export const createChronicleSlice: StateCreator<AppStore, [], [], ChronicleSlice> = (set) => ({
   chronicle: null,

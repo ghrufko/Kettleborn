@@ -20,6 +20,45 @@ export interface ExtraExerciseSet {
 
 export interface WorkoutResult {
   id: string;
+  /**
+   * Permanent, globally unique identity (v4 UUID) — migration 18. Set by
+   * completeHunt for every new result; backfilled for older rows. Optional
+   * in the type only so pre-existing fixtures/callers still compile; every
+   * row read from the database has one.
+   */
+  uuid?: string;
+  /**
+   * The part of xpAwarded that was this stage's first-clear bonus (0 when
+   * none was granted). null for results saved before migration 18, where
+   * the split wasn't recorded. Kept so a future server can enforce
+   * "one first-clear bonus per stage" across devices without guessing.
+   */
+  firstClearBonusXp?: number | null;
+  /** Set when a progress reset voided this result (migration 18). Voided results are kept, never deleted, but excluded from progression and every existing history view. */
+  voidedAt?: string | null;
+  /**
+   * Cloud Save P3 (migration 19): facts recorded at completion so totals
+   * can later be rebuilt from history. All optional in the type (older
+   * fixtures/callers); NULL on rows saved before migration 19 except
+   * progressionEpoch/monsterResetCount, which that migration backfilled.
+   * - progressionEpoch / monsterResetCount: captured when the hunt STARTED (D5/D6).
+   * - volumeKg / trainingMinutes: exactly what this hunt added to the Chronicle.
+   * - streakAfter: the current streak completeHunt computed (D14 streak policy C).
+   * - tzOffsetMinutes: Date#getTimezoneOffset() at completion (audit only).
+   * - originDeviceUuid / originOrder: which install recorded it, and in what order.
+   * - prBonusXp / repeatMultiplier / priorClearsSeen: the XP breakdown inputs (D3).
+   */
+  progressionEpoch?: number | null;
+  monsterResetCount?: number | null;
+  volumeKg?: number | null;
+  trainingMinutes?: number | null;
+  streakAfter?: number | null;
+  tzOffsetMinutes?: number | null;
+  originDeviceUuid?: string | null;
+  originOrder?: number | null;
+  prBonusXp?: number | null;
+  repeatMultiplier?: number | null;
+  priorClearsSeen?: number | null;
   userId: string;
   workoutId: string;
   monsterId: string;

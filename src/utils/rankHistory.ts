@@ -21,9 +21,15 @@ export function computeHistoricalRanks(
   results: WorkoutResult[],
   getWorkout: (workoutId: string) => Workout | undefined
 ): RankedResult[] {
-  const chronological = [...results].sort(
-    (a, b) => new Date(a.completedAt).getTime() - new Date(b.completedAt).getTime()
-  );
+  // Ties on completedAt are broken by uuid (Cloud Save P4), so every device
+  // ranks an identical history identically, whatever order it was loaded in.
+  const chronological = [...results].sort((a, b) => {
+    const byTime = new Date(a.completedAt).getTime() - new Date(b.completedAt).getTime();
+    if (byTime !== 0) return byTime;
+    const ka = a.uuid ?? a.id;
+    const kb = b.uuid ?? b.id;
+    return ka < kb ? -1 : ka > kb ? 1 : 0;
+  });
 
   const bestSoFar = new Map<string, number>();
   return chronological.map((result) => {

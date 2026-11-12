@@ -1,7 +1,7 @@
-import { StateCreator } from 'zustand';
+import type { StateCreator } from 'zustand';
 import { UserRepository } from '../services';
 import { LOCAL_USER_ID } from '../constants/localUser';
-import { AppStore, UserSlice } from './types';
+import type { AppStore, UserSlice } from './types';
 
 export const createUserSlice: StateCreator<AppStore, [], [], UserSlice> = (set) => ({
   user: null,

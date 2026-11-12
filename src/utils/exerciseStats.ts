@@ -1,4 +1,4 @@
-import { WorkoutResult, Workout, ExerciseLibraryEntry } from '../models';
+import type { WorkoutResult, Workout, ExerciseLibraryEntry } from '../models';
 import { getExerciseMovements, resolveExerciseWeightKg } from './exerciseBreakdown';
 import { getWorkoutRoundExercises } from './workoutPresentation';
 
