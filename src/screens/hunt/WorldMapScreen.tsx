@@ -365,7 +365,7 @@ function BossHeroPage({
     >
       <View style={styles.heroPageArtWrap}>
         {portraitSource ? (
-          <MonsterPortraitImage source={portraitSource} style={styles.heroPageImage} />
+          <MonsterPortraitImage source={portraitSource} style={styles.heroPageImage} fitCircularFrame={false} />
         ) : (
           <View style={[styles.heroPageFallback, { backgroundColor: `${accentColor}33` }]}>
             <Text style={styles.heroPageFallbackInitial}>{isLocked ? '?' : monster.name.charAt(0)}</Text>

@@ -1,6 +1,5 @@
 import type { WorkoutResult, Workout, ExerciseLibraryEntry } from '../models';
-import { getExerciseMovements, resolveExerciseWeightKg } from './exerciseBreakdown';
-import { getWorkoutRoundExercises } from './workoutPresentation';
+import { getResultExerciseBreakdown } from './resultWorkout';
 
 export interface ExerciseStats {
   exerciseId: string;
@@ -25,13 +24,15 @@ type LibraryResolver = (exerciseName: string) => ExerciseLibraryEntry | undefine
 
 /**
  * Lifetime per-exercise totals, entirely derived from already-persisted
- * WorkoutResult rows plus the fixed exercise list each Workout carries in
- * content — no separate per-exercise storage table. A completed hunt
- * always means the workout's exact prescribed exercises/reps were
- * finished (Sprint 6: victory is bound to finishing the prescribed
- * workout, not partial credit), so this reconstruction is exact, not an
- * estimate. Distance- and step-based carries preserve their real unit
- * totals without fabricating reps or volume.
+ * WorkoutResult rows — no separate per-exercise storage table. Each
+ * result contributes exactly its own Exercise Breakdown
+ * (getResultExerciseBreakdown): the workout it actually performed, so a
+ * Custom Hunt's rounds/ladder depth/reps/carry steps, the real round
+ * count of a ladder or EMOM attempt, and the post-hunt extra sets
+ * (push-ups, pull-ups) all count — the same numbers the Victory screen
+ * showed for that hunt, never the canonical template's. Distance- and
+ * step-based carries keep their own units without fabricating reps or
+ * volume.
  *
  * Resolvers are passed in rather than importing the Content Engine
  * directly, keeping this util pure/testable like huntState.ts and
@@ -47,79 +48,39 @@ export function getAllExerciseStats(
   const statsById = new Map<string, ExerciseStats>();
 
   results.forEach((result) => {
-    const workout = getWorkout(result.workoutId);
-    if (!workout) {
+    const breakdown = getResultExerciseBreakdown(result, getWorkout, getLibraryEntryById);
+    if (!breakdown) {
       return;
     }
-    const weightAKg = result.weightValueA;
-    const weightBKg = result.weightValueB;
     const exerciseIdsThisSession = new Set<string>();
+    breakdown.forEach((item) => {
+      const entry = item.exerciseId
+        ? getLibraryEntryById?.(item.exerciseId) ?? getLibraryEntry(item.name)
+        : getLibraryEntry(item.name);
+      if (!entry) return;
 
-    // Sections carry a distinct exercise list per round (e.g. Behemoth's
-    // three phases) — the same canonical source Hunt Brief, Active Hunt,
-    // and Exercise Breakdown already read from. A workout without sections
-    // is resolved per round via getWorkoutRoundExercises (statistics
-    // audit): correct for an ordinary flat workout (same full list every
-    // round, same final totals as the old flat-list-times-rounds math)
-    // AND for a workout using the "legacy repeated Chain stored as
-    // consecutive blocks" fallback (e.g. Atlas), which the old blind
-    // multiply double-counted. Task 3 (EMOM): an open-ended workout's
-    // actual round count can differ from workout.rounds (a reference
-    // value only for those, never a cap) — this result's own
-    // rungLaps.length is what actually happened.
-    const actualRounds = result.rungLaps?.length ?? workout.rounds;
-    const exerciseGroups = workout.sections
-      ? workout.sections.map((section) => section.exercises)
-      : Array.from({ length: actualRounds }, (_, i) => getWorkoutRoundExercises(workout, i + 1));
-
-    exerciseGroups.forEach((exerciseList) => {
-      exerciseList.forEach((exercise) => {
-        // Each group above is already exactly one round's worth of
-        // exercises (a section, or one resolved round block) — no further
-        // multiplier needed here.
-        const reps = exercise.targetReps ?? 0;
-        const distanceFt = exercise.targetDistanceFt ?? 0;
-        const steps = exercise.targetSteps ?? 0;
-        getExerciseMovements(exercise, getLibraryEntryById).forEach((movement) => {
-          const entry = movement.libraryExerciseId
-            ? getLibraryEntryById?.(movement.libraryExerciseId) ?? getLibraryEntry(movement.name)
-            : getLibraryEntry(movement.name);
-          if (!entry) return;
-
-          // Each combination component is credited as its own canonical
-          // movement and uses its own kettlebell count. The combo step's
-          // target reps apply once to every constituent movement.
-          const weightPerRepKg = resolveExerciseWeightKg(
-            { ...exercise, usesGearCount: movement.usesGearCount },
-            workout.gearCount,
-            weightAKg,
-            weightBKg
-          );
-          const existing: ExerciseStats = statsById.get(entry.id) ?? {
-            exerciseId: entry.id,
-            exerciseName: entry.name,
-            totalReps: 0,
-            totalVolumeKg: 0,
-            totalSessions: 0,
-            lastPerformedAt: null,
-            totalDistanceFt: 0,
-            totalSteps: 0,
-          };
-
-          existing.totalReps += reps;
-          existing.totalVolumeKg += reps * weightPerRepKg;
-          existing.totalDistanceFt += distanceFt;
-          existing.totalSteps += steps;
-          if (!exerciseIdsThisSession.has(entry.id)) {
-            existing.totalSessions += 1;
-            exerciseIdsThisSession.add(entry.id);
-          }
-          if (!existing.lastPerformedAt || result.completedAt > existing.lastPerformedAt) {
-            existing.lastPerformedAt = result.completedAt;
-          }
-          statsById.set(entry.id, existing);
-        });
-      });
+      const existing: ExerciseStats = statsById.get(entry.id) ?? {
+        exerciseId: entry.id,
+        exerciseName: entry.name,
+        totalReps: 0,
+        totalVolumeKg: 0,
+        totalSessions: 0,
+        lastPerformedAt: null,
+        totalDistanceFt: 0,
+        totalSteps: 0,
+      };
+      existing.totalReps += item.totalReps;
+      existing.totalVolumeKg += item.volumeKg;
+      existing.totalDistanceFt += item.totalDistanceFt ?? 0;
+      existing.totalSteps += item.totalSteps ?? 0;
+      if (!exerciseIdsThisSession.has(entry.id)) {
+        existing.totalSessions += 1;
+        exerciseIdsThisSession.add(entry.id);
+      }
+      if (!existing.lastPerformedAt || result.completedAt > existing.lastPerformedAt) {
+        existing.lastPerformedAt = result.completedAt;
+      }
+      statsById.set(entry.id, existing);
     });
   });
 

@@ -30,6 +30,8 @@ export interface ExerciseBreakdownEntry {
    */
   weightAKg: number;
   weightBKg: number | null;
+  /** Reps of this total that came from optional post-hunt extra sets (see resultWorkout.ts). Absent when none did. */
+  extraReps?: number;
 }
 
 export interface ExerciseMovement {

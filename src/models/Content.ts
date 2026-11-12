@@ -52,6 +52,21 @@ export interface Exercise {
    */
   /** 0 marks a bodyweight step; 1/2 select the kettlebell load for this movement. */
   usesGearCount?: 0 | 1 | 2;
+  /**
+   * The movement this step used to be, for a content change that swapped
+   * the movement in place (same step id, so saved rep overrides still
+   * apply). A result completed before `before` was a hunt of the previous
+   * movement, so statistics read it with these fields instead of the
+   * current ones — history keeps the movement that was actually performed.
+   * See src/utils/resultWorkout.ts.
+   */
+  previousVersion?: {
+    before: string;
+    name: string;
+    libraryExerciseId?: string;
+    displayName?: string;
+    usesGearCount?: 0 | 1 | 2;
+  };
 }
 
 export interface Finisher {
@@ -112,6 +127,14 @@ export interface Workout {
    * before Complete Round is pressed. See useWorkoutSession.ts.
    */
   emomSeconds?: number;
+  /**
+   * How an EMOM workout ends. 'open' (the default, The Breaking): rounds
+   * continue until a window expires, and `rounds` is only a reference.
+   * 'fixed' (Mammoth): exactly `rounds` rounds, each inside its window —
+   * completing the last round ends the hunt, and a window expiring before
+   * that ends the attempt unfinished.
+   */
+  emomMode?: 'open' | 'fixed';
   finisher: Finisher;
 }
 

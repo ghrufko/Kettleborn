@@ -2473,11 +2473,16 @@
       },
       {
         "id": "hydra-push-press",
-        "name": "Double Push Press",
-        "libraryExerciseId": "double-push-press",
+        "name": "Double Jerk",
+        "libraryExerciseId": "double-jerk",
         "damageCoefficient": 16,
         "damageType": "flat",
-        "targetReps": 5
+        "targetReps": 5,
+        "previousVersion": {
+          "before": "2026-11-11T11:23:31.000Z",
+          "name": "Double Push Press",
+          "libraryExerciseId": "double-push-press"
+        }
       },
       {
         "id": "hydra-swing",
@@ -5292,6 +5297,7 @@
     "rounds": 5,
     "restSeconds": 0,
     "emomSeconds": 180,
+    "emomMode": "fixed",
     "roundBonusDamage": 55,
     "targetTimeSeconds": 900,
     "focus": [
@@ -5302,13 +5308,13 @@
     "exercises": [
       {
         "id": "mammoth-burpee-kb",
-        "name": "Burpee — Double KB",
+        "name": "Double KB Burpee",
         "damageCoefficient": 3,
         "damageType": "per_second",
         "durationSeconds": 36,
         "targetReps": 5,
         "libraryExerciseId": "burpee-kettlebell",
-        "displayName": "Burpee — Double KB"
+        "displayName": "Double KB Burpee"
       },
       {
         "id": "mammoth-long-hike-snatch",
@@ -5382,12 +5388,18 @@
     "exercises": [
       {
         "id": "basilisk-burpee",
-        "name": "Burpee",
-        "libraryExerciseId": "burpee",
+        "name": "Double KB Burpee",
+        "libraryExerciseId": "burpee-kettlebell",
         "damageCoefficient": 12,
         "damageType": "flat",
         "targetReps": 4,
-        "usesGearCount": 0
+        "usesGearCount": 2,
+        "previousVersion": {
+          "before": "2026-11-11T11:23:31.000Z",
+          "name": "Burpee",
+          "libraryExerciseId": "burpee",
+          "usesGearCount": 0
+        }
       },
       {
         "id": "basilisk-clean-jerk-1",
@@ -5568,7 +5580,7 @@
     "exercises": [
       {
         "id": "ravager-r1-burpee",
-        "name": "Burpee — Double KB",
+        "name": "Double KB Burpee",
         "libraryExerciseId": "burpee-kettlebell",
         "targetReps": 4,
         "damageCoefficient": 12,
@@ -5627,7 +5639,7 @@
         "exercises": [
           {
             "id": "ravager-r1-burpee",
-            "name": "Burpee — Double KB",
+            "name": "Double KB Burpee",
             "libraryExerciseId": "burpee-kettlebell",
             "targetReps": 4,
             "damageCoefficient": 12,
@@ -5686,7 +5698,7 @@
         "exercises": [
           {
             "id": "ravager-r2-burpee",
-            "name": "Burpee — Double KB",
+            "name": "Double KB Burpee",
             "libraryExerciseId": "burpee-kettlebell",
             "targetReps": 4,
             "damageCoefficient": 12,
@@ -5745,7 +5757,7 @@
         "exercises": [
           {
             "id": "ravager-r3-burpee",
-            "name": "Burpee — Double KB",
+            "name": "Double KB Burpee",
             "libraryExerciseId": "burpee-kettlebell",
             "targetReps": 4,
             "damageCoefficient": 12,
@@ -5804,7 +5816,7 @@
         "exercises": [
           {
             "id": "ravager-r4-burpee",
-            "name": "Burpee — Double KB",
+            "name": "Double KB Burpee",
             "libraryExerciseId": "burpee-kettlebell",
             "targetReps": 4,
             "damageCoefficient": 12,
@@ -5863,7 +5875,7 @@
         "exercises": [
           {
             "id": "ravager-r5-burpee",
-            "name": "Burpee — Double KB",
+            "name": "Double KB Burpee",
             "libraryExerciseId": "burpee-kettlebell",
             "targetReps": 4,
             "damageCoefficient": 12,

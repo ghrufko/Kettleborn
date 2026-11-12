@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Exercise, Workout } from '../../src/models';
+import type { Exercise, Workout } from '../../src/models';
 import { useIntervalClock } from '../timer/useIntervalClock';
 import { getWorkoutRoundExercises } from '../../src/utils/workoutPresentation';
 
@@ -48,6 +48,15 @@ export interface WorkoutSessionState {
   restLaps: RestLap[];
   isResting: boolean;
   isComplete: boolean;
+  /**
+   * False only when the session ended WITHOUT its objectives done: a
+   * fixed-round EMOM workout (workout.emomMode 'fixed', e.g. Mammoth)
+   * whose window expired before its last round was completed. Such an
+   * attempt is over but not won — onWorkoutComplete is not called and the
+   * boss stays alive. True for every normal completion (including an
+   * open-ended EMOM attempt, whose expiring window IS its normal end).
+   */
+  objectivesComplete: boolean;
 }
 
 export interface WorkoutSessionActions {
@@ -91,6 +100,45 @@ function isBareHandLabel(label: string | undefined, hand: 'Left' | 'Right'): boo
   return !!label && new RegExp(`^${hand} Hand$`, 'i').test(label.trim());
 }
 
+/**
+ * What happens when `round` is completed (pure — the hook below applies it):
+ * - 'workout-complete': the last objective is done; the hunt is won.
+ * - 'next-window': EMOM — the next window starts immediately.
+ * - 'next-hand': Left Hand → Right Hand of the same round, no rest.
+ * - 'rest': rest, then the next round.
+ */
+export type RoundCompletionOutcome = 'workout-complete' | 'next-window' | 'next-hand' | 'rest';
+
+export function getRoundCompletionOutcome(
+  workout: Pick<Workout, 'emomSeconds' | 'emomMode' | 'rounds' | 'sections'>,
+  round: number
+): RoundCompletionOutcome {
+  if (workout.emomSeconds) {
+    // Fixed-round EMOM (Mammoth): the configured rounds — canonical or
+    // Custom Hunt — are the objectives, so the last one ends the hunt.
+    // Open-ended EMOM (The Breaking) never ends on a round count.
+    return workout.emomMode === 'fixed' && round >= workout.rounds ? 'workout-complete' : 'next-window';
+  }
+  if (round >= workout.rounds) {
+    return 'workout-complete';
+  }
+  const currentLabel = workout.sections?.[round - 1]?.label;
+  const nextLabel = workout.sections?.[round]?.label;
+  return isBareHandLabel(currentLabel, 'Left') && isBareHandLabel(nextLabel, 'Right') ? 'next-hand' : 'rest';
+}
+
+/**
+ * An EMOM window (plus its grace beat) ran out before Complete Round.
+ * Open-ended: that is how every attempt ends — the attempt is complete.
+ * Fixed-round: the required rounds weren't finished — the attempt is
+ * over, unfinished, and the boss is not defeated.
+ */
+export function getWindowExpiryOutcome(
+  workout: Pick<Workout, 'emomMode'>
+): 'attempt-complete' | 'objectives-unfinished' {
+  return workout.emomMode === 'fixed' ? 'objectives-unfinished' : 'attempt-complete';
+}
+
 export function useWorkoutSession(
   workout: Workout,
   callbacks: WorkoutSessionCallbacks = {}
@@ -115,6 +163,7 @@ export function useWorkoutSession(
   const [emomGraceSecondsLeft, setEmomGraceSecondsLeft] = useState<number | null>(null);
   const [laps, setLaps] = useState<RoundLap[]>([]);
   const [restLaps, setRestLaps] = useState<RestLap[]>([]);
+  const [objectivesComplete, setObjectivesComplete] = useState(true);
 
   const callbacksRef = useRef(callbacks);
   useEffect(() => {
@@ -162,7 +211,13 @@ export function useWorkoutSession(
             if (nextGrace <= 0) {
               setPhase('complete');
               setStatus('complete');
-              callbacksRef.current.onWorkoutComplete?.({ elapsedSeconds: elapsedSeconds + 1 });
+              if (getWindowExpiryOutcome(workout) === 'objectives-unfinished') {
+                // Fixed-round EMOM: the clock beat the player before the
+                // last required round — the attempt ends unfinished.
+                setObjectivesComplete(false);
+              } else {
+                callbacksRef.current.onWorkoutComplete?.({ elapsedSeconds: elapsedSeconds + 1 });
+              }
               return 0;
             }
             return nextGrace;
@@ -230,7 +285,20 @@ export function useWorkoutSession(
     setLaps((prev) => [...prev, { round, durationSeconds }]);
     callbacksRef.current.onRoundComplete?.({ round, durationSeconds, exercises });
 
-    if (workout.emomSeconds) {
+    const outcome = getRoundCompletionOutcome(workout, round);
+
+    if (outcome === 'workout-complete') {
+      // The last objective: every round of a normal workout, or the
+      // configured rounds of a fixed-round EMOM (Mammoth — canonical or
+      // Custom Hunt).
+      setEmomGraceSecondsLeft(null);
+      setPhase('complete');
+      setStatus('complete');
+      callbacksRef.current.onWorkoutComplete?.({ elapsedSeconds });
+      return;
+    }
+
+    if (outcome === 'next-window') {
       // Open-ended EMOM: no predetermined final round (per the brief —
       // "do not invent a maximum number of rounds"), so `workout.rounds`
       // is never checked here as a cap. Completing within the window (or
@@ -239,16 +307,9 @@ export function useWorkoutSession(
       // next window starts immediately, and any in-progress grace clears.
       setCurrentRound(round + 1);
       setCurrentRoundElapsedSeconds(0);
-      setEmomRemainingSeconds(workout.emomSeconds);
+      setEmomRemainingSeconds(workout.emomSeconds ?? null);
       setEmomGraceSecondsLeft(null);
       setPhase('round');
-      return;
-    }
-
-    if (round >= workout.rounds) {
-      setPhase('complete');
-      setStatus('complete');
-      callbacksRef.current.onWorkoutComplete?.({ elapsedSeconds });
       return;
     }
 
@@ -258,9 +319,7 @@ export function useWorkoutSession(
     // this same completeRound the next time it's called, once Right
     // Hand itself completes — same function, same logic, just run again
     // one round later; nothing new to keep in sync.
-    const currentLabel = workout.sections?.[round - 1]?.label;
-    const nextLabel = workout.sections?.[round]?.label;
-    if (isBareHandLabel(currentLabel, 'Left') && isBareHandLabel(nextLabel, 'Right')) {
+    if (outcome === 'next-hand') {
       setCurrentRound(round + 1);
       setCurrentRoundElapsedSeconds(0);
       setPhase('round');
@@ -316,6 +375,7 @@ export function useWorkoutSession(
     restLaps,
     isResting: phase === 'resting',
     isComplete: status === 'complete',
+    objectivesComplete,
     completeRound,
     continueAfterRest,
     skipCountdown,

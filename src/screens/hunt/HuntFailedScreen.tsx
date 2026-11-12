@@ -24,6 +24,7 @@ export function HuntFailedScreen({ route, navigation }: Props) {
   const huntDefinition = monster?.hunts.find((hunt) => hunt.id === huntId);
   const isNotFaster = reason === 'not_faster';
   const isFewerRounds = reason === 'fewer_rounds';
+  const isWindowExpired = reason === 'window_expired';
   const isBelowMinimumRounds = huntDefinition?.minimumRoundsToComplete != null;
 
   const formatMMSS = (totalSeconds: number) => {
@@ -89,7 +90,9 @@ export function HuntFailedScreen({ route, navigation }: Props) {
         </View>
 
         <Text style={styles.title}>
-          {isNotFaster
+          {isWindowExpired
+            ? 'The Window Closed'
+            : isNotFaster
             ? 'Not Fast Enough'
             : isBelowMinimumRounds
               ? 'Minimum Rounds Not Met'
@@ -98,7 +101,9 @@ export function HuntFailedScreen({ route, navigation }: Props) {
                 : 'Hunt Failed'}
         </Text>
         <Text style={styles.subtitle}>
-          {isNotFaster
+          {isWindowExpired
+            ? `${monster?.name ?? 'The boss'} outlasted the clock`
+            : isNotFaster
             ? `${monster?.name ?? 'The boss'} fell, but not quickly enough`
             : isBelowMinimumRounds
               ? `Complete at least ${huntDefinition?.minimumRoundsToComplete} rounds to clear this encounter`
@@ -108,7 +113,17 @@ export function HuntFailedScreen({ route, navigation }: Props) {
         </Text>
 
         <GlassCard style={styles.infoCard}>
-          {isNotFaster ? (
+          {isWindowExpired ? (
+            <>
+              <Text style={styles.infoLine}>
+                {roundsCompleted != null && targetRounds != null
+                  ? `Rounds finished in time: ${roundsCompleted} of ${targetRounds}`
+                  : 'A round was not finished inside its window'}
+              </Text>
+              <Text style={styles.infoLine}>No experience awarded</Text>
+              <Text style={styles.infoLine}>This attempt was not saved</Text>
+            </>
+          ) : isNotFaster ? (
             <>
               <Text style={styles.infoLine}>
                 {elapsedSeconds != null ? `Your time: ${formatMMSS(elapsedSeconds)}` : 'Encounter not beaten'}

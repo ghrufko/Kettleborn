@@ -1,4 +1,4 @@
-import { Exercise } from '../../src/models';
+import type { Exercise } from '../../src/models';
 
 /**
  * Resolves the damage a single exercise completion deals, using only the

@@ -1,4 +1,4 @@
-import { BattleConfig, Exercise, Workout } from '../models';
+import type { BattleConfig, Exercise, Workout } from '../models';
 
 /**
  * Task 2 (Custom Training — structural parameters). This module answers
@@ -109,7 +109,49 @@ export interface StructuralControlConfig {
  * to the structural control above.
  */
 export function getRepsCustomizableTemplate(workout: Workout): Exercise[] | null {
-  return classifyWorkoutStructure(workout) === 'flat' ? workout.exercises : null;
+  const groups = getRepsCustomizableGroups(workout);
+  return groups ? groups.flatMap((group) => group.exercises) : null;
+}
+
+export interface RepsCustomizableGroup {
+  /** The section/phase label, or null for a flat workout's single list. */
+  label: string | null;
+  exercises: Exercise[];
+}
+
+/** True when the step's amount can be overridden: a rep count, or a carry's step count. */
+export function isAmountCustomizable(exercise: Exercise): boolean {
+  return !!exercise.targetReps || !!exercise.targetSteps;
+}
+
+/**
+ * The exercises a Custom Hunt may override, grouped for display.
+ *
+ * - flat: the one repeated exercise list (reps, and a carry's steps —
+ *   e.g. Leviathan's Front Rack Carry).
+ * - fixed-sectioned: every section's own exercises, one group per
+ *   section/phase (e.g. Behemoth's three phases). Each section is
+ *   different work performed once, and every step id in it is unique,
+ *   so an override keyed by step id changes exactly that one phase's
+ *   step — never the same movement in another phase.
+ * - ladder / cyclical-sectioned: null. A ladder's reps are its rung
+ *   numbers, and a cyclical workout reuses one movement across sections
+ *   under regenerated ids, so a per-step override there would be
+ *   ambiguous (see the comment above).
+ */
+export function getRepsCustomizableGroups(workout: Workout): RepsCustomizableGroup[] | null {
+  const kind = classifyWorkoutStructure(workout);
+  if (kind === 'flat') {
+    return [{ label: null, exercises: workout.exercises }];
+  }
+  if (kind === 'fixed-sectioned' && workout.sections?.length) {
+    const ids = workout.sections.flatMap((section) => section.exercises.map((exercise) => exercise.id));
+    if (new Set(ids).size !== ids.length) {
+      return null;
+    }
+    return workout.sections.map((section) => ({ label: section.label, exercises: section.exercises }));
+  }
+  return null;
 }
 
 const MIN_ROUNDS = 1;
@@ -208,6 +250,27 @@ function ladderRungSequence(maxRung: number): number[] {
 function applyRepsOverrides(template: Exercise[], repsOverrides: Record<string, number>): Exercise[] {
   return template.map((exercise) => {
     const overrideReps = repsOverrides[exercise.id];
+    // A carry's override is its step count. Its damage is time-based
+    // (per_second × durationSeconds), so the expected duration scales with
+    // the distance covered — same proportional idea as the flat-damage
+    // coefficient below, keeping the HP calibration consistent.
+    if (!exercise.targetReps && exercise.targetSteps) {
+      if (!overrideReps || overrideReps === exercise.targetSteps) {
+        return exercise;
+      }
+      const clampedSteps = Math.max(1, Math.round(overrideReps));
+      const ratio = clampedSteps / exercise.targetSteps;
+      return {
+        ...exercise,
+        targetSteps: clampedSteps,
+        ...(exercise.durationSeconds !== undefined
+          ? { durationSeconds: Math.max(1, Math.round(exercise.durationSeconds * ratio)) }
+          : {}),
+        ...(exercise.damageType === 'flat'
+          ? { damageCoefficient: Math.max(1, Math.round(exercise.damageCoefficient * ratio)) }
+          : {}),
+      };
+    }
     if (!overrideReps || overrideReps === exercise.targetReps || !exercise.targetReps) {
       return exercise;
     }
@@ -243,17 +306,31 @@ export function buildCustomWorkout(
   repsOverrides?: Record<string, number>
 ): Workout {
   const config = getStructuralControlConfig(canonicalWorkout);
+  const hasRepsOverrides = !!repsOverrides && Object.keys(repsOverrides).length > 0;
   if (!config) {
+    // A fixed-sectioned workout (e.g. Behemoth's three phases) has no
+    // structural control, but each phase's own reps can still be set.
+    // The phases themselves are kept exactly — same labels, same order,
+    // same count — only the overridden steps' amounts change.
+    if (hasRepsOverrides && getRepsCustomizableGroups(canonicalWorkout) && canonicalWorkout.sections) {
+      return {
+        ...canonicalWorkout,
+        sections: canonicalWorkout.sections.map((section) => ({
+          ...section,
+          exercises: applyRepsOverrides(section.exercises, repsOverrides!),
+        })),
+        exercises: applyRepsOverrides(canonicalWorkout.exercises, repsOverrides!),
+      };
+    }
     return canonicalWorkout;
   }
   const clamped = Math.min(config.max, Math.max(config.min, Math.round(value)));
 
   if (config.kind === 'flat') {
     const ratio = clamped / config.canonical;
-    const exercises =
-      repsOverrides && Object.keys(repsOverrides).length > 0
-        ? applyRepsOverrides(canonicalWorkout.exercises, repsOverrides)
-        : canonicalWorkout.exercises;
+    const exercises = hasRepsOverrides
+      ? applyRepsOverrides(canonicalWorkout.exercises, repsOverrides!)
+      : canonicalWorkout.exercises;
     return {
       ...canonicalWorkout,
       rounds: clamped,

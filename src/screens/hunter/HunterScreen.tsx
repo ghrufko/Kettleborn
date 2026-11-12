@@ -11,8 +11,6 @@ import { getLevelProgress } from '../../../engines/progress/progressionEngine';
 import { formatWeight, formatWeightPair } from '../../utils/weight';
 import { isCampaignComplete, getCampaignState } from '../../utils/campaignState';
 import { getNextObjective } from '../../utils/nextObjective';
-import { computeHistoricalRanks, rankDistribution } from '../../utils/rankHistory';
-import { HuntRank } from '../../utils/huntRank';
 import { MILESTONE_DISPLAY_ORDER } from '../../utils/milestones';
 import { WorkoutResult } from '../../models';
 import { HunterStackParamList } from '../../navigation/types';
@@ -36,7 +34,6 @@ export function HunterScreen() {
   const monsterProgress = useAppStore((state) => state.monsterProgress);
   const achievements = useAppStore((state) => state.achievements);
   const getHunterSummary = useAppStore((state) => state.getHunterSummary);
-  const getAllResults = useAppStore((state) => state.getAllResults);
   // The unit the player picks in Settings (settings.unit_preference) — the
   // same source every other weight display reads. The user row's own
   // unit_preference copy is only ever written once, as 'kg', when it's created.
@@ -47,7 +44,6 @@ export function HunterScreen() {
   const [recentResult, setRecentResult] = useState<WorkoutResult | null>(null);
   const [weightPRKg, setWeightPRKg] = useState<number | null>(null);
   const [fastestHuntSeconds, setFastestHuntSeconds] = useState<number | null>(null);
-  const [rankCounts, setRankCounts] = useState<Record<HuntRank, number>>({ S: 0, A: 0, B: 0, C: 0 });
 
   // Sprint 27: useFocusEffect (not a plain useEffect) so this re-fetches
   // every time the Hunter tab regains focus — HunterTab stays mounted
@@ -70,11 +66,7 @@ export function HunterScreen() {
         setWeightPRKg(summary.weightPRKg);
         setFastestHuntSeconds(summary.fastestHuntSeconds);
       });
-      getAllResults().then((results) => {
-        const ranked = computeHistoricalRanks(results, (id) => contentEngine.getWorkout(id));
-        setRankCounts(rankDistribution(ranked));
-      });
-    }, [getHunterSummary, getAllResults])
+    }, [getHunterSummary])
   );
 
   const recentMonster = recentResult ? contentEngine.getMonster(recentResult.monsterId) : undefined;
@@ -128,26 +120,6 @@ export function HunterScreen() {
           <View style={styles.statRow}>
             <Text style={styles.statLabel}>Longest Streak</Text>
             <Text style={styles.statValue}>{chronicle?.longestStreakDays ?? 0} days</Text>
-          </View>
-        </GlassCard>
-
-        <GlassCard style={styles.card}>
-          <Text style={styles.sectionLabel}>Rank Record</Text>
-          <View style={styles.statRow}>
-            <Text style={styles.statLabel}>S</Text>
-            <Text style={styles.statValue}>{rankCounts.S}</Text>
-          </View>
-          <View style={styles.statRow}>
-            <Text style={styles.statLabel}>A</Text>
-            <Text style={styles.statValue}>{rankCounts.A}</Text>
-          </View>
-          <View style={styles.statRow}>
-            <Text style={styles.statLabel}>B</Text>
-            <Text style={styles.statValue}>{rankCounts.B}</Text>
-          </View>
-          <View style={styles.statRow}>
-            <Text style={styles.statLabel}>C</Text>
-            <Text style={styles.statValue}>{rankCounts.C}</Text>
           </View>
         </GlassCard>
 

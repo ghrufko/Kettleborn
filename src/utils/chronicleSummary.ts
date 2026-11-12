@@ -1,6 +1,6 @@
-import { WorkoutResult } from '../models';
+import type { WorkoutResult } from '../models';
 import { contentEngine } from '../../engines/content';
-import { getExerciseBreakdown } from './exerciseBreakdown';
+import { getResultVolumeKg } from './resultWorkout';
 
 export interface PeriodSummary {
   workouts: number;
@@ -9,36 +9,24 @@ export interface PeriodSummary {
 }
 
 /**
- * Sprint 27 (Aggregate Volume fix): previously `result.weightValueA +
- * (result.weightValueB ?? 0)` — that's just the weight used, with zero
- * reps factored in at all (not even a flat/undercounted rep figure, no
- * reps whatsoever). Reuses the same authoritative, sections+rounds-aware
- * `getExerciseBreakdown` helper the aggregate `HuntSummary.volumeKg` fix
- * and the Victory screen's "Exercise Breakdown" card already use — one
- * volume formula, not three different interpretations of how much work a
- * Hunt represents.
+ * The volume one hunt contributes to the weekly/monthly totals — the same
+ * figure it added to the lifetime Chronicle total and showed on its
+ * Victory screen (see getResultVolumeKg). This used to rebuild every
+ * result from the CANONICAL workout with its canonical round count, so a
+ * Custom Hunt was counted as the full default workout (a 5-rung Custom
+ * Minotaur ladder at 2 × 24 kg read as 9,600 kg instead of 2,400 kg).
  */
 function volumeForResult(result: WorkoutResult): number {
-  const workout = contentEngine.getWorkout(result.workoutId);
-  if (!workout) {
-    // Content for this workoutId no longer exists (e.g. removed/renamed
-    // workout) — fall back to the old weight-only approximation rather
-    // than throwing or silently dropping this result from the totals.
-    return result.weightValueA + (result.weightValueB ?? 0);
-  }
-  const gearCount = result.weightValueB !== null ? 2 : 1;
-  // Kettlebell weight audit: weightValueB is passed through as its own
-  // real value now (was missing entirely here — getExerciseBreakdown
-  // would have silently fallen back to weightValueA * 2 for every
-  // double-bell exercise, wrong whenever the two bells actually differ).
-  return getExerciseBreakdown(
-    workout,
-    workout.rounds,
-    result.weightValueA,
-    gearCount,
-    result.weightValueB,
-    (exerciseId) => contentEngine.getExerciseLibraryEntry(exerciseId)
-  ).reduce((sum, entry) => sum + entry.volumeKg, 0);
+  // A result whose workout no longer exists in content and that predates
+  // stored volume can't be measured — it adds nothing rather than a
+  // fabricated weight-only figure.
+  return (
+    getResultVolumeKg(
+      result,
+      (workoutId) => contentEngine.getWorkout(workoutId),
+      (exerciseId) => contentEngine.getExerciseLibraryEntry(exerciseId)
+    ) ?? 0
+  );
 }
 
 function isSameCalendarWeek(a: Date, b: Date): boolean {

@@ -59,8 +59,9 @@ export type HuntStackParamList = {
      * not saved, instant retry" handling, different copy. See
      * targetSeconds/elapsedSeconds below for that copy's numbers.
      */
-    reason?: 'quit' | 'not_faster' | 'fewer_rounds';
-    /** EMOM-style workouts only (reason 'fewer_rounds') — the rounds equivalent of elapsedSeconds/targetSeconds above. */
+    /** 'window_expired': a fixed-round EMOM workout (Mammoth) whose window ran out before its last round. */
+    reason?: 'quit' | 'not_faster' | 'fewer_rounds' | 'window_expired';
+    /** EMOM-style workouts only (reason 'fewer_rounds' / 'window_expired') — the rounds equivalent of elapsedSeconds/targetSeconds above. */
     roundsCompleted?: number;
     targetRounds?: number;
     targetSeconds?: number;

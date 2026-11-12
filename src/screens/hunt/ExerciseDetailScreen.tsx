@@ -126,20 +126,19 @@ export function ExerciseDetailScreen({ route, navigation }: Props) {
         </GlassCard>
 
         {/*
-          Optional post-Hunt exercises: a deliberately separate card from
-          "Your Lifetime Stats" above — extraSets were never part of any
-          Hunt's prescribed structure, so pooling them together would
-          misrepresent both totals. Only renders when this exercise has
-          ever actually been logged as an extra set (non-null extraStats);
-          a regular Hunt exercise's detail page never shows this card.
+          Optional post-Hunt exercises: "Your Lifetime Stats" above already
+          includes extra sets (they're real completed reps — see
+          resultWorkout.ts). This card is the part of that total that came
+          from extra sets, with the set count, not a second total. Only
+          renders when this exercise has ever been logged as an extra set.
         */}
         {extraStats ? (
           <GlassCard style={styles.section}>
-            <Text style={styles.sectionLabel}>Extra Exercise Log</Text>
+            <Text style={styles.sectionLabel}>From Extra Sets</Text>
             <View style={styles.statsGrid}>
               <View style={styles.statCell}>
                 <Text style={styles.statValue}>{extraStats.totalReps.toLocaleString()}</Text>
-                <Text style={styles.statCaption}>Total Reps</Text>
+                <Text style={styles.statCaption}>Reps (of total)</Text>
               </View>
               <View style={styles.statCell}>
                 <Text style={styles.statValue}>{extraStats.totalSets}</Text>

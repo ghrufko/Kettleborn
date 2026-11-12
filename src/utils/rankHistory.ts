@@ -1,6 +1,7 @@
 import type { WorkoutResult, Workout } from '../models';
 import { getHuntRank } from './huntRank';
 import type { HuntRank } from './huntRank';
+import { getPerformedWorkout } from './resultWorkout';
 
 export interface RankedResult {
   result: WorkoutResult;
@@ -40,7 +41,11 @@ export function computeHistoricalRanks(
       bestSoFar.set(result.workoutId, seconds);
     }
 
-    const workout = getWorkout(result.workoutId);
+    // The target the hunt was actually ranked against at completion: a
+    // Custom Hunt's rebuilt workout scales its target time with its
+    // structure (completeHunt ranks against that, not the canonical one).
+    const canonicalWorkout = getWorkout(result.workoutId);
+    const workout = canonicalWorkout ? getPerformedWorkout(result, canonicalWorkout) : undefined;
     const rank: HuntRank = workout ? getHuntRank(seconds, workout.targetTimeSeconds, wasPersonalRecord) : 'C';
     return { result, rank };
   });

@@ -10,7 +10,9 @@ import { getHuntRank } from '../../utils/huntRank';
 import { getWeeklySummary, getMonthlySummary, getTrainingCalendar } from '../../utils/chronicleSummary';
 import { ExerciseStats, WeaknessProfile } from '../../utils/exerciseStats';
 import { getLongestSilenceDays, getMostDangerousOpponent } from '../../utils/chronicleStory';
-import { formatWeightPair } from '../../utils/weight';
+import { convertKgToDisplay, formatWeightPair } from '../../utils/weight';
+import { getPerformedWorkout } from '../../utils/resultWorkout';
+import { formatExerciseRecord } from '../../utils/exerciseRecordFormat';
 import { WorkoutResult, CustomWorkoutResult, StopwatchResult } from '../../models';
 import { ChronicleStackParamList, MainTabsParamList } from '../../navigation/types';
 import { colors, fontFamily, fontSize, spacing } from '../../theme';
@@ -39,6 +41,7 @@ export function ChronicleScreen() {
   const getWeaknessProfile = useAppStore((state) => state.getWeaknessProfile);
   const getAllCustomWorkoutResults = useAppStore((state) => state.getAllCustomWorkoutResults);
   const getAllStopwatchResults = useAppStore((state) => state.getAllStopwatchResults);
+  const unitPreference = useAppStore((state) => state.settings?.unitPreference ?? 'kg');
   const [groups, setGroups] = useState<ReturnType<typeof groupResultsByDay>>([]);
   const [allResults, setAllResults] = useState<WorkoutResult[]>([]);
   const [exerciseStats, setExerciseStats] = useState<ExerciseStats[]>([]);
@@ -194,12 +197,8 @@ export function ChronicleScreen() {
                   <Text style={styles.exerciseRecordName}>{stat.exerciseName}</Text>
                   <Ionicons name="open-outline" size={13} color={colors.bronze.active} />
                 </Pressable>
-                <Text style={styles.statValue}>
-                  {stat.totalReps > 0
-                    ? `${stat.totalReps.toLocaleString()} reps`
-                    : stat.totalDistanceFt > 0
-                      ? `${stat.totalDistanceFt.toLocaleString()} ft`
-                      : `${stat.totalSteps.toLocaleString()} steps`}
+                <Text style={[styles.statValue, styles.exerciseRecordValue]}>
+                  {formatExerciseRecord(stat, (kg) => Math.round(convertKgToDisplay(kg, unitPreference)), unitPreference)}
                 </Text>
               </View>
             ))}
@@ -265,7 +264,8 @@ export function ChronicleScreen() {
             <Text style={styles.dayLabel}>{group.label}</Text>
             {group.entries.map(({ result, wasPersonalRecord, wasFirstClear }) => {
               const monster = contentEngine.getMonster(result.monsterId);
-              const workout = contentEngine.getWorkout(result.workoutId);
+              const canonicalWorkout = contentEngine.getWorkout(result.workoutId);
+              const workout = canonicalWorkout ? getPerformedWorkout(result, canonicalWorkout) : undefined;
               const seconds = result.timeMinutes * 60 + result.timeSeconds;
               const rank = workout ? getHuntRank(seconds, workout.targetTimeSeconds, wasPersonalRecord) : 'C';
               return (
@@ -417,6 +417,15 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.monoBold,
     fontSize: fontSize.base,
     color: colors.text.primary,
+  },
+  // "100 reps — 2,400 kg done" is longer than the old reps-only value:
+  // it keeps the right edge, and wraps under itself on a narrow phone
+  // instead of pushing the exercise name off screen.
+  exerciseRecordValue: {
+    flexShrink: 1,
+    marginLeft: spacing.sm,
+    textAlign: 'right',
+    fontSize: fontSize.sm,
   },
   favoriteRow: {
     marginTop: spacing.sm,

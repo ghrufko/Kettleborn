@@ -17,6 +17,7 @@ import { getHuntRank } from '../utils/huntRank';
 import { getHunterTitle } from '../utils/hunterTitle';
 import { calculateHuntXP, getLevelForTotalXP } from '../../engines/progress/progressionEngine';
 import { getExerciseBreakdown } from '../utils/exerciseBreakdown';
+import { addExtraSetsToBreakdown } from '../utils/resultWorkout';
 import { getWorkoutActualExercises } from '../utils/workoutPresentation';
 import {
   getEncounterOutcome,
@@ -242,12 +243,21 @@ export const createWorkoutSlice: StateCreator<AppStore, [], [], WorkoutSlice> = 
     // (and for them it already equals workout.rounds, so this changes
     // nothing for that case).
     const actualRounds = rungLaps && rungLaps.length > 0 ? rungLaps.length : workout.rounds;
-    const exerciseBreakdown = getExerciseBreakdown(
-      workout,
-      actualRounds,
-      weightKg,
-      gearCount,
-      weightBKg,
+    // Optional post-hunt sets (push-ups, pull-ups) are real completed
+    // exercises: they're part of the breakdown — and so of every statistic
+    // derived from it — as bodyweight reps (0 kg under the volume
+    // convention), added exactly once here. XP/rank below still read only
+    // the prescribed workout, as before.
+    const exerciseBreakdown = addExtraSetsToBreakdown(
+      getExerciseBreakdown(
+        workout,
+        actualRounds,
+        weightKg,
+        gearCount,
+        weightBKg,
+        (exerciseId) => contentEngine.getExerciseLibraryEntry(exerciseId)
+      ),
+      extraSets,
       (exerciseId) => contentEngine.getExerciseLibraryEntry(exerciseId)
     );
     // XP continues to count completed workout-step reps. A combo step is
@@ -309,10 +319,9 @@ export const createWorkoutSlice: StateCreator<AppStore, [], [], WorkoutSlice> = 
       structuralValueUsed: isCustomHunt ? structuralValueUsed ?? null : null,
       repsOverridesUsed: isCustomHunt ? repsOverridesUsed ?? null : null,
       // Optional post-Hunt exercises: stored exactly as the player built
-      // them, with zero influence on any calculation above this line
-      // (rank, xp, volume, exerciseBreakdown are all already computed by
-      // this point). Empty array normalized to null — see
-      // WorkoutResult.extraSets.
+      // them. They count in exerciseBreakdown (above) and every statistic
+      // rebuilt from this row (resultWorkout.ts), never in rank/XP.
+      // Empty array normalized to null — see WorkoutResult.extraSets.
       extraSets: extraSets && extraSets.length > 0 ? extraSets : null,
     };
 

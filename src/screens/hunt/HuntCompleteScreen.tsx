@@ -456,12 +456,23 @@ export function HuntCompleteScreen({ route, navigation }: Props) {
               const libraryEntry = entry.exerciseId
                 ? contentEngine.getExerciseLibraryEntry(entry.exerciseId)
                 : contentEngine.getExerciseLibraryEntryByName(entry.name);
+              // Post-hunt extra sets (push-ups, pull-ups) are part of the
+              // breakdown itself — tagged so the player can tell them
+              // from the prescribed workout.
+              const isExtraOnly = !!entry.extraReps && entry.extraReps === entry.totalReps;
               const nameText = (
-                <Text style={styles.breakdownEntryName}>{entry.displayName ?? entry.name}</Text>
+                <Text style={styles.breakdownEntryName}>
+                  {entry.displayName ?? entry.name}
+                  {entry.extraReps ? (
+                    <Text style={styles.breakdownExtraTag}>
+                      {isExtraOnly ? '  · extra' : `  · +${entry.extraReps} extra`}
+                    </Text>
+                  ) : null}
+                </Text>
               );
               return (
                 <View
-                  key={entry.name}
+                  key={entry.exerciseId ?? entry.name}
                   style={[styles.breakdownEntry, index > 0 && styles.breakdownEntryDivider]}
                 >
                   {libraryEntry ? (
@@ -478,45 +489,10 @@ export function HuntCompleteScreen({ route, navigation }: Props) {
                   )}
                   <View style={styles.breakdownEntryStats}>
                     <Text style={styles.breakdownEntryReps}>{formatBreakdownQuantity(entry)}</Text>
-                    <Text style={styles.breakdownEntryVolume}>{Math.round(entry.volumeKg)} kg</Text>
+                    <Text style={styles.breakdownEntryVolume}>
+                      {entry.weightAKg === 0 && entry.totalReps > 0 ? 'bodyweight' : `${Math.round(entry.volumeKg)} kg`}
+                    </Text>
                   </View>
-                </View>
-              );
-            })}
-          </GlassCard>
-        ) : null}
-
-        {summary.extraSets && summary.extraSets.length > 0 ? (
-          <GlassCard style={styles.card}>
-            <Text style={styles.sectionLabel}>Extra Exercises</Text>
-            {summary.extraSets.map((set, index) => {
-              // Same library-lookup + name-link pattern as the Exercise
-              // Breakdown card right above — each extra exercise is now a
-              // real content/exercises/library.json entry (double-kb-pushup,
-              // single-kb-pushup, vertical-pullup), so it gets the exact
-              // same navigable-name treatment every other exercise here does.
-              const libraryEntry = contentEngine.getExerciseLibraryEntry(set.exerciseId);
-              const nameText = (
-                <Text style={styles.breakdownEntryName}>{libraryEntry?.name ?? set.exerciseId}</Text>
-              );
-              return (
-                <View
-                  key={set.id}
-                  style={[styles.breakdownEntry, index > 0 && styles.breakdownEntryDivider]}
-                >
-                  {libraryEntry ? (
-                    <Pressable
-                      onPress={() => navigation.navigate('ExerciseDetail', { exerciseId: libraryEntry.id })}
-                      accessibilityRole="link"
-                      style={styles.breakdownEntryNamePressable}
-                    >
-                      {nameText}
-                      <Ionicons name="information-circle-outline" size={14} color={colors.text.muted} />
-                    </Pressable>
-                  ) : (
-                    nameText
-                  )}
-                  <Text style={styles.breakdownEntryReps}>{set.reps} reps</Text>
                 </View>
               );
             })}
@@ -860,6 +836,11 @@ const styles = StyleSheet.create({
     fontSize: fontSize.xs,
     color: colors.text.muted,
     marginTop: 1,
+  },
+  breakdownExtraTag: {
+    fontFamily: fontFamily.monoRegular,
+    fontSize: fontSize.xs,
+    color: colors.bronze.active,
   },
   continueButton: { width: '100%', marginTop: spacing.xl, marginBottom: spacing.xl },
   rpeRow: {

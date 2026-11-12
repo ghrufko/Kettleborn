@@ -9,7 +9,15 @@ import { WorkoutStructure } from '../../components/workout/WorkoutStructure';
 import { MonsterPortraitImage } from '../../components/monster/MonsterPortraitImage';
 import { contentEngine } from '../../../engines/content';
 import { getMonsterPortrait } from '../../constants/monsterPortraits';
-import { getStructuralControlConfig, StructuralControlConfig, buildCustomWorkout, getRepsCustomizableTemplate } from '../../utils/customWorkoutStructure';
+import {
+  getStructuralControlConfig,
+  StructuralControlConfig,
+  buildCustomWorkout,
+  getRepsCustomizableTemplate,
+  getRepsCustomizableGroups,
+  isAmountCustomizable,
+} from '../../utils/customWorkoutStructure';
+import { isOpenEndedWorkout } from '../../../engines/battle/battlePlan';
 import { getCombatPersonality, getAtmosphericColor } from '../../utils/bossPersonality';
 import {
   isEncounterLocked,
@@ -107,19 +115,24 @@ function IntStepper({
   min,
   max,
   onChange,
+  step = 1,
+  suffix,
 }: {
   value: number;
   min: number;
   max: number;
   onChange: (next: number) => void;
+  step?: number;
+  /** Unit shown after the value, e.g. "steps" for a carry. */
+  suffix?: string;
 }) {
   return (
     <View style={styles.restStepperRow}>
-      <Pressable onPress={() => onChange(Math.max(min, value - 1))} style={styles.restStepperButton} hitSlop={8}>
+      <Pressable onPress={() => onChange(Math.max(min, value - step))} style={styles.restStepperButton} hitSlop={8}>
         <Ionicons name="remove" size={16} color={colors.bronze.base} />
       </Pressable>
-      <Text style={styles.restStepperValue}>{value}</Text>
-      <Pressable onPress={() => onChange(Math.min(max, value + 1))} style={styles.restStepperButton} hitSlop={8}>
+      <Text style={styles.restStepperValue}>{suffix ? `${value} ${suffix}` : value}</Text>
+      <Pressable onPress={() => onChange(Math.min(max, value + step))} style={styles.restStepperButton} hitSlop={8}>
         <Ionicons name="add" size={16} color={colors.bronze.base} />
       </Pressable>
     </View>
@@ -176,6 +189,29 @@ function WeightStepper({
         <Ionicons name="add" size={16} color={colors.text.primary} />
       </Pressable>
       <Text style={styles.weightUnit}>{unit}</Text>
+    </View>
+  );
+}
+
+/** "Phase I — Tactical / Single-Side Ladder" → "Phase I": the short handle of a section label. */
+function shortSectionLabel(label: string): string {
+  return label.split(/\s+[—–-]\s+/)[0].trim() || label;
+}
+
+/**
+ * One locked (non-editable) parameter of a progression-locked Encounter:
+ * lock mark + muted label + bronze value, inside the bronze-edged locked
+ * panel. Deliberately no stepper chrome, so it can't be mistaken for an
+ * editable control.
+ */
+function LockedParam({ label, value, emphasized = false }: { label: string; value: string; emphasized?: boolean }) {
+  return (
+    <View style={styles.lockedParamRow} accessibilityLabel={`${label}: ${value}, locked`}>
+      <View style={styles.lockedParamLabelWrap}>
+        <Ionicons name="lock-closed" size={11} color={colors.bronze.base} />
+        <Text style={styles.lockedParamLabel}>{label}</Text>
+      </View>
+      <Text style={[styles.lockedParamValue, emphasized && styles.lockedParamValueEmphasized]}>{value}</Text>
     </View>
   );
 }
@@ -253,6 +289,8 @@ export function HuntOverviewScreen({ route, navigation }: Props) {
   // workout — see getRepsCustomizableTemplate's own comment for why this
   // is deliberately not offered for ladder/sectioned workouts.
   const repsTemplate = workout ? getRepsCustomizableTemplate(workout) : null;
+  // The same exercises, grouped by phase for a sectioned workout (Behemoth).
+  const repsGroups = workout ? getRepsCustomizableGroups(workout) : null;
   const [repsOverrides, setRepsOverrides] = useState<Record<string, number>>({});
 
   useEffect(() => {
@@ -447,10 +485,11 @@ export function HuntOverviewScreen({ route, navigation }: Props) {
     }
     const hasStructuralChange = !!structuralControl && structuralValue !== structuralControl.canonical;
     const hasRepsChange = !!repsTemplate && Object.keys(repsOverrides).length > 0;
-    // repsTemplate is only ever non-null for 'flat' workouts, and a flat
-    // workout always has a structuralControl too — so whenever
-    // hasRepsChange is true, structuralValue is already a valid,
-    // correctly-seeded round count (canonical unless also customized).
+    // For a flat workout structuralValue is always a valid, correctly-
+    // seeded round count (canonical unless also customized). A
+    // fixed-sectioned workout (Behemoth) has no structural control:
+    // buildCustomWorkout ignores the value there and applies only the
+    // per-phase overrides.
     const customWorkout =
       isCustomMode && (hasStructuralChange || hasRepsChange)
         ? buildCustomWorkout(workout, structuralValue, repsOverrides)
@@ -470,6 +509,51 @@ export function HuntOverviewScreen({ route, navigation }: Props) {
     });
   };
 
+  // The workout this Hunt will actually run, for the preview below: a
+  // locked Encounter 2/3 shows the exact configuration it is locked to
+  // (its rounds/ladder depth, reps, carry steps, phase reps), and a Custom
+  // Hunt shows the player's current selection — never the default
+  // template when that isn't what will be performed.
+  const lockedPreviewHasOverrides =
+    !!lockedConfig?.repsOverrides && Object.keys(lockedConfig.repsOverrides).length > 0;
+  const customHasStructuralChange = !!structuralControl && structuralValue !== structuralControl.canonical;
+  const customHasRepsChange = !!repsTemplate && Object.keys(repsOverrides).length > 0;
+  const previewWorkout = isProgressionLocked
+    ? lockedConfig?.isCustomHunt && (lockedConfig.structuralValue !== null || lockedPreviewHasOverrides)
+      ? buildCustomWorkout(
+          workout,
+          lockedConfig.structuralValue ?? structuralControl?.canonical ?? 0,
+          lockedConfig.repsOverrides ?? undefined
+        )
+      : workout
+    : isCustomMode && (customHasStructuralChange || customHasRepsChange)
+      ? buildCustomWorkout(workout, structuralValue, repsOverrides)
+      : workout;
+  // Locked panel rows (Encounter 2/3): the structure/rounds, then every
+  // per-step override the locked configuration carries — reps, a carry's
+  // steps, or one phase's reps — named with its phase when it has one.
+  const isLadder = structuralControl?.kind === 'ladder';
+  const lockedStructureLabel = isLadder ? structuralControl.label : `${previewWorkout.stepLabel ?? 'Round'}s`;
+  const lockedStructureValue = isLadder
+    ? `${lockedConfig?.structuralValue ?? structuralControl.canonical}`
+    : `${previewWorkout.rounds}`;
+  const lockedOverrideRows = Object.entries(lockedConfig?.repsOverrides ?? {}).flatMap(([exerciseId, amount]) => {
+    const group = repsGroups?.find((candidate) => candidate.exercises.some((exercise) => exercise.id === exerciseId));
+    const exercise = group?.exercises.find((candidate) => candidate.id === exerciseId);
+    if (!exercise) return [];
+    const name = exercise.displayName ?? exercise.name;
+    return [{
+      id: exerciseId,
+      label: group?.label ? `${shortSectionLabel(group.label)} · ${name}` : name,
+      value: !exercise.targetReps && exercise.targetSteps ? `${amount} steps` : `${amount} reps`,
+    }];
+  });
+  const effectiveRestSeconds = isProgressionLocked
+    ? lockedConfig?.restSeconds ?? hunt.restSecondsOverride ?? workout.restSeconds
+    : isCustomMode
+      ? restSeconds
+      : hunt.restSecondsOverride ?? workout.restSeconds;
+
   // Polish pass, fix 2 (exercise list density): originally gated on
   // `stepLabel === 'Rung'` (only the Minotaur's ladder), but the same
   // "every section is actually the same exercises repeated" shape exists
@@ -484,15 +568,15 @@ export function HuntOverviewScreen({ route, navigation }: Props) {
   // 5 distinct rounds) never matches this and renders exactly as before.
   const sectionExerciseNameShape = (exercises: { name: string }[]) => exercises.map((e) => e.name).join('|');
   const isRepeatingStructure =
-    !!workout.sections &&
-    workout.sections.length > 1 &&
-    workout.sections.every(
-      (section) => sectionExerciseNameShape(section.exercises) === sectionExerciseNameShape(workout.sections![0].exercises)
+    !!previewWorkout.sections &&
+    previewWorkout.sections.length > 1 &&
+    previewWorkout.sections.every(
+      (section) => sectionExerciseNameShape(section.exercises) === sectionExerciseNameShape(previewWorkout.sections![0].exercises)
     );
   const repeatingStructurePreview = isRepeatingStructure
     ? (() => {
         const byName = new Map<string, { id: string; name: string; reps: number[]; libraryExerciseId?: string }>();
-        for (const section of workout.sections!) {
+        for (const section of previewWorkout.sections!) {
           for (const exercise of section.exercises) {
             const key = exercise.libraryExerciseId ?? exercise.name;
             const entry = byName.get(key) ?? {
@@ -510,11 +594,11 @@ export function HuntOverviewScreen({ route, navigation }: Props) {
         return Array.from(byName.values());
       })()
     : [];
-  const repeatingStructureUnitLabel = `${(workout.stepLabel ?? 'Round').toLowerCase()}s`;
-  const previewGroups = workout.sections ?? [{ label: null, exercises: workout.exercises }];
-  const structuredExercises = isRepeatingStructure ? workout.sections![0].exercises : workout.exercises;
-  const workoutStructure = workout.sequenceType === 'chain'
-    ? groupWorkoutPresentation(workout)
+  const repeatingStructureUnitLabel = `${(previewWorkout.stepLabel ?? 'Round').toLowerCase()}s`;
+  const previewGroups = previewWorkout.sections ?? [{ label: null, exercises: previewWorkout.exercises }];
+  const structuredExercises = isRepeatingStructure ? previewWorkout.sections![0].exercises : previewWorkout.exercises;
+  const workoutStructure = previewWorkout.sequenceType === 'chain'
+    ? groupWorkoutPresentation(previewWorkout)
     : groupWorkoutStructure(structuredExercises);
   const hasWorkoutStructure = workoutStructure.length > 0;
   // Polish pass, fix 2 (exercise list density): same shape as
@@ -578,7 +662,7 @@ export function HuntOverviewScreen({ route, navigation }: Props) {
               />
               {isRepeatingStructure ? (
                 <Text style={styles.exerciseGroupLabel}>
-                  {workout.sections!.length} {repeatingStructureUnitLabel}
+                  {previewWorkout.sections!.length} {repeatingStructureUnitLabel}
                 </Text>
               ) : null}
             </View>
@@ -636,7 +720,7 @@ export function HuntOverviewScreen({ route, navigation }: Props) {
                 );
               })}
               <Text style={styles.exerciseGroupLabel}>
-                {workout.sections!.length} {repeatingStructureUnitLabel}
+                {previewWorkout.sections!.length} {repeatingStructureUnitLabel}
               </Text>
             </View>
           ) : (
@@ -706,7 +790,7 @@ export function HuntOverviewScreen({ route, navigation }: Props) {
 
           {workout.finisher.name === 'The Summit' ? (
             <Text style={styles.exerciseGroupLabel}>
-              3 phases · Rest {formatRestSeconds(hunt?.restSecondsOverride ?? workout.restSeconds)}
+              3 phases · Rest {formatRestSeconds(effectiveRestSeconds)}
             </Text>
           ) : null}
 
@@ -723,7 +807,7 @@ export function HuntOverviewScreen({ route, navigation }: Props) {
               <View style={styles.modeHeaderRow}>
                 <Text style={styles.sectionLabel}>Beat Your Record</Text>
                 <View style={styles.lockedPill}>
-                  <Ionicons name="lock-closed" size={12} color={colors.text.muted} />
+                  <Ionicons name="lock-closed" size={12} color={colors.bronze.base} />
                   <Text style={styles.lockedPillText}>Locked</Text>
                 </View>
               </View>
@@ -743,45 +827,34 @@ export function HuntOverviewScreen({ route, navigation }: Props) {
                       couldn't be recovered exactly — defaulted to canonical here as a best-effort fallback.
                     </Text>
                   ) : null}
-                  <View style={styles.customRow}>
-                    <Text style={styles.customRowLabel}>{showSecondWeightCell ? 'Kettlebell 1' : 'Weight'}</Text>
-                    <WeightStepper
-                      value={
-                        lockedConfig
-                          ? `${convertKgToDisplay(lockedConfig.weightKg, unitPreference)}`
-                          : '—'
-                      }
-                      unit={unitPreference}
-                      editable={false}
+                  {/* Locked parameters and rounds: every value this Encounter is
+                      locked to, each marked with the lock and shown in the
+                      bronze accent — distinct from Encounter 1's editable
+                      steppers, so what can't change reads at a glance. */}
+                  <View style={styles.lockedPanel}>
+                    <Text style={styles.lockedPanelTitle}>Locked Parameters</Text>
+                    <LockedParam
+                      label={showSecondWeightCell ? 'Kettlebell 1' : 'Weight'}
+                      value={`${convertKgToDisplay(lockedConfig.weightKg, unitPreference)} ${unitPreference}`}
                     />
-                  </View>
-                  {showSecondWeightCell ? (
-                    <View style={styles.customRow}>
-                      <Text style={styles.customRowLabel}>Kettlebell 2</Text>
-                      <WeightStepper
-                        value={
-                          lockedConfig?.weightBKg !== null && lockedConfig?.weightBKg !== undefined
-                            ? `${convertKgToDisplay(lockedConfig.weightBKg, unitPreference)}`
-                            : '—'
-                        }
-                        unit={unitPreference}
-                        editable={false}
+                    {showSecondWeightCell && lockedConfig.weightBKg !== null ? (
+                      <LockedParam
+                        label="Kettlebell 2"
+                        value={`${convertKgToDisplay(lockedConfig.weightBKg, unitPreference)} ${unitPreference}`}
                       />
-                    </View>
-                  ) : null}
-                  <Text style={styles.modeHint}>
-                    Locked parameters: {formatRestSeconds(lockedConfig.restSeconds)} rest
-                    {lockedConfig.structuralValue !== null
-                      ? `, ${structuralControl?.label ?? 'structure'} ${lockedConfig.structuralValue}`
-                      : ''}
-                    .
-                  </Text>
+                    ) : null}
+                    <LockedParam label="Rest" value={formatRestSeconds(lockedConfig.restSeconds)} />
+                    <LockedParam label={lockedStructureLabel} value={lockedStructureValue} emphasized />
+                    {lockedOverrideRows.map((row) => (
+                      <LockedParam key={row.id} label={row.label} value={row.value} />
+                    ))}
+                  </View>
                   <View style={styles.targetCard}>
                     <Ionicons name="flag" size={16} color={colors.ember.base} />
                     <Text style={styles.targetText}>
-                      {workout.emomSeconds ? 'Rounds to beat: ' : 'Time to beat: '}
+                      {isOpenEndedWorkout(workout) ? 'Rounds to beat: ' : 'Time to beat: '}
                       <Text style={styles.targetTime}>
-                        {workout.emomSeconds
+                        {isOpenEndedWorkout(workout)
                           ? lockState.targetRounds !== null
                             ? `${lockState.targetRounds}`
                             : '—'
@@ -868,55 +941,66 @@ export function HuntOverviewScreen({ route, navigation }: Props) {
                       />
                     </View>
                   ) : null}
-                  {/* Task (reps per exercise): one stepper per exercise that
-                      actually has a rep count — a duration-based exercise
-                      like a carry has no "reps" to override, so it's simply
-                      not shown here, matching the same "no fake
-                      configurability" rule as the structural control above. */}
-                  {repsTemplate ? (
-                    <>
-                      <Text style={styles.customRowLabel}>Reps</Text>
-                      {repsTemplate
-                        .filter((exercise) => !!exercise.targetReps)
-                        .map((exercise) => {
-                          const canonicalReps = exercise.targetReps!;
-                          const currentReps = repsOverrides[exercise.id] ?? canonicalReps;
-                          return (
-                            <View key={exercise.id} style={styles.customRow}>
-                              <Pressable
-                                disabled={!contentEngine.getExerciseLibraryEntry(exercise.libraryExerciseId ?? '') && !contentEngine.getExerciseLibraryEntryByName(exercise.name)}
-                                onPress={() => {
-                                  const entry = exercise.libraryExerciseId
-                                    ? contentEngine.getExerciseLibraryEntry(exercise.libraryExerciseId)
-                                    : contentEngine.getExerciseLibraryEntryByName(exercise.name);
-                                  if (entry) navigation.navigate('ExerciseDetail', { exerciseId: entry.id });
-                                }}
-                                accessibilityRole="link"
-                                style={styles.customExerciseLink}
-                              >
-                                <Text style={styles.customRowLabel}>{exercise.displayName ?? exercise.name}</Text>
-                                <Ionicons name="information-circle-outline" size={15} color={colors.text.muted} />
-                              </Pressable>
-                              <IntStepper
-                                value={currentReps}
-                                min={1}
-                                max={Math.max(canonicalReps * 3, 20)}
-                                onChange={(next) =>
-                                  setRepsOverrides((prev) => {
-                                    const updated = { ...prev };
-                                    if (next === canonicalReps) {
-                                      delete updated[exercise.id];
-                                    } else {
-                                      updated[exercise.id] = next;
-                                    }
-                                    return updated;
-                                  })
-                                }
-                              />
-                            </View>
-                          );
-                        })}
-                    </>
+                  {/* Per-exercise amounts: one stepper per step that has a rep
+                      count — or, for a carry (Leviathan's Front Rack Carry), its
+                      step count, shown and stored as steps, never as reps. A
+                      sectioned workout (Behemoth's three phases) gets one group
+                      per phase, so each phase's reps are set independently.
+                      Ladder/cyclical workouts get none (see
+                      getRepsCustomizableGroups). */}
+                  {repsGroups ? (
+                    repsGroups.map((group) => {
+                      const amountExercises = group.exercises.filter(isAmountCustomizable);
+                      if (amountExercises.length === 0) return null;
+                      return (
+                        <View key={group.label ?? 'reps'} style={group.label ? styles.repsGroup : undefined}>
+                          <Text style={group.label ? styles.repsGroupLabel : styles.customRowLabel}>
+                            {group.label ?? 'Reps'}
+                          </Text>
+                          {amountExercises.map((exercise) => {
+                            const isSteps = !exercise.targetReps && !!exercise.targetSteps;
+                            const canonicalAmount = (isSteps ? exercise.targetSteps : exercise.targetReps)!;
+                            const currentAmount = repsOverrides[exercise.id] ?? canonicalAmount;
+                            return (
+                              <View key={exercise.id} style={styles.customRow}>
+                                <Pressable
+                                  disabled={!contentEngine.getExerciseLibraryEntry(exercise.libraryExerciseId ?? '') && !contentEngine.getExerciseLibraryEntryByName(exercise.name)}
+                                  onPress={() => {
+                                    const entry = exercise.libraryExerciseId
+                                      ? contentEngine.getExerciseLibraryEntry(exercise.libraryExerciseId)
+                                      : contentEngine.getExerciseLibraryEntryByName(exercise.name);
+                                    if (entry) navigation.navigate('ExerciseDetail', { exerciseId: entry.id });
+                                  }}
+                                  accessibilityRole="link"
+                                  style={styles.customExerciseLink}
+                                >
+                                  <Text style={styles.customRowLabel}>{exercise.displayName ?? exercise.name}</Text>
+                                  <Ionicons name="information-circle-outline" size={15} color={colors.text.muted} />
+                                </Pressable>
+                                <IntStepper
+                                  value={currentAmount}
+                                  min={isSteps ? 5 : 1}
+                                  max={isSteps ? Math.max(canonicalAmount * 4, 200) : Math.max(canonicalAmount * 3, 20)}
+                                  step={isSteps ? 5 : 1}
+                                  suffix={isSteps ? 'steps' : undefined}
+                                  onChange={(next) =>
+                                    setRepsOverrides((prev) => {
+                                      const updated = { ...prev };
+                                      if (next === canonicalAmount) {
+                                        delete updated[exercise.id];
+                                      } else {
+                                        updated[exercise.id] = next;
+                                      }
+                                      return updated;
+                                    })
+                                  }
+                                />
+                              </View>
+                            );
+                          })}
+                        </View>
+                      );
+                    })
                   ) : null}
                 </>
               ) : (
@@ -958,13 +1042,9 @@ export function HuntOverviewScreen({ route, navigation }: Props) {
           )}
         </GlassCard>
 
-        <GlassCard style={styles.section}>
-          <Text style={styles.sectionLabel}>Estimated Time</Text>
-          <Text style={styles.metaValue}>
-            {workout.estimatedMinutesRange[0]}–{workout.estimatedMinutesRange[1]} min
-          </Text>
-        </GlassCard>
-
+        {/* Estimated Time is temporarily hidden (presentation only —
+            workout.estimatedMinutesRange and every timing/target-time
+            calculation are unchanged). The next card simply moves up. */}
         <GlassCard style={[styles.section, styles.metaRow]}>
           <View>
             <Text style={styles.sectionLabel}>Personal Best</Text>
@@ -1324,6 +1404,17 @@ const styles = StyleSheet.create({
     marginTop: spacing.sm,
   },
   customExerciseLink: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: spacing.xxs, marginRight: spacing.sm },
+  repsGroup: {
+    marginTop: spacing.sm,
+    paddingTop: spacing.xs,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: colors.border.hairlineStrong,
+  },
+  repsGroupLabel: {
+    fontFamily: fontFamily.bodySemiBold,
+    fontSize: fontSize.sm,
+    color: colors.bronze.active,
+  },
   // Encounter Lock: "Canonical Encounter — Locked" card + footer styles.
   lockedPill: {
     flexDirection: 'row',
@@ -1342,6 +1433,57 @@ const styles = StyleSheet.create({
     color: colors.text.muted,
     textTransform: 'uppercase',
     letterSpacing: 1,
+  },
+  // Locked parameters panel: a hairline bronze frame with a bronze left
+  // edge and bronze/gold values — the existing accent family, no glow.
+  lockedPanel: {
+    marginTop: spacing.sm,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    borderRadius: radii.sm,
+    borderWidth: 1,
+    borderLeftWidth: 3,
+    borderColor: colors.border.hairlineStrong,
+    borderLeftColor: colors.bronze.base,
+    backgroundColor: 'rgba(184, 115, 51, 0.06)',
+  },
+  lockedPanelTitle: {
+    fontFamily: fontFamily.displayRegular,
+    fontSize: fontSize.xs,
+    letterSpacing: 2,
+    color: colors.bronze.active,
+    textTransform: 'uppercase',
+    marginBottom: spacing.xxs,
+  },
+  lockedParamRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 5,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: colors.border.hairline,
+  },
+  lockedParamLabelWrap: {
+    flex: 1,
+    minWidth: 0,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xxs,
+    marginRight: spacing.sm,
+  },
+  lockedParamLabel: {
+    flexShrink: 1,
+    fontFamily: fontFamily.bodyRegular,
+    fontSize: fontSize.sm,
+    color: colors.text.secondary,
+  },
+  lockedParamValue: {
+    fontFamily: fontFamily.monoBold,
+    fontSize: fontSize.sm,
+    color: colors.bronze.active,
+  },
+  lockedParamValueEmphasized: {
+    color: colors.gold,
   },
   targetCard: {
     flexDirection: 'row',

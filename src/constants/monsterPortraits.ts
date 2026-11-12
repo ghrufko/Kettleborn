@@ -1,4 +1,6 @@
 import { ImageSourcePropType } from 'react-native';
+import { PORTRAIT_FRAMING } from './portraitFraming';
+import type { PortraitFraming } from './portraitFraming';
 
 export const MONSTER_PORTRAITS: Record<string, ImageSourcePropType> = {
   minotaur: require('../../assets/images/monsters/minotaur.jpg'),
@@ -24,6 +26,15 @@ export const MONSTER_PORTRAITS: Record<string, ImageSourcePropType> = {
   crooked: require('../../assets/images/monsters/CROOKED.png'),
   basilisk: require('../../assets/images/monsters/Basilisk.png'),
 };
+
+const FRAMING_BY_SOURCE = new Map<ImageSourcePropType, PortraitFraming>(
+  Object.entries(PORTRAIT_FRAMING).map(([key, framing]) => [MONSTER_PORTRAITS[key], framing])
+);
+
+/** The frame correction for an artwork whose painted frame is off-centre (see portraitFraming.ts), if any. */
+export function getPortraitFraming(source: ImageSourcePropType): PortraitFraming | undefined {
+  return FRAMING_BY_SOURCE.get(source);
+}
 
 export function getMonsterPortrait(portraitAsset?: string): ImageSourcePropType | undefined {
   if (!portraitAsset) {

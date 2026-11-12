@@ -10,12 +10,12 @@ export interface ExtraExerciseStats {
 /**
  * Lifetime per-exercise totals for the optional post-Hunt extra
  * exercises — entirely derived from already-persisted WorkoutResult rows'
- * `extraSets`, no separate storage table. Deliberately kept SEPARATE from
- * `getAllExerciseStats` (exerciseStats.ts), which only ever reads a
- * workout's PRESCRIBED exercises — an extra set was never part of any
- * Hunt's prescribed structure, so mixing the two pools would misrepresent
- * both. An extra set carries no weight, so there's no volume figure here
- * — never fabricated to match the main-exercise stats shape.
+ * `extraSets`, no separate storage table. `getAllExerciseStats`
+ * (exerciseStats.ts) already counts these reps in each exercise's overall
+ * totals; this is the extra-set share of them plus the set count, shown
+ * on Exercise Detail. An extra set carries no weight, so there's no
+ * volume figure here — never fabricated to match the main-exercise stats
+ * shape.
  */
 export function getAllExtraExerciseStats(results: WorkoutResult[]): ExtraExerciseStats[] {
   const statsById = new Map<ExtraExerciseId, ExtraExerciseStats>();

@@ -18,7 +18,9 @@ import { getRPELabel } from '../../utils/rpeLabels';
 import { WorkoutStructure } from '../../components/workout/WorkoutStructure';
 import { groupWorkoutPresentation } from '../../utils/workoutPresentation';
 import { HuntRank } from '../../utils/huntRank';
-import { WorkoutResult } from '../../models';
+import type { Exercise, Workout, WorkoutResult } from '../../models';
+import { getEncounterSnapshots, EncounterSnapshot } from '../../utils/encounterSnapshot';
+import { classifyWorkoutStructure } from '../../utils/customWorkoutStructure';
 import { convertKgToDisplay, formatWeightPair } from '../../utils/weight';
 import { useAppStore } from '../../store';
 import { colors, fontFamily, fontSize, lineHeight, spacing, glow } from '../../theme';
@@ -73,6 +75,114 @@ interface RankedHistoryEntry {
 // phone screen — every result is still real and persisted either way;
 // this only limits how many render at once.
 const HISTORY_DISPLAY_LIMIT = 10;
+
+/** "5 rounds" / "9 rungs · max rung 5" — the structure of a (possibly Custom Hunt) workout. */
+function describeStructure(workout: Workout): string {
+  const unit = (workout.stepLabel ?? 'Round').toLowerCase();
+  const base = `${workout.rounds} ${unit}${workout.rounds === 1 ? '' : 's'}`;
+  if (workout.stepLabel === 'Rung' && workout.sections?.length) {
+    const maxRung = Math.max(...workout.sections.map((section) => section.exercises[0]?.targetReps ?? 0));
+    return maxRung > 0 ? `${base} · max rung ${maxRung}` : base;
+  }
+  return base;
+}
+
+function exerciseQuantity(exercise: Exercise): string {
+  return exercise.targetReps
+    ? `${exercise.targetReps} reps`
+    : exercise.targetSteps
+      ? `${exercise.targetSteps} steps`
+      : exercise.targetDistanceFt
+        ? `${exercise.targetDistanceFt} ft`
+        : '';
+}
+
+/**
+ * One encounter's workout: its exercises with their quantities, then
+ * label/value rows (structure, weight, rest, target time…). Renders
+ * whichever Workout it's given — the canonical one for the "First
+ * Encounter" preview, or a completed encounter's performed workout.
+ */
+function EncounterWorkoutCard({
+  title,
+  subtitle,
+  workout,
+  rows,
+  note,
+  onExercisePress,
+}: {
+  title: string;
+  subtitle: string;
+  workout: Workout;
+  rows: { label: string; value: string }[];
+  note: string | null;
+  onExercisePress: (libraryExerciseId: string) => void;
+}) {
+  const libraryEntryFor = (exercise: Exercise) =>
+    exercise.libraryExerciseId
+      ? contentEngine.getExerciseLibraryEntry(exercise.libraryExerciseId)
+      : exercise.components?.[0]?.libraryExerciseId
+        ? contentEngine.getExerciseLibraryEntry(exercise.components[0].libraryExerciseId)
+        : contentEngine.getExerciseLibraryEntryByName(exercise.name);
+  const isLadder = workout.stepLabel === 'Rung';
+  const structure = isLadder ? [] : groupWorkoutPresentation(workout);
+  // A workout of distinct sections (Behemoth's three phases) lists each
+  // section with its own quantities; a ladder lists its movements once
+  // (its reps are the rungs — see the Structure row); anything else
+  // lists its exercise list, as this card always has.
+  const sections = !isLadder && classifyWorkoutStructure(workout) === 'fixed-sectioned' && workout.sections?.length
+    ? workout.sections
+    : [{ label: null as string | null, exercises: isLadder
+        ? workout.exercises.filter((exercise, index, all) =>
+            all.findIndex((candidate) => (candidate.libraryExerciseId ?? candidate.name) === (exercise.libraryExerciseId ?? exercise.name)) === index)
+        : workout.exercises }];
+  return (
+    <GlassCard style={styles.progressCard}>
+      <Text style={styles.sectionLabel}>{title}</Text>
+      <Text style={styles.previewSubtitle}>{subtitle}</Text>
+      {note ? <Text style={styles.modeHint}>{note}</Text> : null}
+      {structure.length ? (
+        <WorkoutStructure groups={structure} compact />
+      ) : (
+        sections.map((section, sectionIndex) => (
+          <View key={section.label ?? `section-${sectionIndex}`}>
+            {section.label ? <Text style={styles.encounterSectionLabel}>{section.label}</Text> : null}
+            {section.exercises.map((exercise) => {
+              const libraryEntry = libraryEntryFor(exercise);
+              return (
+                <Pressable
+                  key={exercise.id}
+                  disabled={!libraryEntry}
+                  onPress={() => libraryEntry && onExercisePress(libraryEntry.id)}
+                  style={styles.statRow}
+                >
+                  {/* Label + optional info icon stay ONE child of statRow so
+                      the value keeps the far edge (see the right-alignment
+                      note this card has always followed). */}
+                  <View style={styles.statLabelWithIcon}>
+                    <Text style={styles.statLabel}>{exercise.displayName ?? exercise.name}</Text>
+                    {libraryEntry ? (
+                      <Ionicons name="information-circle-outline" size={16} color={colors.text.muted} />
+                    ) : null}
+                  </View>
+                  {workout.stepLabel === 'Rung' ? null : (
+                    <Text style={styles.statValue}>{exerciseQuantity(exercise)}</Text>
+                  )}
+                </Pressable>
+              );
+            })}
+          </View>
+        ))
+      )}
+      {rows.map((row) => (
+        <View key={row.label} style={styles.statRow}>
+          <Text style={styles.statLabel}>{row.label}</Text>
+          <Text style={styles.statValue}>{row.value}</Text>
+        </View>
+      ))}
+    </GlassCard>
+  );
+}
 
 export function MonsterDetailScreen({ route, navigation }: Props) {
   const { monsterId } = route.params;
@@ -153,6 +263,14 @@ export function MonsterDetailScreen({ route, navigation }: Props) {
     return summaries;
   }, [monsterResults]);
 
+  const encounterSnapshots = useMemo(
+    () =>
+      monster
+        ? getEncounterSnapshots(monster, monsterResults, (id) => contentEngine.getWorkout(id))
+        : new Map<string, EncounterSnapshot>(),
+    [monster, monsterResults]
+  );
+
   // Phase 2.9: full Hunt History list (every completed result for this
   // monster, newest first) — a separate, independent computation from
   // previousEncounterByHuntId above (which only keeps the LATEST result
@@ -196,7 +314,6 @@ export function MonsterDetailScreen({ route, navigation }: Props) {
   });
   const firstHunt = monster.hunts.find((h) => h.order === 1);
   const firstWorkout = firstHunt?.workoutId ? contentEngine.getWorkout(firstHunt.workoutId) : undefined;
-  const firstWorkoutStructure = firstWorkout ? groupWorkoutPresentation(firstWorkout) : [];
   const huntsCompleted = progress?.huntsCompleted ?? 0;
   const huntsTotal = progress?.huntsTotal ?? monster.hunts.length;
   const huntsRemaining = Math.max(huntsTotal - huntsCompleted, 0);
@@ -251,119 +368,73 @@ export function MonsterDetailScreen({ route, navigation }: Props) {
         <Text style={styles.personalityFlavor}>{personality.beforeBattleFlavor}</Text>
 
         {/*
-          Monster Overview (Custom Hunt merge, §1): "what exactly am I
-          going to fight" at a glance, the moment the player opens this
-          monster — always the CANONICAL Encounter 1 workout (content
-          exactly as authored), regardless of whether the player ends up
-          choosing Canonical or Custom Hunt on Hunt Overview. A ladder
-          workout (stepLabel 'Rung') gets a structural summary instead of
-          a per-exercise reps list — its reps vary by rung, and
-          HuntOverviewScreen already has the real ordered ladder preview
-          for that; this card is deliberately a lighter glance, not a
-          duplicate of that screen.
+          Encounter configuration: each completed encounter shows what was
+          ACTUALLY performed — its exercises and quantities, structure, rest,
+          weight and target time — rebuilt from that encounter's own saved
+          result (encounterSnapshot.ts), so a Custom Hunt's rounds/reps/steps
+          are shown, not the default template. Encounters 1/2/3 each read only
+          their own result, so they never overwrite each other. An encounter
+          not completed yet shows nothing here, except Encounter 1, which
+          shows the canonical workout as the "what am I going to fight"
+          preview it always was.
         */}
-        {firstHunt && firstWorkout ? (
-          <GlassCard style={styles.progressCard}>
-            <Text style={styles.sectionLabel}>First Encounter</Text>
-            <Text style={styles.previewSubtitle}>{firstWorkout.name}</Text>
-            {firstWorkout.stepLabel === 'Rung' ? (
-              <View>
-                <Text style={styles.modeHint}>A {firstWorkout.rounds}-{firstWorkout.stepLabel.toLowerCase()} ladder:</Text>
-                {firstWorkout.exercises.filter((exercise, index, all) =>
-                  all.findIndex((candidate) => (candidate.libraryExerciseId ?? candidate.name) === (exercise.libraryExerciseId ?? exercise.name)) === index
-                ).map((exercise) => {
-                  const libraryEntry = exercise.libraryExerciseId
-                    ? contentEngine.getExerciseLibraryEntry(exercise.libraryExerciseId)
-                    : contentEngine.getExerciseLibraryEntryByName(exercise.name);
-                  return (
-                    <Pressable
-                      key={exercise.id}
-                      disabled={!libraryEntry}
-                      onPress={() => libraryEntry && navigation.navigate('ExerciseDetail', { exerciseId: libraryEntry.id })}
-                      style={styles.statRow}
-                    >
-                      <Text style={styles.statLabel}>{exercise.displayName ?? exercise.name}</Text>
-                      {libraryEntry ? <Ionicons name="information-circle-outline" size={16} color={colors.text.muted} /> : null}
-                    </Pressable>
-                  );
-                })}
-              </View>
-            ) : firstWorkoutStructure.length ? (
-              <WorkoutStructure groups={firstWorkoutStructure} compact />
-            ) : (
-              firstWorkout.exercises.map((exercise) => {
-                const libraryEntry = exercise.libraryExerciseId
-                  ? contentEngine.getExerciseLibraryEntry(exercise.libraryExerciseId)
-                  : exercise.components?.[0]?.libraryExerciseId
-                    ? contentEngine.getExerciseLibraryEntry(exercise.components[0].libraryExerciseId)
-                    : contentEngine.getExerciseLibraryEntryByName(exercise.name);
-                return (
-                  <Pressable
-                    key={exercise.id}
-                    disabled={!libraryEntry}
-                    onPress={() => libraryEntry && navigation.navigate('ExerciseDetail', { exerciseId: libraryEntry.id })}
-                    style={styles.statRow}
-                  >
-                    {/*
-                      Right-alignment fix: the label and its optional info
-                      icon must be ONE child of statRow (a flex:1 column),
-                      never two separate siblings alongside statValue — a
-                      three-child `justifyContent: 'space-between'` row
-                      distributes all three across the row instead of
-                      pushing the value to the far edge, so a row with the
-                      icon (a libraryEntry match) showed its value shifted
-                      left of rows without one (Structure/Weight/Rest/
-                      Target Time below, which only ever have 2 children).
-                      Same two-child shape ChronicleScreen's own
-                      exerciseRecordLink + statValue pair already uses.
-                    */}
-                    <View style={styles.statLabelWithIcon}>
-                      <Text style={styles.statLabel}>{exercise.displayName ?? exercise.name}</Text>
-                      {libraryEntry ? (
-                        <Ionicons name="information-circle-outline" size={16} color={colors.text.muted} />
-                      ) : null}
-                    </View>
-                    <Text style={styles.statValue}>
-                      {exercise.targetReps
-                        ? `${exercise.targetReps} reps`
-                        : exercise.targetSteps
-                          ? `${exercise.targetSteps} steps`
-                        : exercise.targetDistanceFt
-                          ? `${exercise.targetDistanceFt} ft`
-                          : ''}
-                    </Text>
-                  </Pressable>
-                );
-              })
-            )}
-            <View style={styles.statRow}>
-              <Text style={styles.statLabel}>Structure</Text>
-              <Text style={styles.statValue}>
-                {firstWorkout.rounds} {(firstWorkout.stepLabel ?? 'Round').toLowerCase()}
-                {firstWorkout.rounds === 1 ? '' : 's'}
-              </Text>
-            </View>
-            <View style={styles.statRow}>
-              <Text style={styles.statLabel}>Canonical Weight</Text>
-              <Text style={styles.statValue}>
-                {convertKgToDisplay(firstWorkout.gearWeightKg, unitPreference)} {unitPreference} ×{' '}
-                {firstWorkout.gearCount}
-              </Text>
-            </View>
-            <View style={styles.statRow}>
-              <Text style={styles.statLabel}>Canonical Rest</Text>
-              <Text style={styles.statValue}>
-                {formatSecondsClock(firstHunt.restSecondsOverride ?? firstWorkout.restSeconds)}
-              </Text>
-            </View>
-            <View style={styles.statRow}>
-              <Text style={styles.statLabel}>Target Time</Text>
-              <Text style={styles.statValue}>
-                {firstWorkout.targetTimeSeconds ? formatSecondsClock(firstWorkout.targetTimeSeconds) : '—'}
-              </Text>
-            </View>
-          </GlassCard>
-        ) : null}
+        {monster.hunts.map((hunt) => {
+          const snapshot = encounterSnapshots.get(hunt.id);
+          if (snapshot) {
+            return (
+              <EncounterWorkoutCard
+                key={hunt.id}
+                title={`Encounter ${hunt.order} · ${hunt.name}`}
+                subtitle={`${snapshot.workout.name} · ${snapshot.isCustomHunt ? 'Custom Hunt' : 'Canonical'} · ${formatDate(snapshot.result.completedAt)}`}
+                workout={snapshot.workout}
+                onExercisePress={(exerciseId) => navigation.navigate('ExerciseDetail', { exerciseId })}
+                note={
+                  snapshot.isExact
+                    ? null
+                    : 'Recorded before full configuration tracking — rest/structure/reps shown as canonical.'
+                }
+                rows={[
+                  { label: 'Structure', value: describeStructure(snapshot.workout) },
+                  {
+                    label: 'Weight',
+                    value: formatWeightPair(snapshot.result.weightValueA, snapshot.result.weightValueB, unitPreference),
+                  },
+                  { label: 'Rest', value: formatSecondsClock(snapshot.restSeconds) },
+                  {
+                    label: 'Target Time',
+                    value: snapshot.workout.targetTimeSeconds ? formatSecondsClock(snapshot.workout.targetTimeSeconds) : '—',
+                  },
+                  { label: 'Your Time', value: formatSecondsClock(snapshot.elapsedSeconds) },
+                ]}
+              />
+            );
+          }
+          if (hunt.order !== 1 || !firstWorkout) {
+            return null;
+          }
+          return (
+            <EncounterWorkoutCard
+              key={hunt.id}
+              title="First Encounter"
+              subtitle={firstWorkout.name}
+              workout={firstWorkout}
+              onExercisePress={(exerciseId) => navigation.navigate('ExerciseDetail', { exerciseId })}
+              note={null}
+              rows={[
+                { label: 'Structure', value: describeStructure(firstWorkout) },
+                {
+                  label: 'Canonical Weight',
+                  value: `${convertKgToDisplay(firstWorkout.gearWeightKg, unitPreference)} ${unitPreference} × ${firstWorkout.gearCount}`,
+                },
+                { label: 'Canonical Rest', value: formatSecondsClock(hunt.restSecondsOverride ?? firstWorkout.restSeconds) },
+                {
+                  label: 'Target Time',
+                  value: firstWorkout.targetTimeSeconds ? formatSecondsClock(firstWorkout.targetTimeSeconds) : '—',
+                },
+              ]}
+            />
+          );
+        })}
 
         <GlassCard style={styles.progressCard}>
           <Text style={styles.sectionLabel}>Monster Progress</Text>
@@ -708,6 +779,12 @@ const styles = StyleSheet.create({
     fontSize: fontSize.xs,
     color: colors.text.muted,
     marginTop: spacing.sm,
+  },
+  encounterSectionLabel: {
+    marginTop: spacing.sm,
+    fontFamily: fontFamily.bodySemiBold,
+    fontSize: fontSize.sm,
+    color: colors.bronze.active,
   },
   previewSubtitle: {
     fontFamily: fontFamily.bodySemiBold,

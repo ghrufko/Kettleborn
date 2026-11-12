@@ -11,17 +11,25 @@ import type { WorkoutPresentationGroup } from '../../utils/workoutPresentation';
 interface Props {
   groups: WorkoutPresentationGroup[];
   compact?: boolean;
+  /**
+   * Active Hunt only: noticeably larger exercise names and targets, read
+   * mid-set from arm's length. Combined with `compact` (a long round) it
+   * steps down one size so every row still fits on screen.
+   */
+  hud?: boolean;
   onExercisePress?: (exercise: Exercise) => void;
 }
 
 function AlternatingHandChain({
   exercises,
   compact,
+  hud,
   navigate,
   onExercisePress,
 }: {
   exercises: WorkoutPresentationGroup['exercises'];
   compact: boolean;
+  hud: boolean;
   navigate: (screen: string, params: { exerciseId: string }) => void;
   onExercisePress?: (exercise: WorkoutPresentationGroup['exercises'][number]) => void;
 }) {
@@ -44,12 +52,12 @@ function AlternatingHandChain({
             {index > 0 ? <Text style={styles.sequenceArrow}> → </Text> : null}
             {libraryEntry || onExercisePress ? (
               <Pressable onPress={onPress} accessibilityRole="link">
-                <Text style={[styles.sequenceMovement, compact && styles.sequenceMovementCompact]}>
+                <Text style={[styles.sequenceMovement, compact && styles.sequenceMovementCompact, hud && (compact ? styles.hudNameCompact : styles.hudName)]}>
                   {exercise.name}
                 </Text>
               </Pressable>
             ) : (
-              <Text style={[styles.sequenceMovement, compact && styles.sequenceMovementCompact]}>
+              <Text style={[styles.sequenceMovement, compact && styles.sequenceMovementCompact, hud && (compact ? styles.hudNameCompact : styles.hudName)]}>
                 {exercise.name}
               </Text>
             )}
@@ -78,8 +86,11 @@ function AlternatingHandChain({
 }
 
 /** Shared readable, numbered view of the authored chain/complex structure. */
-export function WorkoutStructure({ groups, compact = false, onExercisePress }: Props) {
+export function WorkoutStructure({ groups, compact = false, hud = false, onExercisePress }: Props) {
   const navigation = useNavigation<any>();
+  const nameStyle = [styles.exerciseName, compact && styles.exerciseNameCompact, hud && (compact ? styles.hudNameCompact : styles.hudName)];
+  const targetStyle = [styles.target, compact && styles.targetCompact, hud && (compact ? styles.hudTargetCompact : styles.hudTarget)];
+  const indexStyle = [styles.index, compact && styles.indexCompact, hud && styles.hudIndex];
   if (!groups.length) return null;
 
   return (
@@ -105,6 +116,7 @@ export function WorkoutStructure({ groups, compact = false, onExercisePress }: P
               <AlternatingHandChain
                 exercises={group.exercises}
                 compact={compact}
+                hud={hud}
                 navigate={(screen, params) => navigation.navigate(screen, params)}
                 onExercisePress={onExercisePress}
               />
@@ -129,7 +141,7 @@ export function WorkoutStructure({ groups, compact = false, onExercisePress }: P
                 else if (libraryEntry) navigation.navigate('ExerciseDetail', { exerciseId: libraryEntry.id });
               };
               const Name = (
-                <Text style={[styles.exerciseName, compact && styles.exerciseNameCompact]}>
+                <Text style={nameStyle}>
                   {name}
                   {exerciseIndex < group.exercises.length - 1 ? ' →' : ''}
                 </Text>
@@ -144,22 +156,22 @@ export function WorkoutStructure({ groups, compact = false, onExercisePress }: P
 
               return (
                 <View key={exercise.id} style={styles.exerciseRow}>
-                  <Text style={[styles.index, compact && styles.indexCompact]}>{exerciseIndex + 1}.</Text>
+                  <Text style={indexStyle}>{exerciseIndex + 1}.</Text>
                   <View style={styles.nameColumn}>
                     {componentLabels ? (
                       <View style={styles.componentNames}>
                         {componentLabels.map((component, componentIndex) => (
                           <React.Fragment key={component.id}>
-                            {componentIndex > 0 ? <Text style={[styles.exerciseName, compact && styles.exerciseNameCompact]}> → </Text> : null}
+                            {componentIndex > 0 ? <Text style={nameStyle}> → </Text> : null}
                             <Pressable
                               onPress={() => navigation.navigate('ExerciseDetail', { exerciseId: component.id })}
                               accessibilityRole="link"
                             >
-                              <Text style={[styles.exerciseName, compact && styles.exerciseNameCompact]}>{component.name}</Text>
+                              <Text style={nameStyle}>{component.name}</Text>
                             </Pressable>
                           </React.Fragment>
                         ))}
-                        {cycleNote ? <Text style={[styles.exerciseName, compact && styles.exerciseNameCompact]}>{cycleNote}</Text> : null}
+                        {cycleNote ? <Text style={nameStyle}>{cycleNote}</Text> : null}
                       </View>
                     ) : isClickable ? (
                       <Pressable onPress={onPress} accessibilityRole="link" style={styles.namePressable}>
@@ -168,7 +180,7 @@ export function WorkoutStructure({ groups, compact = false, onExercisePress }: P
                       </Pressable>
                     ) : Name}
                   </View>
-                  {!!target && <Text style={[styles.target, compact && styles.targetCompact]}>{target}</Text>}
+                  {!!target && <Text style={targetStyle}>{target}</Text>}
                 </View>
               );
             })}
@@ -204,6 +216,13 @@ const styles = StyleSheet.create({
   namePressable: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing.xxs, flexShrink: 1 },
   exerciseName: { flexShrink: 1, fontFamily: fontFamily.bodySemiBold, fontSize: fontSize.base, lineHeight: 23, color: colors.text.primary },
   exerciseNameCompact: { fontSize: fontSize.sm, lineHeight: 20 },
+  // Active Hunt sizes (see Props.hud): Cormorant's small x-height reads
+  // small at 16, so the in-hunt names step up to 20 (17 for a long round).
+  hudName: { fontSize: 20, lineHeight: 25 },
+  hudNameCompact: { fontSize: 17, lineHeight: 21 },
+  hudTarget: { width: 72, fontSize: 17 },
+  hudTargetCompact: { width: 64, fontSize: 15 },
+  hudIndex: { fontSize: 15 },
   target: { width: 64, textAlign: 'right', fontFamily: fontFamily.monoRegular, fontSize: fontSize.base, color: colors.bronze.active },
   targetCompact: { fontSize: fontSize.sm },
   handRepSummary: { marginTop: 2, fontFamily: fontFamily.monoRegular, fontSize: fontSize.xs, color: colors.bronze.active },

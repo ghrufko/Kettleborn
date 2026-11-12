@@ -1,7 +1,8 @@
 import { useMemo, useReducer } from 'react';
-import { BattleConfig, Workout } from '../../src/models';
+import type { BattleConfig, Workout } from '../../src/models';
 import { resolveExerciseDamage } from './damageResolver';
-import { BattleAction, BattleState, DamageEvent, PerformanceBonusEvent } from './types';
+import { getBattlePlan } from './battlePlan';
+import type { BattleAction, BattleState, DamageEvent, PerformanceBonusEvent } from './types';
 
 const PHASE_LABELS = ['Engaged', 'Staggering', 'Wounded', 'Weakened', 'Critical'];
 
@@ -30,7 +31,7 @@ function deriveHP(state: BattleState, cumulativeDamage: number, config: BattleCo
   };
 }
 
-function createInitialState(config: BattleConfig): BattleState {
+export function createInitialState(config: BattleConfig): BattleState {
   return {
     maxHP: config.hp,
     currentHP: config.hp,
@@ -45,7 +46,10 @@ function createInitialState(config: BattleConfig): BattleState {
   };
 }
 
-function makeReducer(config: BattleConfig, workout: Workout) {
+export function makeReducer(config: BattleConfig, workout: Workout) {
+  // See battlePlan.ts: null for an open-ended EMOM workout, which keeps
+  // its raw, unscaled damage.
+  const plan = getBattlePlan(workout, config);
   return function battleReducer(state: BattleState, action: BattleAction): BattleState {
     switch (action.type) {
       case 'ROUND_COMPLETED': {
@@ -94,14 +98,29 @@ function makeReducer(config: BattleConfig, workout: Workout) {
           nextStreak = 0;
         }
 
-        const totalDamage = Math.round(exerciseDamage + roundBonus + bonusDamage);
+        const rawDamage = Math.round(exerciseDamage + roundBonus + bonusDamage);
+        let totalDamage = rawDamage;
+        let shownBonuses = fired;
+        if (plan) {
+          if (action.round >= plan.objectiveRounds) {
+            // The final objective: the boss falls with exactly the HP it
+            // has left — never short of it (HP left on a "defeated"
+            // boss), and never more than the plan's own scaled share.
+            totalDamage = Math.max(state.currentHP, Math.round(rawDamage * plan.scale));
+          } else {
+            // Every earlier round: scaled to the plan, and never lethal —
+            // the boss can't fall while objectives remain.
+            totalDamage = Math.min(Math.round(rawDamage * plan.scale), Math.max(0, state.currentHP - 1));
+          }
+          shownBonuses = fired.map((bonus) => ({ ...bonus, amount: Math.round(bonus.amount * plan.scale) }));
+        }
         const lastDamage: DamageEvent = { amount: totalDamage, source: 'round' };
 
         return deriveHP(
           {
             ...state,
             lastDamage,
-            lastBonuses: fired,
+            lastBonuses: shownBonuses,
             cleanStreak: nextStreak,
             totalDamageDealt: state.totalDamageDealt + totalDamage,
             criticalHitCount: state.criticalHitCount + (fired.length > 0 ? 1 : 0),
@@ -128,13 +147,22 @@ function makeReducer(config: BattleConfig, workout: Workout) {
           fired.push({ type: 'personal_record', amount: bonuses.personalRecordDamage });
         }
 
-        if (fired.length === 0) {
+        // Every objective is done, so the boss is down. The final round
+        // already took HP to 0 under the plan; this only guarantees it
+        // (e.g. a session that reported fewer rounds than planned).
+        const remainingHP = plan ? state.currentHP : 0;
+
+        if (fired.length === 0 && remainingHP === 0) {
           return state;
         }
 
         return deriveHP(
-          { ...state, lastBonuses: fired, totalDamageDealt: state.totalDamageDealt + bonusDamage },
-          config.hp - state.currentHP + bonusDamage,
+          {
+            ...state,
+            lastBonuses: fired.length > 0 ? fired : state.lastBonuses,
+            totalDamageDealt: state.totalDamageDealt + bonusDamage + remainingHP,
+          },
+          config.hp - state.currentHP + bonusDamage + remainingHP,
           config
         );
       }

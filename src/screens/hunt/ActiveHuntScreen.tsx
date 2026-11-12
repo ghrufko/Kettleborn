@@ -14,10 +14,11 @@ import { contentEngine } from '../../../engines/content';
 import { useWorkoutSession } from '../../../engines/session/useWorkoutSession';
 import type { RoundLap } from '../../../engines/session/useWorkoutSession';
 import { useBattleEngine, phaseLabel } from '../../../engines/battle/useBattleEngine';
+import { isOpenEndedWorkout } from '../../../engines/battle/battlePlan';
 import { useAppStore } from '../../store';
 import { setHuntActive } from '../../services/sync/engine';
 import { getMonsterPortrait } from '../../constants/monsterPortraits';
-import { scaleBattleConfigForCustomWorkout, buildCustomWorkout } from '../../utils/customWorkoutStructure';
+import { scaleBattleConfigForCustomWorkout, buildCustomWorkout, getStructuralControlConfig } from '../../utils/customWorkoutStructure';
 import {
   isEncounterLocked,
   getEncounterLockState,
@@ -69,14 +70,18 @@ function exerciseTargetLabel(exercise: Workout['exercises'][number]): string {
 function RoundExerciseList({
   exercises,
   compact = false,
+  dense = false,
   onExercisePress,
 }: {
   exercises: Workout['exercises'];
   compact?: boolean;
+  /** 8+ rows: one size smaller again, so a long round still fits on one screen. */
+  dense?: boolean;
   onExercisePress?: (exercise: Workout['exercises'][number], libraryExerciseId?: string) => void;
 }) {
+  const textSize = dense ? styles.roundExerciseTextDense : compact ? styles.roundExerciseTextCompact : null;
   return (
-    <View style={[styles.roundExerciseList, compact && styles.roundExerciseListCompact]}>
+    <View style={[styles.roundExerciseList, (compact || dense) && styles.roundExerciseListCompact]}>
       {exercises.map((exercise, index) => (
         (() => {
           const rawName = sequenceMovementName(exercise);
@@ -84,31 +89,37 @@ function RoundExerciseList({
           const name = isLongCycle ? rawName.slice(0, -13) : rawName;
           return (
             <View key={`${exercise.id}-${index}`} style={styles.roundExerciseRow}>
-              <Text style={[styles.roundExerciseIndex, compact && styles.roundExerciseTextCompact]}>{index + 1}.</Text>
+              <Text style={[styles.roundExerciseIndex, (compact || dense) && styles.roundExerciseIndexCompact]}>{index + 1}.</Text>
               {onExercisePress && exercise.components?.length && name.includes('→') ? (
                 <View style={styles.inlineExerciseComponents}>
                   {exercise.components.map((component, componentIndex) => {
                     const componentName = contentEngine.getExerciseLibraryEntry(component.libraryExerciseId)?.name ?? component.libraryExerciseId;
+                    // The arrow belongs to the movement before it, so a
+                    // long combo wraps as "Double Clean →" / "Double Jerk"
+                    // instead of stranding the arrow on its own line.
+                    const isLast = componentIndex === exercise.components!.length - 1;
                     return (
-                      <React.Fragment key={component.libraryExerciseId}>
-                        {componentIndex > 0 ? <Text style={[styles.roundExerciseName, styles.roundExerciseComponentName, compact && styles.roundExerciseTextCompact]}> → </Text> : null}
-                        <Pressable onPress={() => onExercisePress(exercise, component.libraryExerciseId)} accessibilityRole="link">
-                          <Text style={[styles.roundExerciseName, styles.roundExerciseComponentName, isLongCycle && styles.roundExerciseNameInline, compact && styles.roundExerciseTextCompact]}>
-                            {componentName}
-                          </Text>
-                        </Pressable>
-                      </React.Fragment>
+                      <Pressable
+                        key={component.libraryExerciseId}
+                        onPress={() => onExercisePress(exercise, component.libraryExerciseId)}
+                        accessibilityRole="link"
+                      >
+                        <Text style={[styles.roundExerciseName, styles.roundExerciseComponentName, isLongCycle && styles.roundExerciseNameInline, textSize]}>
+                          {componentName}
+                          {isLast ? '' : ' → '}
+                        </Text>
+                      </Pressable>
                     );
                   })}
                 </View>
               ) : onExercisePress ? (
                 <Pressable onPress={() => onExercisePress(exercise)} accessibilityRole="link">
-                  <Text style={[styles.roundExerciseName, isLongCycle && styles.roundExerciseNameInline, compact && styles.roundExerciseTextCompact]}>
+                  <Text style={[styles.roundExerciseName, isLongCycle && styles.roundExerciseNameInline, textSize]}>
                     {name}
                   </Text>
                 </Pressable>
               ) : (
-                <Text style={[styles.roundExerciseName, isLongCycle && styles.roundExerciseNameInline, compact && styles.roundExerciseTextCompact]}>
+                <Text style={[styles.roundExerciseName, isLongCycle && styles.roundExerciseNameInline, textSize]}>
                   {name}
                 </Text>
               )}
@@ -117,14 +128,14 @@ function RoundExerciseList({
                   style={[
                     styles.roundExerciseTarget,
                     isLongCycle && styles.roundExerciseTargetInline,
-                    compact && styles.roundExerciseTextCompact,
+                    textSize,
                   ]}
                 >
                   {exerciseTargetLabel(exercise)}
                 </Text>
               ) : null}
               {isLongCycle ? (
-                <Text style={[styles.roundExerciseSuffix, compact && styles.roundExerciseTextCompact]}>
+                <Text style={[styles.roundExerciseSuffix, textSize]}>
                   (Long Cycle)
                 </Text>
               ) : null}
@@ -292,9 +303,18 @@ export function ActiveHuntScreen({ route, navigation }: Props) {
   // structuralValue/repsOverrides — never trusting route params' own
   // customWorkout (which reflects Hunt Overview's current UI state, not
   // necessarily this locked encounter's actual required shape).
+  // A locked Custom Hunt may carry a structural value, per-step overrides
+  // (reps, a carry's steps, a phase's reps — e.g. Behemoth, which has no
+  // structural control at all), or both; any of them means the encounter
+  // must be rebuilt, not run as canonical.
+  const lockedHasOverrides = !!lockedConfig?.repsOverrides && Object.keys(lockedConfig.repsOverrides).length > 0;
   const effectiveCustomWorkout = lockedConfig
-    ? lockedConfig.isCustomHunt && lockedConfig.structuralValue !== null
-      ? buildCustomWorkout(workout, lockedConfig.structuralValue, lockedConfig.repsOverrides ?? undefined)
+    ? lockedConfig.isCustomHunt && (lockedConfig.structuralValue !== null || lockedHasOverrides)
+      ? buildCustomWorkout(
+          workout,
+          lockedConfig.structuralValue ?? getStructuralControlConfig(workout)?.canonical ?? 0,
+          lockedConfig.repsOverrides ?? undefined
+        )
       : undefined
     : customWorkout;
   const effectiveWorkout = effectiveCustomWorkout ?? workout;
@@ -344,7 +364,11 @@ export function ActiveHuntScreen({ route, navigation }: Props) {
           // Encounter 1 (or an unlocked Hunt) has no target and always
           // succeeds here, exactly as completion worked before this rule.
           if (hunt && (isLocked || hunt.minimumRoundsToComplete !== undefined)) {
-            const succeeded = workout.emomSeconds
+            // Rounds are the metric only for an open-ended EMOM (The
+            // Breaking). A fixed-round EMOM (Mammoth) always completes the
+            // same rounds, so — like every other workout — time decides.
+            const roundsAreTheMetric = isOpenEndedWorkout(workout);
+            const succeeded = roundsAreTheMetric
               ? isEmomEncounterAttemptSuccessful(hunt, rungLaps?.length ?? 0, lockState.targetRounds)
               : isEncounterAttemptSuccessful(hunt, elapsedSeconds, lockState.targetSeconds);
             if (!succeeded) {
@@ -352,7 +376,7 @@ export function ActiveHuntScreen({ route, navigation }: Props) {
                 monsterId,
                 huntId,
                 workoutId,
-                reason: workout.emomSeconds ? 'fewer_rounds' : 'not_faster',
+                reason: roundsAreTheMetric ? 'fewer_rounds' : 'not_faster',
                 targetSeconds: lockState.targetSeconds ?? undefined,
                 elapsedSeconds,
                 roundsCompleted: rungLaps?.length,
@@ -430,6 +454,20 @@ export function ActiveHuntScreen({ route, navigation }: Props) {
           stoppedAtRound,
         });
       }}
+      onWindowExpired={(stoppedAtRound, roundsCompleted) => {
+        // Fixed-round EMOM: the window ran out before the last required
+        // round. Same "nothing saved, no XP, instant retry" handling as
+        // quitting — the boss was not defeated.
+        navigation.replace('HuntFailed', {
+          monsterId,
+          huntId,
+          workoutId,
+          stoppedAtRound,
+          reason: 'window_expired',
+          roundsCompleted,
+          targetRounds: effectiveWorkout.rounds,
+        });
+      }}
     />
   );
 }
@@ -460,6 +498,8 @@ interface ActiveHuntSessionProps {
     extraSets?: ExtraExerciseSet[]
   ) => void;
   onQuit: (stoppedAtRound: number) => void;
+  /** A fixed-round EMOM attempt ran out of window time before its last round. */
+  onWindowExpired: (stoppedAtRound: number, roundsCompleted: number) => void;
 }
 
 function ActiveHuntSession({
@@ -474,6 +514,7 @@ function ActiveHuntSession({
   saveError,
   onFinish,
   onQuit,
+  onWindowExpired,
 }: ActiveHuntSessionProps) {
   const keepScreenAwake = useAppStore((state) => state.settings?.keepScreenAwake ?? false);
   useConditionalKeepAwake(keepScreenAwake);
@@ -783,12 +824,22 @@ function ActiveHuntSession({
     previousAudioPhaseRef.current = session.phase;
   }, [session.phase]);
 
+  // Fixed-round EMOM: the attempt ended with objectives unfinished — no
+  // victory moment, straight to the failure screen (fires once).
+  const hasReportedExpiryRef = useRef(false);
+  useEffect(() => {
+    if (session.isComplete && !session.objectivesComplete && !hasReportedExpiryRef.current) {
+      hasReportedExpiryRef.current = true;
+      onWindowExpired(session.currentRound, session.laps.length);
+    }
+  }, [session.isComplete, session.objectivesComplete, session.currentRound, session.laps.length, onWindowExpired]);
+
   const hasPlayedFinishRef = useRef(false);
   const [showDefeatOverlay, setShowDefeatOverlay] = useState(false);
   const defeatBackdropAnim = useRef(new Animated.Value(0)).current;
   const defeatTextAnim = useRef(new Animated.Value(0.85)).current;
   useEffect(() => {
-    if (session.isComplete && !hasPlayedFinishRef.current) {
+    if (session.isComplete && session.objectivesComplete && !hasPlayedFinishRef.current) {
       hasPlayedFinishRef.current = true;
       audioEngine.playSound('finish');
       triggerHaptic(Haptics.ImpactFeedbackStyle.Medium);
@@ -814,7 +865,7 @@ function ActiveHuntSession({
         Animated.timing(defeatBackdropAnim, { toValue: 0, duration: 400, useNativeDriver: true }),
       ]).start(() => setShowDefeatOverlay(false));
     }
-  }, [session.isComplete, defeatBackdropAnim, defeatTextAnim]);
+  }, [session.isComplete, session.objectivesComplete, defeatBackdropAnim, defeatTextAnim]);
 
   return (
     <AppBackground
@@ -928,7 +979,7 @@ function ActiveHuntSession({
             portrait, fixed-zone round timer, or current exercise for
             space, and stays in place across exercise/round changes and
             rest, since it depends on none of that state. */}
-        {workout.emomSeconds ? (
+        {isOpenEndedWorkout(workout) ? (
           targetRounds !== null ? (
             <View style={styles.targetChip}>
               <Ionicons name="flag" size={10} color={colors.ember.base} />
@@ -1052,7 +1103,7 @@ function ActiveHuntSession({
           </View>
         ) : null}
 
-        {session.phase === 'complete' ? (
+        {session.phase === 'complete' && !session.objectivesComplete ? null : session.phase === 'complete' ? (
           <>
           <GlassCard style={styles.completeCard} glow="lg">
             <Text style={styles.completeTitle}>Workout Complete</Text>
@@ -1278,12 +1329,14 @@ function ActiveHuntSession({
                     <WorkoutStructure
                       groups={currentRoundStructure}
                       compact={exerciseListDensity !== 'normal'}
+                      hud={exerciseListDensity !== 'dense'}
                       onExercisePress={onExercisePress}
                     />
                   ) : (
                     <RoundExerciseList
                       exercises={currentRoundExercises}
-                      compact={exerciseListDensity !== 'normal'}
+                      compact={exerciseListDensity === 'compact'}
+                      dense={exerciseListDensity === 'dense'}
                       onExercisePress={onExercisePress}
                     />
                   )}
@@ -1295,7 +1348,7 @@ function ActiveHuntSession({
                   exerciseListDensity === 'dense' && styles.roundLabelCompact,
                 ]}
               >
-                {workout.emomSeconds
+                {isOpenEndedWorkout(workout)
                   ? `${stepLabel} ${session.currentRound}`
                   : `${stepLabel} ${session.currentRound} / ${session.totalRounds}`}{' '}
                 · Total {elapsedClock.minutes}:
@@ -1383,7 +1436,7 @@ function ActiveHuntSession({
 
         {/* Bottom controls */}
         <View style={styles.actions}>
-          {session.phase === 'complete' ? (
+          {session.phase === 'complete' && !session.objectivesComplete ? null : session.phase === 'complete' ? (
             <View style={styles.actionButtonWrap}>
               <Button
                 label={isSaving ? 'Saving…' : 'Finish Hunt'}
@@ -1618,9 +1671,17 @@ const styles = StyleSheet.create({
     fontSize: fontSize.xs,
     color: colors.text.primary,
   },
+  // Damage/bonus/combo pop-ups float over the boss portrait instead of
+  // reserving a fixed 78px band above the exercise list — that band was
+  // empty most of the time and is what pushed a 6-exercise round off a
+  // small phone screen. Same content and animation, no layout cost.
   feedbackAnchor: {
+    position: 'absolute',
+    top: spacing.md + 18,
+    left: 0,
+    right: 0,
     height: 78,
-    width: '100%',
+    zIndex: 5,
     alignItems: 'center',
     justifyContent: 'flex-start',
   },
@@ -1641,6 +1702,10 @@ const styles = StyleSheet.create({
     color: colors.ember.base,
     letterSpacing: 1,
     lineHeight: 30,
+    // Readable over the portrait artwork it now floats on.
+    textShadowColor: 'rgba(0, 0, 0, 0.9)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 6,
   },
   roundBonusLabel: {
     fontFamily: fontFamily.monoBold,
@@ -1750,18 +1815,22 @@ const styles = StyleSheet.create({
   },
   inlineExerciseComponents: { flex: 1, flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center' },
   roundExerciseComponentName: { flex: 0 },
+  // Exercise names are read mid-set from arm's length: 20px (Cormorant's
+  // small x-height read small at 16), wrapping onto a second line rather
+  // than truncating a long name. A long round (compact, 5+ rows) steps
+  // down to 17px so every row still fits on one screen.
   roundExerciseIndex: {
-    width: 22,
+    width: 24,
     fontFamily: fontFamily.monoRegular,
-    fontSize: fontSize.sm,
+    fontSize: 15,
     color: colors.text.muted,
   },
   roundExerciseName: {
     flex: 1,
     flexShrink: 1,
     fontFamily: fontFamily.bodySemiBold,
-    fontSize: fontSize.base,
-    lineHeight: 20,
+    fontSize: 20,
+    lineHeight: 25,
     color: colors.text.primary,
   },
   roundExerciseNameInline: {
@@ -1770,7 +1839,7 @@ const styles = StyleSheet.create({
   roundExerciseTarget: {
     marginLeft: 'auto',
     fontFamily: fontFamily.monoBold,
-    fontSize: fontSize.sm,
+    fontSize: 17,
     color: colors.bronze.active,
   },
   roundExerciseTargetInline: {
@@ -1782,8 +1851,16 @@ const styles = StyleSheet.create({
     color: colors.text.secondary,
   },
   roundExerciseTextCompact: {
+    fontSize: 17,
+    lineHeight: 21,
+  },
+  roundExerciseTextDense: {
+    fontSize: 15,
+    lineHeight: 19,
+  },
+  roundExerciseIndexCompact: {
     fontSize: 13,
-    lineHeight: 18,
+    lineHeight: 21,
   },
   recoveryRoundLabel: {
     marginTop: spacing.xxs,
