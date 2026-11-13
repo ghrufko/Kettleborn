@@ -8,7 +8,7 @@ import { contentEngine } from '../../../engines/content';
 import { useAppStore } from '../../store';
 import { CustomWorkoutExercise } from '../../models';
 import { convertKgToDisplay, convertDisplayToKg } from '../../utils/weight';
-import { colors, fontFamily, fontSize, radii, spacing } from '../../theme';
+import { colors, controls, fontFamily, fontSize, radii, spacing } from '../../theme';
 
 type Props = NativeStackScreenProps<TimerStackParamList, 'CustomWorkoutBuilder'>;
 
@@ -453,15 +453,7 @@ const styles = StyleSheet.create({
     color: colors.text.primary,
   },
   repsStepperRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
-  repsStepButton: {
-    width: 26,
-    height: 26,
-    borderRadius: 13,
-    borderWidth: 1,
-    borderColor: colors.border.hairline,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+  repsStepButton: { ...controls.stepButton, ...controls.stepButtonCompact },
   repsValue: {
     fontFamily: fontFamily.monoBold,
     fontSize: fontSize.sm,

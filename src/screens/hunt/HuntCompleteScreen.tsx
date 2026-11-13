@@ -18,7 +18,7 @@ import { isCampaignComplete } from '../../utils/campaignState';
 import { detectMilestone, Milestone } from '../../utils/milestones';
 import { useStaggeredReveal } from '../../utils/useStaggeredReveal';
 import { getRoundStats } from '../../utils/roundStats';
-import { convertKgToDisplay, formatWeightPair } from '../../utils/weight';
+import { convertKgToDisplay, formatVolume, formatWeightPair } from '../../utils/weight';
 import { colors, fontFamily, fontSize, spacing, glow } from '../../theme';
 import { SYNC_TEXT } from '../../services/sync/syncMessages';
 
@@ -417,7 +417,7 @@ export function HuntCompleteScreen({ route, navigation }: Props) {
           </View>
           <View style={styles.statRow}>
             <Text style={styles.statLabel}>Volume</Text>
-            <Text style={styles.statValue}>{Math.round(summary.volumeKg)} kg</Text>
+            <Text style={styles.statValue}>{formatVolume(summary.volumeKg, unitPreference)}</Text>
           </View>
           <View style={styles.statRow}>
             <Text style={styles.statLabel}>Damage Dealt</Text>
@@ -489,9 +489,13 @@ export function HuntCompleteScreen({ route, navigation }: Props) {
                   )}
                   <View style={styles.breakdownEntryStats}>
                     <Text style={styles.breakdownEntryReps}>{formatBreakdownQuantity(entry)}</Text>
-                    <Text style={styles.breakdownEntryVolume}>
-                      {entry.weightAKg === 0 && entry.totalReps > 0 ? 'bodyweight' : `${Math.round(entry.volumeKg)} kg`}
-                    </Text>
+                    {/* A carry moves no counted volume — show its steps alone,
+                        as Exercise Records do, rather than a "0 kg" line. */}
+                    {entry.weightAKg === 0 && entry.totalReps > 0 ? (
+                      <Text style={styles.breakdownEntryVolume}>bodyweight</Text>
+                    ) : entry.volumeKg > 0 ? (
+                      <Text style={styles.breakdownEntryVolume}>{formatVolume(entry.volumeKg, unitPreference)}</Text>
+                    ) : null}
                   </View>
                 </View>
               );
@@ -548,17 +552,21 @@ export function HuntCompleteScreen({ route, navigation }: Props) {
         <GlassCard style={styles.card}>
           <Text style={styles.sectionLabel}>How did that feel?</Text>
           <View style={styles.rpeRow}>
+            {/* Each Button sits in a fixed half-width cell: Button applies
+                `style` inside its own Pressable, so a flex basis passed to it
+                never reached the row, and the four choices came out ragged. */}
             {RPE_OPTIONS.map(({ value, label }) => (
-              <Button
-                key={value}
-                label={label}
-                variant={selectedRPE === value ? 'primary' : 'secondary'}
-                onPress={() => {
-                  setSelectedRPE(value);
-                  setResultRPE(summary.resultId, value);
-                }}
-                style={styles.rpeButton}
-              />
+              <View key={value} style={styles.rpeCell}>
+                <Button
+                  label={label}
+                  variant={selectedRPE === value ? 'primary' : 'secondary'}
+                  onPress={() => {
+                    setSelectedRPE(value);
+                    setResultRPE(summary.resultId, value);
+                  }}
+                  style={styles.rpeButton}
+                />
+              </View>
             ))}
           </View>
         </GlassCard>
@@ -774,9 +782,9 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     marginBottom: spacing.xs,
   },
-  statRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: spacing.xs },
-  statLabel: { fontFamily: fontFamily.bodyRegular, fontSize: fontSize.base, color: colors.text.secondary },
-  statValue: { fontFamily: fontFamily.monoBold, fontSize: fontSize.base, color: colors.text.primary },
+  statRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', gap: spacing.sm, marginTop: spacing.xs },
+  statLabel: { flexShrink: 0, fontFamily: fontFamily.bodyRegular, fontSize: fontSize.base, color: colors.text.secondary },
+  statValue: { flexShrink: 1, textAlign: 'right', fontFamily: fontFamily.monoBold, fontSize: fontSize.base, color: colors.text.primary },
   xpValue: { color: colors.gold },
   levelRow: {
     flexDirection: 'row',
@@ -849,9 +857,13 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
     marginTop: spacing.xs,
   },
-  rpeButton: {
+  rpeCell: {
     flexGrow: 1,
     flexBasis: '45%',
+  },
+  rpeButton: {
+    width: '100%',
+    paddingHorizontal: spacing.xs,
   },
   // Task 10: styled like a journal entry, not a generic form field —
   // reuses the same body font as the rest of the app's prose text

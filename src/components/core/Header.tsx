@@ -1,8 +1,9 @@
 import React from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { View, Text, Pressable, StyleSheet, useWindowDimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors, fontFamily, fontSize, letterSpacing, spacing } from '../../theme';
+import { fitHeaderTitleSize, HEADER_SIDE_WIDTH } from '../../utils/headerTitleSize';
 
 interface HeaderProps {
   title: string;
@@ -14,6 +15,10 @@ interface HeaderProps {
 }
 
 export function Header({ title, onBack, rightIcon, onRightPress, rightAccessibilityLabel }: HeaderProps) {
+  const { width } = useWindowDimensions();
+  const titleSize = fitHeaderTitleSize(title, width);
+  const titleStyle =
+    titleSize < fontSize.lg ? { fontSize: titleSize, letterSpacing: letterSpacing.normal * 4 } : null;
   return (
     <SafeAreaView edges={['top']} style={styles.safeArea}>
       <View style={styles.row}>
@@ -25,7 +30,7 @@ export function Header({ title, onBack, rightIcon, onRightPress, rightAccessibil
           ) : null}
         </View>
 
-        <Text style={styles.title} numberOfLines={1}>
+        <Text style={[styles.title, titleStyle]} numberOfLines={1}>
           {title}
         </Text>
 
@@ -46,7 +51,6 @@ export function Header({ title, onBack, rightIcon, onRightPress, rightAccessibil
   );
 }
 
-const HEADER_SIDE_WIDTH = 40;
 
 const styles = StyleSheet.create({
   safeArea: {},

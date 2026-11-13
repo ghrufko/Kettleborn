@@ -11,12 +11,23 @@ import { contentEngine } from '../../../engines/content';
 import { getMonsterPortrait } from '../../constants/monsterPortraits';
 import {
   getStructuralControlConfig,
-  StructuralControlConfig,
   buildCustomWorkout,
-  getRepsCustomizableTemplate,
   getRepsCustomizableGroups,
-  isAmountCustomizable,
 } from '../../utils/customWorkoutStructure';
+import {
+  getCustomHuntModel,
+  CustomHuntConfig,
+  CustomHuntModel,
+  CONFIG_VERSION,
+  CONFIG_VERSION_KEY,
+  describeConfig,
+  isCanonicalConfig,
+  isModelConfig,
+  outerValue,
+} from '../../utils/customHuntModel';
+import { getEquipmentRule, resolveGearCount, applyGearVariants } from '../../utils/equipmentRules';
+import { CustomHuntControls } from '../../components/workout/CustomHuntControls';
+import { PhaseSummary } from '../../components/workout/PhaseSummary';
 import { isOpenEndedWorkout } from '../../../engines/battle/battlePlan';
 import { getCombatPersonality, getAtmosphericColor } from '../../utils/bossPersonality';
 import {
@@ -31,7 +42,7 @@ import { groupWorkoutPresentation, groupWorkoutStructure } from '../../utils/wor
 import { WorkoutResult, CustomHuntPreset } from '../../models';
 import { convertKgToDisplay, convertDisplayToKg, formatWeightPair } from '../../utils/weight';
 import { getHeaviestOwnedKettlebellKg, getHeaviestMatchedKettlebellPairKg } from '../../utils/equipment';
-import { colors, fontFamily, fontSize, radii, spacing } from '../../theme';
+import { colors, controls, fontFamily, fontSize, radii, spacing } from '../../theme';
 
 type Props = NativeStackScreenProps<HuntStackParamList, 'HuntOverview'>;
 
@@ -173,7 +184,7 @@ function WeightStepper({
         hitSlop={8}
         style={({ pressed }) => [styles.weightStepButton, pressed && styles.weightStepButtonPressed]}
       >
-        <Ionicons name="remove" size={16} color={colors.text.primary} />
+        <Ionicons name="remove" size={16} color={colors.bronze.base} />
       </Pressable>
       <TextInput
         value={value}
@@ -186,11 +197,17 @@ function WeightStepper({
         hitSlop={8}
         style={({ pressed }) => [styles.weightStepButton, pressed && styles.weightStepButtonPressed]}
       >
-        <Ionicons name="add" size={16} color={colors.text.primary} />
+        <Ionicons name="add" size={16} color={colors.bronze.base} />
       </Pressable>
       <Text style={styles.weightUnit}>{unit}</Text>
     </View>
   );
+}
+
+/** A stored config without its format marker — the editable values only. */
+function withoutMarker(config: Record<string, number>): CustomHuntConfig {
+  const { [CONFIG_VERSION_KEY]: _marker, ...values } = config;
+  return values;
 }
 
 /** "Phase I — Tactical / Single-Side Ladder" → "Phase I": the short handle of a section label. */
@@ -280,18 +297,17 @@ export function HuntOverviewScreen({ route, navigation }: Props) {
   const [isCustomMode, setIsCustomMode] = useState(false);
   const [gearCount, setGearCount] = useState<1 | 2>(2);
   const [restSeconds, setRestSeconds] = useState(45);
-  // Task 2: content-driven — null for a workout with no safe structural
-  // parameter (e.g. Weaver, Ifrit's main+finisher shape), in which case
-  // no control renders at all and this state is simply unused.
-  const structuralControl: StructuralControlConfig | null = workout ? getStructuralControlConfig(workout) : null;
-  const [structuralValue, setStructuralValue] = useState<number>(structuralControl?.canonical ?? 0);
-  // Task (reps per exercise): null for anything that isn't a flat
-  // workout — see getRepsCustomizableTemplate's own comment for why this
-  // is deliberately not offered for ladder/sectioned workouts.
-  const repsTemplate = workout ? getRepsCustomizableTemplate(workout) : null;
-  // The same exercises, grouped by phase for a sectioned workout (Behemoth).
-  const repsGroups = workout ? getRepsCustomizableGroups(workout) : null;
-  const [repsOverrides, setRepsOverrides] = useState<Record<string, number>>({});
+  // Correction Sprint 2: what Custom Hunt can change comes from the
+  // workout's own CustomHuntModel (Chain/Complex phases, or a round
+  // template with per-step reps) — see src/utils/customHuntModel.ts. The
+  // outer value (rounds / max rung; null = canonical) and the namespaced
+  // phase/step values (a missing key = canonical) are the whole config.
+  const customModel: CustomHuntModel | null = workout ? getCustomHuntModel(workout) : null;
+  // How many kettlebells: fixed by the workout, or a choice for Behemoth /
+  // The Duelist only (src/utils/equipmentRules.ts).
+  const equipmentRule = workout ? getEquipmentRule(workout) : null;
+  const [structuralValue, setStructuralValue] = useState<number | null>(null);
+  const [modelConfig, setModelConfig] = useState<CustomHuntConfig>({});
 
   useEffect(() => {
     if (!workout) {
@@ -313,10 +329,10 @@ export function HuntOverviewScreen({ route, navigation }: Props) {
       setWeightBInput(
         lockedConfig.weightBKg !== null ? String(convertKgToDisplay(lockedConfig.weightBKg, unitPreference)) : ''
       );
-      setGearCount(lockedConfig.gearCount);
+      setGearCount(resolveGearCount(workout, lockedConfig.gearCount));
       setRestSeconds(lockedConfig.restSeconds);
-      setStructuralValue(lockedConfig.structuralValue ?? structuralControl?.canonical ?? 0);
-      setRepsOverrides(lockedConfig.repsOverrides ?? {});
+      setStructuralValue(lockedConfig.structuralValue);
+      setModelConfig(isModelConfig(lockedConfig.repsOverrides) ? withoutMarker(lockedConfig.repsOverrides!) : {});
       return;
     }
     getCustomHuntPreset(workout.id).then((preset: CustomHuntPreset | null) => {
@@ -333,10 +349,21 @@ export function HuntOverviewScreen({ route, navigation }: Props) {
         setWeightBInput(
           String(convertKgToDisplay(preset.weightBKg ?? preset.weightKg, unitPreference))
         );
-        setGearCount(preset.gearCount);
+        setGearCount(resolveGearCount(workout, preset.gearCount));
         setRestSeconds(preset.restSeconds);
-        setStructuralValue(preset.customStructureValue ?? structuralControl?.canonical ?? 0);
-        setRepsOverrides(preset.repsOverrides ?? {});
+        // A preset saved by this model reloads as-is. One saved before it
+        // keeps only a value that means the same thing here (a flat
+        // workout's rounds, a ladder's max rung); anything else starts
+        // from canonical rather than being misread.
+        if (isModelConfig(preset.repsOverrides)) {
+          setStructuralValue(preset.customStructureValue ?? null);
+          setModelConfig(withoutMarker(preset.repsOverrides!));
+        } else {
+          const model = getCustomHuntModel(workout);
+          const sameMeaning = model.kind === 'ladder' || (model.kind === 'template' && model.shape === 'flat');
+          setStructuralValue(sameMeaning ? preset.customStructureValue ?? null : null);
+          setModelConfig({});
+        }
       } else {
         // Phase 2.7: single-kettlebell canonical workout gets an
         // equipment-driven default — the heaviest kettlebell owned.
@@ -354,8 +381,8 @@ export function HuntOverviewScreen({ route, navigation }: Props) {
         setWeightBInput(String(convertKgToDisplay(defaultWeightBKg, unitPreference)));
         setGearCount(workout.gearCount);
         setRestSeconds(hunt?.restSecondsOverride ?? workout.restSeconds);
-        setStructuralValue(structuralControl?.canonical ?? 0);
-        setRepsOverrides({});
+        setStructuralValue(null);
+        setModelConfig({});
       }
       setIsCustomMode(false);
     });
@@ -399,11 +426,15 @@ export function HuntOverviewScreen({ route, navigation }: Props) {
   const parsedDisplayWeightB = Number(weightBInput.replace(',', '.'));
   const parsedWeightBKg = convertDisplayToKg(parsedDisplayWeightB, unitPreference);
   const effectiveGearCount: 1 | 2 = isProgressionLocked
-    ? lockedConfig?.gearCount ?? 1
+    ? resolveGearCount(workout, lockedConfig?.gearCount)
     : isCustomMode
-      ? gearCount
+      ? resolveGearCount(workout, gearCount)
       : workout.gearCount;
   const showSecondWeightCell = effectiveGearCount === 2;
+  // The controls name the movements the hunt will actually use: a
+  // one-bell Behemoth / Duelist shows its one-bell movements. Variants
+  // never move a step, so the config keys are the same either way.
+  const controlsModel = customModel ? getCustomHuntModel(applyGearVariants(workout, effectiveGearCount)) : null;
   const isWeightBValid =
     !showSecondWeightCell ||
     (Number.isFinite(parsedWeightBKg) && parsedWeightBKg > 0 && parsedWeightBKg <= MAX_WEIGHT_KG);
@@ -441,8 +472,8 @@ export function HuntOverviewScreen({ route, navigation }: Props) {
     setWeightBInput(String(convertKgToDisplay(workout.gearWeightKg, unitPreference)));
     // Task 2: structural value resets to canonical too, same "nothing is
     // deleted from storage, only Begin Hunt persists" rule as weight.
-    setStructuralValue(structuralControl?.canonical ?? 0);
-    setRepsOverrides({});
+    setStructuralValue(null);
+    setModelConfig({});
   };
 
   const beginHunt = async () => {
@@ -468,6 +499,8 @@ export function HuntOverviewScreen({ route, navigation }: Props) {
       });
       return;
     }
+    // The bell count the rule allows (a fixed workout ignores any choice).
+    const customGearCount = resolveGearCount(workout, gearCount);
     if (isCustomMode) {
       // Persisted here (not on every keystroke/tap) — matches the
       // existing project convention of saving on an explicit confirm
@@ -476,24 +509,13 @@ export function HuntOverviewScreen({ route, navigation }: Props) {
       await saveCustomHuntPreset({
         workoutId: workout.id,
         weightKg: parsedWeightKg,
-        weightBKg: gearCount === 2 ? parsedWeightBKg : undefined,
-        gearCount,
+        weightBKg: customGearCount === 2 ? parsedWeightBKg : undefined,
+        gearCount: customGearCount,
         restSeconds,
-        customStructureValue: structuralControl ? structuralValue : undefined,
-        repsOverrides: repsTemplate ? repsOverrides : undefined,
+        customStructureValue: customOuter ?? undefined,
+        repsOverrides: customConfig,
       });
     }
-    const hasStructuralChange = !!structuralControl && structuralValue !== structuralControl.canonical;
-    const hasRepsChange = !!repsTemplate && Object.keys(repsOverrides).length > 0;
-    // For a flat workout structuralValue is always a valid, correctly-
-    // seeded round count (canonical unless also customized). A
-    // fixed-sectioned workout (Behemoth) has no structural control:
-    // buildCustomWorkout ignores the value there and applies only the
-    // per-phase overrides.
-    const customWorkout =
-      isCustomMode && (hasStructuralChange || hasRepsChange)
-        ? buildCustomWorkout(workout, structuralValue, repsOverrides)
-        : undefined;
     navigation.navigate('ActiveHunt', {
       monsterId,
       huntId,
@@ -501,11 +523,13 @@ export function HuntOverviewScreen({ route, navigation }: Props) {
       weightKg: parsedWeightKg,
       weightBKg: showSecondWeightCell ? parsedWeightBKg : undefined,
       isCustomHunt: isCustomMode,
-      customGearCount: isCustomMode ? gearCount : undefined,
+      customGearCount: isCustomMode ? customGearCount : undefined,
       customRestSeconds: isCustomMode ? restSeconds : undefined,
-      customWorkout,
-      customStructuralValue: isCustomMode && structuralControl ? structuralValue : undefined,
-      customRepsOverrides: isCustomMode && repsTemplate && Object.keys(repsOverrides).length > 0 ? repsOverrides : undefined,
+      customWorkout: isCustomMode && (customChanged || customNeedsVariants) ? previewWorkout : undefined,
+      // Only a configuration that changes the workout is snapshotted —
+      // a weight/rest-only Custom Hunt stays comparable, as before.
+      customStructuralValue: isCustomMode && customChanged && customOuter !== null ? customOuter : undefined,
+      customRepsOverrides: isCustomMode && customChanged ? customConfig : undefined,
     });
   };
 
@@ -516,28 +540,49 @@ export function HuntOverviewScreen({ route, navigation }: Props) {
   // template when that isn't what will be performed.
   const lockedPreviewHasOverrides =
     !!lockedConfig?.repsOverrides && Object.keys(lockedConfig.repsOverrides).length > 0;
-  const customHasStructuralChange = !!structuralControl && structuralValue !== structuralControl.canonical;
-  const customHasRepsChange = !!repsTemplate && Object.keys(repsOverrides).length > 0;
-  const previewWorkout = isProgressionLocked
-    ? lockedConfig?.isCustomHunt && (lockedConfig.structuralValue !== null || lockedPreviewHasOverrides)
-      ? buildCustomWorkout(
-          workout,
-          lockedConfig.structuralValue ?? structuralControl?.canonical ?? 0,
-          lockedConfig.repsOverrides ?? undefined
-        )
-      : workout
-    : isCustomMode && (customHasStructuralChange || customHasRepsChange)
-      ? buildCustomWorkout(workout, structuralValue, repsOverrides)
-      : workout;
-  // Locked panel rows (Encounter 2/3): the structure/rounds, then every
-  // per-step override the locked configuration carries — reps, a carry's
-  // steps, or one phase's reps — named with its phase when it has one.
-  const isLadder = structuralControl?.kind === 'ladder';
-  const lockedStructureLabel = isLadder ? structuralControl.label : `${previewWorkout.stepLabel ?? 'Round'}s`;
-  const lockedStructureValue = isLadder
-    ? `${lockedConfig?.structuralValue ?? structuralControl.canonical}`
-    : `${previewWorkout.rounds}`;
-  const lockedOverrideRows = Object.entries(lockedConfig?.repsOverrides ?? {}).flatMap(([exerciseId, amount]) => {
+  // This Encounter-1 Custom Hunt's config: the outer value (null when the
+  // model has none) and the phase/step values with the format marker.
+  const customOuter = customModel?.outer ? outerValue(customModel, structuralValue) : null;
+  const customConfig: CustomHuntConfig = { [CONFIG_VERSION_KEY]: CONFIG_VERSION, ...modelConfig };
+  const customChanged = !isCanonicalConfig(workout, customOuter, customConfig);
+  const customNeedsVariants = !!workout.flexibleGearCount && effectiveGearCount === 1;
+  const previewWorkout = applyGearVariants(
+    isProgressionLocked
+      ? lockedConfig?.isCustomHunt && (lockedConfig.structuralValue !== null || lockedPreviewHasOverrides)
+        ? buildCustomWorkout(
+            workout,
+            lockedConfig.structuralValue ?? getStructuralControlConfig(workout)?.canonical ?? 0,
+            lockedConfig.repsOverrides ?? undefined
+          )
+        : workout
+      : isCustomMode && customChanged
+        ? buildCustomWorkout(workout, customOuter ?? 0, customConfig)
+        : workout,
+    effectiveGearCount
+  );
+  // Locked panel rows (Encounter 2/3): the structure — max rung, phase
+  // cycles, or rounds — then every other value the locked configuration
+  // changed (per-movement/per-step reps, a carry's steps, a phase's reps).
+  const previewModel = getCustomHuntModel(previewWorkout);
+  const lockedStructureRows: { label: string; value: string }[] =
+    customModel?.kind === 'ladder'
+      ? [{ label: customModel.outer.label, value: `${outerValue(customModel, lockedConfig?.structuralValue) ?? customModel.outer.canonical}` }]
+      : previewModel.kind === 'phased'
+        ? [
+            ...(previewModel.layout === 'inline' ? [{ label: 'Rounds', value: `${previewWorkout.sections?.length ?? previewWorkout.rounds}` }] : []),
+            ...previewModel.phases.map((phase) => ({ label: `${phase.title} Cycles`, value: `${phase.canonicalCycles}` })),
+          ]
+        : [{ label: `${previewWorkout.stepLabel ?? 'Round'}s`, value: `${previewWorkout.rounds}` }];
+  const lockedOverrideRows = isModelConfig(lockedConfig?.repsOverrides)
+    ? describeConfig(workout, lockedConfig!.repsOverrides!)
+        .filter((row) => !row.key.endsWith('.cycles'))
+        .map((row) => ({ id: row.key, label: row.label, value: row.value }))
+    : legacyLockedOverrideRows();
+  // A configuration saved before Correction Sprint 2: overrides keyed by
+  // step id (Sprint 1's carry steps / phase reps), described as before.
+  function legacyLockedOverrideRows() {
+    const repsGroups = getRepsCustomizableGroups(workout!);
+    return Object.entries(lockedConfig?.repsOverrides ?? {}).flatMap(([exerciseId, amount]) => {
     const group = repsGroups?.find((candidate) => candidate.exercises.some((exercise) => exercise.id === exerciseId));
     const exercise = group?.exercises.find((candidate) => candidate.id === exerciseId);
     if (!exercise) return [];
@@ -547,7 +592,8 @@ export function HuntOverviewScreen({ route, navigation }: Props) {
       label: group?.label ? `${shortSectionLabel(group.label)} · ${name}` : name,
       value: !exercise.targetReps && exercise.targetSteps ? `${amount} steps` : `${amount} reps`,
     }];
-  });
+    });
+  }
   const effectiveRestSeconds = isProgressionLocked
     ? lockedConfig?.restSeconds ?? hunt.restSecondsOverride ?? workout.restSeconds
     : isCustomMode
@@ -647,7 +693,19 @@ export function HuntOverviewScreen({ route, navigation }: Props) {
 
         <GlassCard style={styles.section}>
           <Text style={styles.sectionLabel}>Workout</Text>
-          {hasWorkoutStructure ? (
+          {previewModel.kind === 'phased' ? (
+            <View style={styles.exerciseList}>
+              <PhaseSummary
+                workout={previewWorkout}
+                onExercisePress={(exercise) => {
+                  const libraryEntry = exercise.libraryExerciseId
+                    ? contentEngine.getExerciseLibraryEntry(exercise.libraryExerciseId)
+                    : contentEngine.getExerciseLibraryEntryByName(exercise.name);
+                  if (libraryEntry) navigation.navigate('ExerciseDetail', { exerciseId: libraryEntry.id });
+                }}
+              />
+            </View>
+          ) : hasWorkoutStructure ? (
             <View style={styles.exerciseList}>
               <WorkoutStructure
                 groups={workoutStructure}
@@ -844,7 +902,9 @@ export function HuntOverviewScreen({ route, navigation }: Props) {
                       />
                     ) : null}
                     <LockedParam label="Rest" value={formatRestSeconds(lockedConfig.restSeconds)} />
-                    <LockedParam label={lockedStructureLabel} value={lockedStructureValue} emphasized />
+                    {lockedStructureRows.map((row) => (
+                      <LockedParam key={row.label} label={row.label} value={row.value} emphasized />
+                    ))}
                     {lockedOverrideRows.map((row) => (
                       <LockedParam key={row.id} label={row.label} value={row.value} />
                     ))}
@@ -887,15 +947,31 @@ export function HuntOverviewScreen({ route, navigation }: Props) {
                     Use your own equipment — the Monster and exercises stay the same, only how you perform
                     it changes. Saved for {monster.name}'s other Levels too.
                   </Text>
-                  <View style={styles.customRow}>
-                    <Text style={styles.customRowLabel}>Kettlebells</Text>
-                    <View style={styles.modeToggleRow}>
-                      <MiniToggle label="1" value={gearCount === 1} onToggle={() => setGearCount(1)} />
-                      <MiniToggle label="2" value={gearCount === 2} onToggle={() => setGearCount(2)} />
+                  {/* Equipment (Correction Sprint 2): only Behemoth and The
+                      Duelist may switch between one and two kettlebells —
+                      their movements switch to one-bell variants with it.
+                      Every other workout shows its fixed requirement. */}
+                  {equipmentRule?.kind === 'flexible' ? (
+                    <View style={styles.customRow}>
+                      <Text style={styles.customRowLabel}>Kettlebells</Text>
+                      <View style={styles.modeToggleRow}>
+                        <MiniToggle label="1" value={effectiveGearCount === 1} onToggle={() => setGearCount(1)} />
+                        <MiniToggle label="2" value={effectiveGearCount === 2} onToggle={() => setGearCount(2)} />
+                      </View>
                     </View>
-                  </View>
+                  ) : (
+                    <View style={styles.customRow}>
+                      <Text style={styles.customRowLabel}>Kettlebells</Text>
+                      <View style={styles.fixedEquipment}>
+                        <Ionicons name="lock-closed" size={11} color={colors.bronze.base} />
+                        <Text style={styles.fixedEquipmentText}>
+                          {workout.gearCount === 2 ? 'Two · fixed' : 'One · fixed'}
+                        </Text>
+                      </View>
+                    </View>
+                  )}
                   <View style={styles.customRow}>
-                    <Text style={styles.customRowLabel}>{gearCount === 2 ? 'Kettlebell 1' : 'Weight'}</Text>
+                    <Text style={styles.customRowLabel}>{effectiveGearCount === 2 ? 'Kettlebell 1' : 'Weight'}</Text>
                     <WeightStepper
                       value={weightInput}
                       onChangeText={setWeightInput}
@@ -904,7 +980,7 @@ export function HuntOverviewScreen({ route, navigation }: Props) {
                       invalid={!isWeightValid}
                     />
                   </View>
-                  {gearCount === 2 ? (
+                  {effectiveGearCount === 2 ? (
                     <View style={styles.customRow}>
                       <Text style={styles.customRowLabel}>Kettlebell 2</Text>
                       <WeightStepper
@@ -926,81 +1002,25 @@ export function HuntOverviewScreen({ route, navigation }: Props) {
                     <Text style={styles.customRowLabel}>Rest Between Rounds</Text>
                     <RestStepper value={restSeconds} onChange={setRestSeconds} />
                   </View>
-                  {/* Task 2: only rendered when this workout's own structure
-                      has a safe adjustable parameter — a fixed-sectioned
-                      workout (e.g. Weaver, Ifrit) shows nothing extra here,
-                      exactly per "do not invent fake configurability." */}
-                  {structuralControl ? (
-                    <View style={styles.customRow}>
-                      <Text style={styles.customRowLabel}>{structuralControl.label}</Text>
-                      <IntStepper
-                        value={structuralValue}
-                        min={structuralControl.min}
-                        max={structuralControl.max}
-                        onChange={setStructuralValue}
-                      />
-                    </View>
-                  ) : null}
-                  {/* Per-exercise amounts: one stepper per step that has a rep
-                      count — or, for a carry (Leviathan's Front Rack Carry), its
-                      step count, shown and stored as steps, never as reps. A
-                      sectioned workout (Behemoth's three phases) gets one group
-                      per phase, so each phase's reps are set independently.
-                      Ladder/cyclical workouts get none (see
-                      getRepsCustomizableGroups). */}
-                  {repsGroups ? (
-                    repsGroups.map((group) => {
-                      const amountExercises = group.exercises.filter(isAmountCustomizable);
-                      if (amountExercises.length === 0) return null;
-                      return (
-                        <View key={group.label ?? 'reps'} style={group.label ? styles.repsGroup : undefined}>
-                          <Text style={group.label ? styles.repsGroupLabel : styles.customRowLabel}>
-                            {group.label ?? 'Reps'}
-                          </Text>
-                          {amountExercises.map((exercise) => {
-                            const isSteps = !exercise.targetReps && !!exercise.targetSteps;
-                            const canonicalAmount = (isSteps ? exercise.targetSteps : exercise.targetReps)!;
-                            const currentAmount = repsOverrides[exercise.id] ?? canonicalAmount;
-                            return (
-                              <View key={exercise.id} style={styles.customRow}>
-                                <Pressable
-                                  disabled={!contentEngine.getExerciseLibraryEntry(exercise.libraryExerciseId ?? '') && !contentEngine.getExerciseLibraryEntryByName(exercise.name)}
-                                  onPress={() => {
-                                    const entry = exercise.libraryExerciseId
-                                      ? contentEngine.getExerciseLibraryEntry(exercise.libraryExerciseId)
-                                      : contentEngine.getExerciseLibraryEntryByName(exercise.name);
-                                    if (entry) navigation.navigate('ExerciseDetail', { exerciseId: entry.id });
-                                  }}
-                                  accessibilityRole="link"
-                                  style={styles.customExerciseLink}
-                                >
-                                  <Text style={styles.customRowLabel}>{exercise.displayName ?? exercise.name}</Text>
-                                  <Ionicons name="information-circle-outline" size={15} color={colors.text.muted} />
-                                </Pressable>
-                                <IntStepper
-                                  value={currentAmount}
-                                  min={isSteps ? 5 : 1}
-                                  max={isSteps ? Math.max(canonicalAmount * 4, 200) : Math.max(canonicalAmount * 3, 20)}
-                                  step={isSteps ? 5 : 1}
-                                  suffix={isSteps ? 'steps' : undefined}
-                                  onChange={(next) =>
-                                    setRepsOverrides((prev) => {
-                                      const updated = { ...prev };
-                                      if (next === canonicalAmount) {
-                                        delete updated[exercise.id];
-                                      } else {
-                                        updated[exercise.id] = next;
-                                      }
-                                      return updated;
-                                    })
-                                  }
-                                />
-                              </View>
-                            );
-                          })}
-                        </View>
-                      );
-                    })
+                  {/* Correction Sprint 2: everything else this workout lets the
+                      player change, from its own CustomHuntModel — Chain/Complex
+                      phases with their cycles and per-movement reps, or the
+                      round count with one row per movement (left/right paired),
+                      or a ladder's max rung. */}
+                  {controlsModel ? (
+                    <CustomHuntControls
+                      model={controlsModel}
+                      structuralValue={structuralValue}
+                      onStructuralChange={setStructuralValue}
+                      config={modelConfig}
+                      onConfigChange={setModelConfig}
+                      onExercisePress={(exercise) => {
+                        const entry = exercise.libraryExerciseId
+                          ? contentEngine.getExerciseLibraryEntry(exercise.libraryExerciseId)
+                          : contentEngine.getExerciseLibraryEntryByName(exercise.name);
+                        if (entry) navigation.navigate('ExerciseDetail', { exerciseId: entry.id });
+                      }}
+                    />
                   ) : null}
                 </>
               ) : (
@@ -1320,19 +1340,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing.xs,
   },
-  weightStepButton: {
-    width: 36,
-    height: 36,
-    borderRadius: radii.pill,
-    backgroundColor: colors.void.surface,
-    borderWidth: 1,
-    borderColor: colors.border.hairline,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  weightStepButtonPressed: {
-    backgroundColor: colors.charcoal.raised,
-  },
+  weightStepButton: { ...controls.stepButton },
+  weightStepButtonPressed: { ...controls.stepButtonPressed },
   weightInputCompact: {
     width: 64,
     fontFamily: fontFamily.monoBold,
@@ -1402,6 +1411,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     marginTop: spacing.sm,
+  },
+  fixedEquipment: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xxs,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 3,
+    borderRadius: radii.pill,
+    borderWidth: 1,
+    borderColor: colors.border.hairlineStrong,
+  },
+  fixedEquipmentText: {
+    fontFamily: fontFamily.monoBold,
+    fontSize: fontSize.xs,
+    color: colors.bronze.active,
+    textTransform: 'uppercase',
+    letterSpacing: 1,
   },
   customExerciseLink: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: spacing.xxs, marginRight: spacing.sm },
   repsGroup: {
@@ -1541,15 +1567,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing.sm,
   },
-  restStepperButton: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    borderWidth: 1,
-    borderColor: colors.border.hairlineStrong,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+  restStepperButton: { ...controls.stepButton },
   restStepperValue: {
     fontFamily: fontFamily.monoBold,
     fontSize: fontSize.base,

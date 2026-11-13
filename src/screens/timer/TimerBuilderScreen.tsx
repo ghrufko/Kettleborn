@@ -7,7 +7,7 @@ import { Header, Button, GlassCard } from '../../components/core';
 import { contentEngine } from '../../../engines/content';
 import { useAppStore } from '../../store';
 import { TimerRound, TimerInterval } from '../../models';
-import { colors, fontFamily, fontSize, radii, spacing } from '../../theme';
+import { colors, controls, fontFamily, fontSize, radii, spacing } from '../../theme';
 
 type Props = NativeStackScreenProps<TimerStackParamList, 'TimerBuilder'>;
 
@@ -369,15 +369,7 @@ const styles = StyleSheet.create({
     marginTop: spacing.sm,
   },
   stepperRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
-  stepperButton: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    borderWidth: 1,
-    borderColor: colors.border.hairlineStrong,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+  stepperButton: { ...controls.stepButton },
   stepperValue: {
     fontFamily: fontFamily.monoBold,
     fontSize: fontSize.base,

@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Pressable, StyleSheet, ViewStyle } from 'react-native';
+import { View, Text, Pressable, StyleSheet, ViewStyle, useWindowDimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -34,6 +34,7 @@ export function BottomNavigation({ state, descriptors, navigation }: BottomTabBa
   // on focus (and clears it on blur) — that half of the wiring was already
   // correct, this component just never read it. StyleSheet.flatten handles
   // both object and array style values safely.
+  const isNarrow = useWindowDimensions().width < 360;
   const focusedOptions = descriptors[state.routes[state.index].key].options;
   // tabBarStyle's declared type includes Animated-interpolated variants
   // that don't apply here in practice (this app only ever sets a plain
@@ -75,9 +76,11 @@ export function BottomNavigation({ state, descriptors, navigation }: BottomTabBa
               <Ionicons
                 name={iconName}
                 size={22}
-                color={isActive ? colors.ember.base : colors.steel}
+                color={isActive ? colors.ember.base : colors.text.muted}
               />
-              <Text style={[styles.label, isActive && styles.labelActive]}>{label}</Text>
+              <Text style={[styles.label, isNarrow && styles.labelNarrow, isActive && styles.labelActive]} numberOfLines={1}>
+                {label}
+              </Text>
               {isActive ? <View style={styles.activeIndicator} /> : null}
             </Pressable>
           );
@@ -103,11 +106,20 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.xs,
     gap: 4,
   },
+  // Inactive tabs read in the muted text tone, not steel: steel on the
+  // bar's surface was under 2:1 contrast, so "Timer"/"Chronicle" were
+  // barely legible. Below 360pt a fifth of the screen is too narrow for
+  // "Chronicle" at 11px, so the labels drop to 10px with no tracking.
   label: {
     fontFamily: fontFamily.displayRegular,
-    fontSize: fontSize.xs,
-    color: colors.steel,
+    fontSize: 11,
+    letterSpacing: 0.4,
+    color: colors.text.muted,
     textTransform: 'uppercase',
+  },
+  labelNarrow: {
+    fontSize: 10,
+    letterSpacing: 0,
   },
   labelActive: {
     color: colors.text.primary,

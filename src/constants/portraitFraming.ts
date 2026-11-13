@@ -20,6 +20,11 @@ export const REFERENCE_FRAME_DIAMETER = 0.99;
 export const PORTRAIT_FRAMING: Record<string, PortraitFraming> = {
   mammoth: { centerX: 0.4878, centerY: 0.4857, diameter: 0.9602 },
   basilisk: { centerX: 0.4971, centerY: 0.4921, diameter: 0.912 },
+  sovereign: { centerX: 0.497, centerY: 0.4826, diameter: 0.9637 },
+  dualist: { centerX: 0.4951, centerY: 0.4823, diameter: 0.9675 },
+  fallen: { centerX: 0.4964, centerY: 0.4794, diameter: 0.9584 },
+  unbroken: { centerX: 0.4972, centerY: 0.4839, diameter: 0.9658 },
+  colossus: { centerX: 0.4938, centerY: 0.4891, diameter: 0.9676 },
 };
 
 /**

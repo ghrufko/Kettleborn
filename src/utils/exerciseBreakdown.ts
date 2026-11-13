@@ -163,9 +163,11 @@ export function getExerciseBreakdown(
       weightAByName.set(key, effectiveGearCount === 0 ? 0 : weightAKg);
       weightBByName.set(key, effectiveGearCount === 2 ? weightBKg ?? weightAKg : null);
     }
-    const reps = (exercise.targetReps ?? 0) * repsMultiplier;
-    const distanceFt = (exercise.targetDistanceFt ?? 0) * repsMultiplier;
-    const steps = (exercise.targetSteps ?? 0) * repsMultiplier;
+    // A Complex step repeated as a block (Exercise.cycles) counts every cycle.
+    const multiplier = repsMultiplier * (exercise.cycles ?? 1);
+    const reps = (exercise.targetReps ?? 0) * multiplier;
+    const distanceFt = (exercise.targetDistanceFt ?? 0) * multiplier;
+    const steps = (exercise.targetSteps ?? 0) * multiplier;
     const weightPerRepKg = resolveExerciseWeightKg(
       { ...exercise, usesGearCount: movement.usesGearCount },
       gearCount === 2 ? 2 : 1,

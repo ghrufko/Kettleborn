@@ -153,19 +153,21 @@ test('a single-bell Custom Hunt counts one bell; a canonical double-bell workout
 
 // ------------------------------------------------------------- 3. Exercise Records format
 
-test('Exercise Records show "N reps — X kg done"; bodyweight and carries never get a fabricated kg figure', () => {
+// Correction Sprint 2 dropped the word "done" ("100 reps · 4,800 kg").
+test('Exercise Records show reps and accumulated kg; bodyweight and carries never get a fabricated kg figure', () => {
   const kg = (v: number) => Math.round(v);
   assert.equal(
     formatExerciseRecord({ totalReps: 100, totalVolumeKg: 4800, totalDistanceFt: 0, totalSteps: 0 }, kg, 'kg'),
-    `100 reps — ${(4800).toLocaleString()} kg done`
+    `100 reps · ${(4800).toLocaleString()} kg`
   );
   assert.equal(formatExerciseRecord({ totalReps: 40, totalVolumeKg: 0, totalDistanceFt: 0, totalSteps: 0 }, kg, 'kg'), '40 reps');
   assert.equal(formatExerciseRecord({ totalReps: 0, totalVolumeKg: 0, totalDistanceFt: 0, totalSteps: 250 }, kg, 'kg'), '250 steps');
   const lb = (v: number) => Math.round(v * 2.20462);
   assert.equal(
     formatExerciseRecord({ totalReps: 10, totalVolumeKg: 100, totalDistanceFt: 0, totalSteps: 0 }, lb, 'lb'),
-    '10 reps — 220 lb done'
+    '10 reps · 220 lb'
   );
+  assert.ok(!formatExerciseRecord({ totalReps: 10, totalVolumeKg: 100, totalDistanceFt: 0, totalSteps: 0 }, kg, 'kg').includes('done'));
 });
 
 // ------------------------------------------------------------- 4. Leviathan carry steps

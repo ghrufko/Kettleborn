@@ -18,6 +18,7 @@ import { getHunterTitle } from '../utils/hunterTitle';
 import { calculateHuntXP, getLevelForTotalXP } from '../../engines/progress/progressionEngine';
 import { getExerciseBreakdown } from '../utils/exerciseBreakdown';
 import { addExtraSetsToBreakdown } from '../utils/resultWorkout';
+import { applyGearVariants, resolveGearCount } from '../utils/equipmentRules';
 import { getWorkoutActualExercises } from '../utils/workoutPresentation';
 import {
   getEncounterOutcome,
@@ -107,7 +108,12 @@ export const createWorkoutSlice: StateCreator<AppStore, [], [], WorkoutSlice> = 
     // breakdown) uses THIS Workout instead of the canonical one — it's
     // the actual thing the player did. The canonical Workout is only
     // used for the existence check above and is otherwise untouched.
-    const workout = customWorkout ?? canonicalWorkout;
+    // Equipment (Correction Sprint 2): the bell count is the workout's own
+    // fixed count, or the player's choice for a flexible workout — never an
+    // incompatible override (see equipmentRules.ts). A flexible workout done
+    // with one bell runs its one-bell variants.
+    const gearCount = resolveGearCount(canonicalWorkout, actualGearCount === 1 || actualGearCount === 2 ? actualGearCount : undefined);
+    const workout = applyGearVariants(customWorkout ?? canonicalWorkout, gearCount);
 
     // Player-entered weight for this specific Hunt (Hunt Brief), falling
     // back to the workout's content-authored recommendation when not
@@ -118,7 +124,6 @@ export const createWorkoutSlice: StateCreator<AppStore, [], [], WorkoutSlice> = 
     // canonical workout.gearCount exactly like weightKg above — every
     // existing/older completeHunt call (no actualGearCount passed) keeps
     // reading workout.gearCount unchanged.
-    const gearCount = actualGearCount ?? workout.gearCount;
     // Kettlebell weight audit: the second bell's REAL weight — genuinely
     // independent from `weightKg` (16kg + 18kg is valid, not assumed
     // equal). Falls back to `weightKg` only when gearCount is 2 but no
@@ -268,7 +273,10 @@ export const createWorkoutSlice: StateCreator<AppStore, [], [], WorkoutSlice> = 
     // rounds sum, so a "legacy repeated Chain" workout (e.g. Atlas) no
     // longer double-counts — identical output for every other workout.
     const actualExercises = getWorkoutActualExercises(workout, actualRounds);
-    const workoutTotalReps = actualExercises.reduce((sum, exercise) => sum + (exercise.targetReps ?? 0), 0);
+    const workoutTotalReps = actualExercises.reduce(
+      (sum, exercise) => sum + (exercise.targetReps ?? 0) * (exercise.cycles ?? 1),
+      0
+    );
     const xp = calculateHuntXP({
       difficulty: workout.difficulty,
       actualWeightKg: weightKg,

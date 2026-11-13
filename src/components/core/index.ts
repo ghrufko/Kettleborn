@@ -5,3 +5,4 @@ export { Header } from './Header';
 export { LevelUpModal } from './LevelUpModal';
 export { AppBackground } from './AppBackground';
 export { ConfirmDialog } from './ConfirmDialog';
+export { Toggle } from './Toggle';

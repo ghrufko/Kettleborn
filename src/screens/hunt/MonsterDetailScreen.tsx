@@ -21,6 +21,8 @@ import { HuntRank } from '../../utils/huntRank';
 import type { Exercise, Workout, WorkoutResult } from '../../models';
 import { getEncounterSnapshots, EncounterSnapshot } from '../../utils/encounterSnapshot';
 import { classifyWorkoutStructure } from '../../utils/customWorkoutStructure';
+import { getCustomHuntModel } from '../../utils/customHuntModel';
+import { PhaseSummary } from '../../components/workout/PhaseSummary';
 import { convertKgToDisplay, formatWeightPair } from '../../utils/weight';
 import { useAppStore } from '../../store';
 import { colors, fontFamily, fontSize, lineHeight, spacing, glow } from '../../theme';
@@ -78,6 +80,14 @@ const HISTORY_DISPLAY_LIMIT = 10;
 
 /** "5 rounds" / "9 rungs · max rung 5" — the structure of a (possibly Custom Hunt) workout. */
 function describeStructure(workout: Workout): string {
+  // A Chain/Complex workout is described by its phases, not its session
+  // rounds (The Sovereign's 6 rounds are 5 Chain passes + the Complex).
+  const model = getCustomHuntModel(workout);
+  if (model.kind === 'phased') {
+    const phases = model.phases.map((phase) => `${phase.kind === 'chain' ? 'Chain' : 'Complex'} ×${phase.canonicalCycles}`).join(' → ');
+    const rounds = model.layout === 'inline' ? workout.sections?.length ?? workout.rounds : 1;
+    return rounds > 1 ? `${rounds} rounds · ${phases}` : phases;
+  }
   const unit = (workout.stepLabel ?? 'Round').toLowerCase();
   const base = `${workout.rounds} ${unit}${workout.rounds === 1 ? '' : 's'}`;
   if (workout.stepLabel === 'Rung' && workout.sections?.length) {
@@ -141,7 +151,15 @@ function EncounterWorkoutCard({
       <Text style={styles.sectionLabel}>{title}</Text>
       <Text style={styles.previewSubtitle}>{subtitle}</Text>
       {note ? <Text style={styles.modeHint}>{note}</Text> : null}
-      {structure.length ? (
+      {getCustomHuntModel(workout).kind === 'phased' ? (
+        <PhaseSummary
+          workout={workout}
+          onExercisePress={(exercise) => {
+            const entry = libraryEntryFor(exercise);
+            if (entry) onExercisePress(entry.id);
+          }}
+        />
+      ) : structure.length ? (
         <WorkoutStructure groups={structure} compact />
       ) : (
         sections.map((section, sectionIndex) => (
@@ -400,10 +418,9 @@ export function MonsterDetailScreen({ route, navigation }: Props) {
                     value: formatWeightPair(snapshot.result.weightValueA, snapshot.result.weightValueB, unitPreference),
                   },
                   { label: 'Rest', value: formatSecondsClock(snapshot.restSeconds) },
-                  {
-                    label: 'Target Time',
-                    value: snapshot.workout.targetTimeSeconds ? formatSecondsClock(snapshot.workout.targetTimeSeconds) : '—',
-                  },
+                  // The time this encounter was cleared in — the time the next
+                  // encounter has to beat. The workout's own target time is
+                  // never shown in a monster description (Correction Sprint 2).
                   { label: 'Your Time', value: formatSecondsClock(snapshot.elapsedSeconds) },
                 ]}
               />
@@ -427,10 +444,6 @@ export function MonsterDetailScreen({ route, navigation }: Props) {
                   value: `${convertKgToDisplay(firstWorkout.gearWeightKg, unitPreference)} ${unitPreference} × ${firstWorkout.gearCount}`,
                 },
                 { label: 'Canonical Rest', value: formatSecondsClock(hunt.restSecondsOverride ?? firstWorkout.restSeconds) },
-                {
-                  label: 'Target Time',
-                  value: firstWorkout.targetTimeSeconds ? formatSecondsClock(firstWorkout.targetTimeSeconds) : '—',
-                },
               ]}
             />
           );
@@ -802,9 +815,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    gap: spacing.sm,
     marginTop: spacing.xs,
   },
+  // flexShrink: a long movement name wraps inside its own column instead
+  // of pushing its info icon into the rep count beside it.
   statLabel: {
+    flexShrink: 1,
     fontFamily: fontFamily.bodyRegular,
     fontSize: fontSize.base,
     color: colors.text.secondary,

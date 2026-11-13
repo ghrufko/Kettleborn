@@ -15,6 +15,15 @@ export function convertDisplayToKg(displayValue: number, unit: 'kg' | 'lb'): num
   return displayValue;
 }
 
+/**
+ * A total load lifted (volume), in the player's unit with thousands
+ * separators: "2,400 kg", "5,291 lb". Lower-case unit, as volumes read
+ * everywhere; a bell's own weight stays upper-case (formatWeight).
+ */
+export function formatVolume(volumeKg: number, unit: 'kg' | 'lb'): string {
+  return `${Math.round(convertKgToDisplay(volumeKg, unit)).toLocaleString('en-US')} ${unit}`;
+}
+
 export function formatWeight(weightKg: number, unit: 'kg' | 'lb'): string {
   return `${convertKgToDisplay(weightKg, unit)} ${unit.toUpperCase()}`;
 }

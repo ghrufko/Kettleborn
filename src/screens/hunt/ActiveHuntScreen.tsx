@@ -15,6 +15,7 @@ import { useWorkoutSession } from '../../../engines/session/useWorkoutSession';
 import type { RoundLap } from '../../../engines/session/useWorkoutSession';
 import { useBattleEngine, phaseLabel } from '../../../engines/battle/useBattleEngine';
 import { isOpenEndedWorkout } from '../../../engines/battle/battlePlan';
+import { applyGearVariants, resolveGearCount } from '../../utils/equipmentRules';
 import { useAppStore } from '../../store';
 import { setHuntActive } from '../../services/sync/engine';
 import { getMonsterPortrait } from '../../constants/monsterPortraits';
@@ -32,11 +33,12 @@ import { restFlavorFor } from '../../utils/huntAtmosphere';
 import { getRoundStats } from '../../utils/roundStats';
 import { getWorkoutRoundExercises, groupWorkoutStructure, isAlternatingHandChain } from '../../utils/workoutPresentation';
 import { triggerHaptic } from '../../utils/haptics';
+import { formatCount } from '../../utils/countFormat';
 import { audioEngine } from '../../../engines/audio/AudioEngine';
 import * as Haptics from 'expo-haptics';
 import { Monster, Workout, ExtraExerciseSet, ExtraExerciseId } from '../../models';
 import { EXTRA_EXERCISE_IDS } from '../../constants/extraExercises';
-import { colors, fontFamily, fontSize, radii, spacing, glow } from '../../theme';
+import { colors, controls, fontFamily, fontSize, letterSpacing, lineHeight, radii, spacing, glow } from '../../theme';
 
 type Props = NativeStackScreenProps<HuntStackParamList, 'ActiveHunt'>;
 
@@ -60,7 +62,7 @@ function sequenceMovementName(exercise: Workout['exercises'][number]): string {
 }
 
 function exerciseTargetLabel(exercise: Workout['exercises'][number]): string {
-  if (exercise.targetReps) return `×${exercise.targetReps}`;
+  if (exercise.targetReps) return (exercise.cycles ?? 1) > 1 ? `×${exercise.targetReps} · ${exercise.cycles} cycles` : `×${exercise.targetReps}`;
   if (exercise.targetSteps) return `${exercise.targetSteps} steps`;
   if (exercise.targetDistanceFt) return `${exercise.targetDistanceFt} ft`;
   if (exercise.durationSeconds) return `${exercise.durationSeconds}s`;
@@ -317,7 +319,14 @@ export function ActiveHuntScreen({ route, navigation }: Props) {
         )
       : undefined
     : customWorkout;
-  const effectiveWorkout = effectiveCustomWorkout ?? workout;
+  // Equipment (Correction Sprint 2): the bell count the workout's rule
+  // allows — fixed, or the player's choice for Behemoth / The Duelist,
+  // whose one-bell hunt runs the one-bell variants of the double-bell steps.
+  const effectiveGearCount = resolveGearCount(
+    workout,
+    lockedConfig ? lockedConfig.gearCount : isCustomHunt ? (customGearCount as 1 | 2 | undefined) : undefined
+  );
+  const effectiveWorkout = applyGearVariants(effectiveCustomWorkout ?? workout, effectiveGearCount);
   const plannedRestSeconds = lockedConfig?.restSeconds ?? (isCustomHunt
     ? customRestSeconds ?? workout.restSeconds
     : hunt?.restSecondsOverride ?? workout.restSeconds);
@@ -401,11 +410,7 @@ export function ActiveHuntScreen({ route, navigation }: Props) {
             // fallback (mirrors actualWeightKg only when gearCount is 2
             // but nothing else was supplied) is what actually applies.
             actualWeightBKg: lockedConfig ? (lockedConfig.weightBKg ?? undefined) : weightBKg,
-            actualGearCount: lockedConfig
-              ? lockedConfig.gearCount
-              : isCustomHunt
-                ? customGearCount
-                : undefined,
+            actualGearCount: effectiveGearCount,
             isCustomHunt: effectiveIsCustomHunt,
             rungLaps,
             customWorkout: effectiveCustomWorkout,
@@ -876,14 +881,16 @@ function ActiveHuntSession({
       {showDefeatOverlay ? (
         // The transient defeat title does not block the finishing controls.
         <Animated.View pointerEvents="none" style={[styles.defeatOverlay, { opacity: defeatBackdropAnim }]}>
+          <View style={styles.defeatOverlayRule} />
           <Animated.Text
             style={[
               styles.defeatOverlayText,
-              { color: personality.accentColor, transform: [{ scale: defeatTextAnim }] },
+              { color: colors.ember.glow, transform: [{ scale: defeatTextAnim }] },
             ]}
           >
             Monster Defeated
           </Animated.Text>
+          <View style={styles.defeatOverlayRule} />
         </Animated.View>
       ) : null}
 
@@ -1108,7 +1115,7 @@ function ActiveHuntSession({
           <GlassCard style={styles.completeCard} glow="lg">
             <Text style={styles.completeTitle}>Workout Complete</Text>
             <Text style={styles.completeCaption}>
-              {session.totalRounds} {stepLabel.toLowerCase()}s finished in {elapsedClock.minutes}:
+              {formatCount(session.totalRounds, stepLabel.toLowerCase())} finished in {elapsedClock.minutes}:
               {elapsedClock.seconds.toString().padStart(2, '0')}
               {roundStats.fastestRoundSeconds !== null
                 ? ` · Fastest ${stepLabel.toLowerCase()} ${formatClock(roundStats.fastestRoundSeconds).minutes}:${formatClock(
@@ -1536,27 +1543,35 @@ const styles = StyleSheet.create({
     marginTop: spacing.md,
   },
   // A centered victory band that never blocks the finish controls.
+  // The defeat moment owns the whole screen while it plays: a dark veil
+  // over everything, the title centred between two bronze rules. It used
+  // to be a boxed label floating at 38% height, which landed on top of
+  // the "Workout Complete" card and read as two cards colliding.
   defeatOverlay: {
     position: 'absolute',
-    top: '38%',
-    left: spacing.lg,
-    right: spacing.lg,
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
     zIndex: 20,
     alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: spacing.lg,
+    backgroundColor: 'rgba(10, 9, 8, 0.82)',
+  },
+  defeatOverlayRule: {
+    width: 96,
+    height: 1,
+    backgroundColor: colors.bronze.base,
+    marginVertical: spacing.md,
   },
   defeatOverlayText: {
     fontFamily: fontFamily.displayBold,
     fontSize: fontSize.xl,
+    lineHeight: lineHeight.xl,
     textTransform: 'uppercase',
     letterSpacing: 3,
     textAlign: 'center',
-    backgroundColor: 'rgba(10, 9, 8, 0.85)',
-    borderWidth: 1,
-    borderColor: colors.ember.glow,
-    borderRadius: 12,
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.lg,
-    overflow: 'hidden',
   },
   // Sprint 4: same footprint as `portrait` itself (not larger) so wrapping
   // it doesn't add any height to the boss column — the status pill below
@@ -1934,12 +1949,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: spacing.sm,
   },
+  // 20pt keeps "Workout Complete" on one line down to 320pt screens; at
+  // 28pt it broke over two left-hugging lines.
   completeTitle: {
     fontFamily: fontFamily.displayBold,
-    fontSize: fontSize.xl,
+    fontSize: fontSize.lg,
     color: colors.gold,
     textTransform: 'uppercase',
-    letterSpacing: 2,
+    letterSpacing: letterSpacing.wide,
+    textAlign: 'center',
   },
   completeCaption: {
     fontFamily: fontFamily.bodyRegular,
@@ -2018,15 +2036,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing.xs,
   },
-  extraRepsStepButton: {
-    width: 28,
-    height: 28,
-    borderRadius: radii.sm,
-    borderWidth: 1,
-    borderColor: colors.border.hairlineStrong,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+  extraRepsStepButton: { ...controls.stepButton, ...controls.stepButtonCompact },
   extraRepsValue: {
     fontFamily: fontFamily.monoBold,
     fontSize: fontSize.base,

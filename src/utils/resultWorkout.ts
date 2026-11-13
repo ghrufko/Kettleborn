@@ -1,6 +1,7 @@
 import type { Exercise, ExerciseLibraryEntry, ExtraExerciseSet, Workout, WorkoutResult } from '../models';
 import { buildCustomWorkout, getStructuralControlConfig } from './customWorkoutStructure';
 import { getExerciseBreakdown } from './exerciseBreakdown';
+import { applyGearVariants } from './equipmentRules';
 import type { ExerciseBreakdownEntry } from './exerciseBreakdown';
 
 /**
@@ -33,6 +34,7 @@ export function exerciseAsOf(exercise: Exercise, completedAt: string): Exercise 
     libraryExerciseId: previous.libraryExerciseId,
     displayName: previous.displayName,
     usesGearCount: previous.usesGearCount,
+    cycles: previous.cycles,
     previousVersion: undefined,
   };
 }
@@ -61,7 +63,13 @@ export function workoutAsOf(workout: Workout, completedAt: string): Workout {
  * workout — the same fallback encounterLock.ts already documents.
  */
 export function getPerformedWorkout(result: WorkoutResult, canonicalWorkout: Workout): Workout {
-  const base = workoutAsOf(canonicalWorkout, result.completedAt);
+  // A flexible-equipment workout (Behemoth, The Duelist) done with one bell
+  // used the one-bell variants of its double-bell steps.
+  const base = applyGearVariants(
+    workoutAsOf(canonicalWorkout, result.completedAt),
+    result.weightValueB !== null ? 2 : 1,
+    result.completedAt
+  );
   if (!result.isCustomHunt) {
     return base;
   }

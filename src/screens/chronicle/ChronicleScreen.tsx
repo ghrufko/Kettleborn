@@ -10,9 +10,10 @@ import { getHuntRank } from '../../utils/huntRank';
 import { getWeeklySummary, getMonthlySummary, getTrainingCalendar } from '../../utils/chronicleSummary';
 import { ExerciseStats, WeaknessProfile } from '../../utils/exerciseStats';
 import { getLongestSilenceDays, getMostDangerousOpponent } from '../../utils/chronicleStory';
-import { convertKgToDisplay, formatWeightPair } from '../../utils/weight';
+import { convertKgToDisplay, formatVolume, formatWeightPair } from '../../utils/weight';
+import { formatCount } from '../../utils/countFormat';
 import { getPerformedWorkout } from '../../utils/resultWorkout';
-import { formatExerciseRecord } from '../../utils/exerciseRecordFormat';
+import { formatExerciseRecord, getExerciseRecordParts } from '../../utils/exerciseRecordFormat';
 import { WorkoutResult, CustomWorkoutResult, StopwatchResult } from '../../models';
 import { ChronicleStackParamList, MainTabsParamList } from '../../navigation/types';
 import { colors, fontFamily, fontSize, spacing } from '../../theme';
@@ -117,7 +118,7 @@ export function ChronicleScreen() {
           </View>
           <View style={styles.statRow}>
             <Text style={styles.statLabel}>Current Streak</Text>
-            <Text style={styles.statValue}>{chronicle?.currentStreakDays ?? 0} days</Text>
+            <Text style={styles.statValue}>{formatCount(chronicle?.currentStreakDays ?? 0, 'day')}</Text>
           </View>
         </GlassCard>
 
@@ -133,17 +134,15 @@ export function ChronicleScreen() {
             <Text style={styles.sectionLabel}>This Week</Text>
             <Text style={styles.periodValue}>{weeklySummary.workouts}</Text>
             <Text style={styles.periodCaption}>hunts</Text>
-            <Text style={styles.periodDetail}>
-              {weeklySummary.totalMinutes} min · {Math.round(weeklySummary.totalVolumeKg)} kg
-            </Text>
+            <Text style={styles.periodDetail}>{weeklySummary.totalMinutes} min</Text>
+            <Text style={styles.periodDetailSecond}>{formatVolume(weeklySummary.totalVolumeKg, unitPreference)}</Text>
           </GlassCard>
           <GlassCard style={styles.periodCard}>
             <Text style={styles.sectionLabel}>This Month</Text>
             <Text style={styles.periodValue}>{monthlySummary.workouts}</Text>
             <Text style={styles.periodCaption}>hunts</Text>
-            <Text style={styles.periodDetail}>
-              {monthlySummary.totalMinutes} min · {Math.round(monthlySummary.totalVolumeKg)} kg
-            </Text>
+            <Text style={styles.periodDetail}>{monthlySummary.totalMinutes} min</Text>
+            <Text style={styles.periodDetailSecond}>{formatVolume(monthlySummary.totalVolumeKg, unitPreference)}</Text>
           </GlassCard>
         </View>
 
@@ -182,26 +181,47 @@ export function ChronicleScreen() {
         {exerciseStats.length > 0 ? (
           <GlassCard>
             <Text style={styles.sectionLabel}>Exercise Records</Text>
-            {exerciseStats.slice(0, 5).map((stat) => (
-              <View key={stat.exerciseId} style={styles.statRow}>
+            {/* Each record: the movement, then what was done with it —
+                reps (or a carry's steps) and the total external load
+                lifted, both bells counted. Bodyweight movements and carries
+                show no load figure (see getExerciseRecordParts). */}
+            {exerciseStats.slice(0, 5).map((stat, index) => {
+              const parts = getExerciseRecordParts(stat, (kg) => Math.round(convertKgToDisplay(kg, unitPreference)));
+              return (
                 <Pressable
+                  key={stat.exerciseId}
                   disabled={!contentEngine.getExerciseLibraryEntry(stat.exerciseId)}
                   accessibilityRole="button"
-                  accessibilityLabel={`Open ${stat.exerciseName} in Exercise Library`}
+                  accessibilityLabel={`${stat.exerciseName}: ${formatExerciseRecord(stat, (kg) => Math.round(convertKgToDisplay(kg, unitPreference)), unitPreference)}. Open in Exercise Library`}
                   onPress={() => tabNavigation?.navigate('HuntTab', {
                     screen: 'ExerciseDetail',
                     params: { exerciseId: stat.exerciseId },
                   })}
-                  style={styles.exerciseRecordLink}
+                  style={({ pressed }) => [styles.recordRow, index === 0 && styles.recordRowFirst, pressed && styles.recordRowPressed]}
                 >
-                  <Text style={styles.exerciseRecordName}>{stat.exerciseName}</Text>
-                  <Ionicons name="open-outline" size={13} color={colors.bronze.active} />
+                  <View style={styles.recordNameRow}>
+                    <Text style={styles.recordName} numberOfLines={2}>{stat.exerciseName}</Text>
+                    <Ionicons name="chevron-forward" size={13} color={colors.bronze.base} />
+                  </View>
+                  <View style={styles.recordStats}>
+                    <Text style={styles.recordFigure}>{parts.amount.toLocaleString()}</Text>
+                    <Text style={styles.recordUnit}>{parts.amountUnit}</Text>
+                    {parts.load !== null ? (
+                      <>
+                        <Text style={styles.recordDivider}>·</Text>
+                        <Text style={[styles.recordFigure, styles.recordLoad]}>{parts.load.toLocaleString()}</Text>
+                        <Text style={styles.recordUnit}>{unitPreference}</Text>
+                      </>
+                    ) : parts.isBodyweight ? (
+                      <>
+                        <Text style={styles.recordDivider}>·</Text>
+                        <Text style={styles.recordMuted}>bodyweight</Text>
+                      </>
+                    ) : null}
+                  </View>
                 </Pressable>
-                <Text style={[styles.statValue, styles.exerciseRecordValue]}>
-                  {formatExerciseRecord(stat, (kg) => Math.round(convertKgToDisplay(kg, unitPreference)), unitPreference)}
-                </Text>
-              </View>
-            ))}
+              );
+            })}
             <View style={[styles.statRow, styles.favoriteRow]}>
               <Text style={styles.favoriteLabel}>Weapon of Choice</Text>
               <Text style={styles.favoriteValue}>{exerciseStats[0].exerciseName}</Text>
@@ -213,21 +233,21 @@ export function ChronicleScreen() {
           <GlassCard>
             <Text style={styles.sectionLabel}>Training Balance</Text>
             {weaknessProfile.strongest ? (
-              <View style={styles.statRow}>
-                <Text style={styles.statLabel}>Strongest Movement</Text>
-                <Text style={styles.statValue}>{weaknessProfile.strongest.exerciseName}</Text>
+              <View style={styles.ledgerRow}>
+                <Text style={styles.ledgerLabel}>Strongest Movement</Text>
+                <Text style={styles.ledgerValue}>{weaknessProfile.strongest.exerciseName}</Text>
               </View>
             ) : null}
             {weaknessProfile.weakest && weaknessProfile.weakest.exerciseId !== weaknessProfile.strongest?.exerciseId ? (
-              <View style={styles.statRow}>
-                <Text style={styles.statLabel}>Weakest Movement</Text>
-                <Text style={styles.statValue}>{weaknessProfile.weakest.exerciseName}</Text>
+              <View style={styles.ledgerRow}>
+                <Text style={styles.ledgerLabel}>Weakest Movement</Text>
+                <Text style={styles.ledgerValue}>{weaknessProfile.weakest.exerciseName}</Text>
               </View>
             ) : null}
             {weaknessProfile.leastTrained ? (
-              <View style={styles.statRow}>
-                <Text style={styles.statLabel}>Least Trained</Text>
-                <Text style={styles.statValue}>{weaknessProfile.leastTrained.exerciseName}</Text>
+              <View style={styles.ledgerRow}>
+                <Text style={styles.ledgerLabel}>Least Trained</Text>
+                <Text style={styles.ledgerValue}>{weaknessProfile.leastTrained.exerciseName}</Text>
               </View>
             ) : null}
           </GlassCard>
@@ -245,7 +265,7 @@ export function ChronicleScreen() {
             {longestSilenceDays !== null && longestSilenceDays > 0 ? (
               <View style={styles.statRow}>
                 <Text style={styles.statLabel}>Longest Silence</Text>
-                <Text style={styles.statValue}>{longestSilenceDays} days</Text>
+                <Text style={styles.statValue}>{formatCount(longestSilenceDays, 'day')}</Text>
               </View>
             ) : null}
           </GlassCard>
@@ -393,7 +413,28 @@ const styles = StyleSheet.create({
   statRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'baseline',
+    gap: spacing.sm,
     marginTop: spacing.sm,
+  },
+  // A label over a long value (a movement's name), for facts that can't
+  // share one line on a phone without both halves wrapping.
+  ledgerRow: {
+    marginTop: spacing.sm,
+    paddingTop: spacing.sm,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: colors.border.hairline,
+  },
+  ledgerLabel: {
+    fontFamily: fontFamily.bodyRegular,
+    fontSize: fontSize.sm,
+    color: colors.text.muted,
+  },
+  ledgerValue: {
+    marginTop: 2,
+    fontFamily: fontFamily.monoBold,
+    fontSize: fontSize.base,
+    color: colors.text.primary,
   },
   statLabel: {
     fontFamily: fontFamily.bodyRegular,
@@ -414,18 +455,78 @@ const styles = StyleSheet.create({
     color: colors.bronze.active,
   },
   statValue: {
+    flexShrink: 1,
+    textAlign: 'right',
     fontFamily: fontFamily.monoBold,
     fontSize: fontSize.base,
     color: colors.text.primary,
   },
-  // "100 reps — 2,400 kg done" is longer than the old reps-only value:
-  // it keeps the right edge, and wraps under itself on a narrow phone
-  // instead of pushing the exercise name off screen.
-  exerciseRecordValue: {
+  // Exercise Records: a ledger of movements. A hairline bronze rule
+  // separates entries; the name reads first (Cinzel, small caps), the
+  // figures below it in mono — reps in parchment, the load in ember.
+  recordRow: {
+    marginTop: spacing.xs,
+    paddingTop: spacing.sm,
+    paddingLeft: spacing.sm,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: colors.border.hairlineStrong,
+    borderLeftWidth: 2,
+    borderLeftColor: colors.bronze.base,
+  },
+  recordRowFirst: {
+    borderTopWidth: 0,
+    paddingTop: spacing.xxs,
+  },
+  recordRowPressed: {
+    opacity: 0.7,
+  },
+  recordNameRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xxs,
+  },
+  recordName: {
     flexShrink: 1,
-    marginLeft: spacing.sm,
-    textAlign: 'right',
+    fontFamily: fontFamily.displayRegular,
     fontSize: fontSize.sm,
+    letterSpacing: 1.2,
+    textTransform: 'uppercase',
+    color: colors.text.primary,
+  },
+  recordStats: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'baseline',
+    marginTop: 2,
+  },
+  recordFigure: {
+    fontFamily: fontFamily.monoBold,
+    fontSize: fontSize.base,
+    color: colors.text.primary,
+  },
+  recordLoad: {
+    color: colors.ember.base,
+  },
+  recordUnit: {
+    marginLeft: 4,
+    fontFamily: fontFamily.monoRegular,
+    fontSize: fontSize.xs,
+    color: colors.text.muted,
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+  },
+  recordDivider: {
+    marginHorizontal: spacing.xs,
+    fontFamily: fontFamily.monoRegular,
+    fontSize: fontSize.sm,
+    color: colors.bronze.base,
+  },
+  recordMuted: {
+    fontFamily: fontFamily.monoRegular,
+    fontSize: fontSize.xs,
+    color: colors.text.muted,
+    textTransform: 'uppercase',
+    letterSpacing: 1,
   },
   favoriteRow: {
     marginTop: spacing.sm,
@@ -463,11 +564,18 @@ const styles = StyleSheet.create({
     color: colors.text.muted,
     textTransform: 'uppercase',
   },
+  // Time and volume take a line each: side by side, a four-figure
+  // volume pushed its unit onto a line of its own at 320pt.
   periodDetail: {
     fontFamily: fontFamily.monoRegular,
     fontSize: fontSize.xs,
     color: colors.text.secondary,
     marginTop: spacing.xxs,
+  },
+  periodDetailSecond: {
+    fontFamily: fontFamily.monoRegular,
+    fontSize: fontSize.xs,
+    color: colors.text.secondary,
   },
   weekdayRow: {
     flexDirection: 'row',

@@ -7,6 +7,11 @@ import type { Exercise } from '../../src/models';
  * damageType, keeping the reducer itself free of per-exercise math.
  */
 export function resolveExerciseDamage(exercise: Exercise, repsCompleted: number): number {
+  // A Complex step performed as a block of N cycles deals its damage N times.
+  return resolveSingleCycleDamage(exercise, repsCompleted) * (exercise.cycles ?? 1);
+}
+
+function resolveSingleCycleDamage(exercise: Exercise, repsCompleted: number): number {
   switch (exercise.damageType) {
     case 'flat':
       return exercise.damageCoefficient;

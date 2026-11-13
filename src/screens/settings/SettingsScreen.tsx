@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Switch, Pressable } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { ForgeStackParamList } from '../../navigation/types';
-import { Header, GlassCard, Button, ConfirmDialog } from '../../components/core';
+import { Header, GlassCard, Button, ConfirmDialog, Toggle } from '../../components/core';
 import { useAppStore } from '../../store';
 import { colors, fontFamily, fontSize, spacing } from '../../theme';
 import { SyncAccountPanel } from '../../components/sync/SyncAccountPanel';
@@ -127,12 +127,7 @@ function ToggleRow({
   return (
     <View style={styles.row}>
       <Text style={styles.rowLabel}>{label}</Text>
-      <Switch
-        value={value}
-        onValueChange={onValueChange}
-        trackColor={{ false: colors.charcoal.raised, true: colors.bronze.base }}
-        thumbColor={colors.text.primary}
-      />
+      <Toggle value={value} onValueChange={onValueChange} accessibilityLabel={label} />
     </View>
   );
 }

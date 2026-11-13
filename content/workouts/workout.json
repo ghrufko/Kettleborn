@@ -2203,6 +2203,7 @@
     ],
     "gearWeightKg": 20,
     "gearCount": 2,
+    "flexibleGearCount": true,
     "rounds": 3,
     "restSeconds": 120,
     "roundBonusDamage": 70,
@@ -2375,6 +2376,7 @@
       },
       {
         "label": "Phase III — Two Kettlebells · 2 × 20 kg",
+        "singleBellLabel": "Phase III — One Kettlebell",
         "exercises": [
           {
             "id": "behemoth-p3-snatch",
@@ -2384,7 +2386,12 @@
             "targetReps": 10,
             "displayName": "Double Half Snatch",
             "libraryExerciseId": "double-half-snatch",
-            "usesGearCount": 2
+            "usesGearCount": 2,
+            "singleBellVariant": {
+              "since": "2026-11-12T08:41:16.000Z",
+              "name": "Half Snatch",
+              "libraryExerciseId": "snatch"
+            }
           },
           {
             "id": "behemoth-p3-squat",
@@ -2394,7 +2401,12 @@
             "targetReps": 8,
             "displayName": "Double Squat",
             "libraryExerciseId": "double-front-squat",
-            "usesGearCount": 2
+            "usesGearCount": 2,
+            "singleBellVariant": {
+              "since": "2026-11-12T08:41:16.000Z",
+              "name": "Front Squat",
+              "libraryExerciseId": "front-squat"
+            }
           },
           {
             "id": "behemoth-p3-press",
@@ -2404,7 +2416,12 @@
             "targetReps": 6,
             "displayName": "Double Press",
             "libraryExerciseId": "double-press",
-            "usesGearCount": 2
+            "usesGearCount": 2,
+            "singleBellVariant": {
+              "since": "2026-11-12T08:41:16.000Z",
+              "name": "Press",
+              "libraryExerciseId": "press"
+            }
           },
           {
             "id": "behemoth-p3-clean",
@@ -2414,7 +2431,12 @@
             "targetReps": 4,
             "displayName": "Double Clean",
             "libraryExerciseId": "double-clean",
-            "usesGearCount": 2
+            "usesGearCount": 2,
+            "singleBellVariant": {
+              "since": "2026-11-12T08:41:16.000Z",
+              "name": "Clean",
+              "libraryExerciseId": "clean"
+            }
           },
           {
             "id": "behemoth-p3-snatch-2",
@@ -2424,7 +2446,12 @@
             "targetReps": 2,
             "displayName": "Double Swing",
             "libraryExerciseId": "double-swing",
-            "usesGearCount": 2
+            "usesGearCount": 2,
+            "singleBellVariant": {
+              "since": "2026-11-12T08:41:16.000Z",
+              "name": "Swing",
+              "libraryExerciseId": "swing"
+            }
           }
         ]
       }
@@ -2891,11 +2918,16 @@
       },
       {
         "id": "atlas-chain1-press",
-        "name": "Double Press",
-        "displayName": "Double Press (Chain 1/5)",
+        "name": "Double Jerk",
+        "displayName": "Double Jerk (Chain 1/5)",
         "damageCoefficient": 14,
         "damageType": "flat",
-        "targetReps": 3
+        "targetReps": 3,
+        "previousVersion": {
+          "before": "2026-11-12T08:41:16.000Z",
+          "name": "Double Press",
+          "displayName": "Double Press (Chain 1/5)"
+        }
       },
       {
         "id": "atlas-chain1-clean",
@@ -2931,11 +2963,16 @@
       },
       {
         "id": "atlas-chain2-press",
-        "name": "Double Press",
-        "displayName": "Double Press (Chain 2/5)",
+        "name": "Double Jerk",
+        "displayName": "Double Jerk (Chain 2/5)",
         "damageCoefficient": 14,
         "damageType": "flat",
-        "targetReps": 3
+        "targetReps": 3,
+        "previousVersion": {
+          "before": "2026-11-12T08:41:16.000Z",
+          "name": "Double Press",
+          "displayName": "Double Press (Chain 2/5)"
+        }
       },
       {
         "id": "atlas-chain2-clean",
@@ -2971,11 +3008,16 @@
       },
       {
         "id": "atlas-chain3-press",
-        "name": "Double Press",
-        "displayName": "Double Press (Chain 3/5)",
+        "name": "Double Jerk",
+        "displayName": "Double Jerk (Chain 3/5)",
         "damageCoefficient": 14,
         "damageType": "flat",
-        "targetReps": 3
+        "targetReps": 3,
+        "previousVersion": {
+          "before": "2026-11-12T08:41:16.000Z",
+          "name": "Double Press",
+          "displayName": "Double Press (Chain 3/5)"
+        }
       },
       {
         "id": "atlas-chain3-clean",
@@ -3011,11 +3053,16 @@
       },
       {
         "id": "atlas-chain4-press",
-        "name": "Double Press",
-        "displayName": "Double Press (Chain 4/5)",
+        "name": "Double Jerk",
+        "displayName": "Double Jerk (Chain 4/5)",
         "damageCoefficient": 14,
         "damageType": "flat",
-        "targetReps": 3
+        "targetReps": 3,
+        "previousVersion": {
+          "before": "2026-11-12T08:41:16.000Z",
+          "name": "Double Press",
+          "displayName": "Double Press (Chain 4/5)"
+        }
       },
       {
         "id": "atlas-chain4-clean",
@@ -3051,11 +3098,16 @@
       },
       {
         "id": "atlas-chain5-press",
-        "name": "Double Press",
-        "displayName": "Double Press (Chain 5/5)",
+        "name": "Double Jerk",
+        "displayName": "Double Jerk (Chain 5/5)",
         "damageCoefficient": 14,
         "damageType": "flat",
-        "targetReps": 3
+        "targetReps": 3,
+        "previousVersion": {
+          "before": "2026-11-12T08:41:16.000Z",
+          "name": "Double Press",
+          "displayName": "Double Press (Chain 5/5)"
+        }
       },
       {
         "id": "atlas-chain5-clean",
@@ -3087,15 +3139,27 @@
         "displayName": "Double Front Squat (Complex ×5)",
         "damageCoefficient": 14,
         "damageType": "flat",
-        "targetReps": 3
+        "targetReps": 3,
+        "cycles": 5,
+        "previousVersion": {
+          "before": "2026-11-12T08:41:16.000Z",
+          "name": "Double Front Squat",
+          "displayName": "Double Front Squat (Complex ×5)"
+        }
       },
       {
         "id": "atlas-complex-press",
-        "name": "Double Press",
-        "displayName": "Double Press (Complex ×5)",
+        "name": "Double Jerk",
+        "displayName": "Double Jerk (Complex ×5)",
         "damageCoefficient": 14,
         "damageType": "flat",
-        "targetReps": 3
+        "targetReps": 3,
+        "cycles": 5,
+        "previousVersion": {
+          "before": "2026-11-12T08:41:16.000Z",
+          "name": "Double Press",
+          "displayName": "Double Press (Complex ×5)"
+        }
       },
       {
         "id": "atlas-complex-clean",
@@ -3103,7 +3167,13 @@
         "displayName": "Double Clean (Complex ×5)",
         "damageCoefficient": 14,
         "damageType": "flat",
-        "targetReps": 3
+        "targetReps": 3,
+        "cycles": 5,
+        "previousVersion": {
+          "before": "2026-11-12T08:41:16.000Z",
+          "name": "Double Clean",
+          "displayName": "Double Clean (Complex ×5)"
+        }
       },
       {
         "id": "atlas-complex-push-press",
@@ -3111,7 +3181,13 @@
         "displayName": "Double Push Press (Complex ×5)",
         "damageCoefficient": 16,
         "damageType": "flat",
-        "targetReps": 3
+        "targetReps": 3,
+        "cycles": 5,
+        "previousVersion": {
+          "before": "2026-11-12T08:41:16.000Z",
+          "name": "Double Push Press",
+          "displayName": "Double Push Press (Complex ×5)"
+        }
       },
       {
         "id": "atlas-complex-row",
@@ -3119,7 +3195,13 @@
         "displayName": "Double Row (Complex ×5)",
         "damageCoefficient": 12,
         "damageType": "flat",
-        "targetReps": 3
+        "targetReps": 3,
+        "cycles": 5,
+        "previousVersion": {
+          "before": "2026-11-12T08:41:16.000Z",
+          "name": "Double Row",
+          "displayName": "Double Row (Complex ×5)"
+        }
       }
     ],
     "finisher": {
@@ -3229,6 +3311,7 @@
     ],
     "gearWeightKg": 20,
     "gearCount": 2,
+    "flexibleGearCount": true,
     "rounds": 5,
     "restSeconds": 105,
     "roundBonusDamage": 65,
@@ -3244,21 +3327,36 @@
         "name": "Double Snatch",
         "damageCoefficient": 16,
         "damageType": "flat",
-        "targetReps": 5
+        "targetReps": 5,
+        "singleBellVariant": {
+          "since": "2026-11-12T08:41:16.000Z",
+          "name": "Snatch",
+          "libraryExerciseId": "snatch"
+        }
       },
       {
         "id": "chimera-thruster",
         "name": "Double Thruster",
         "damageCoefficient": 14,
         "damageType": "flat",
-        "targetReps": 5
+        "targetReps": 5,
+        "singleBellVariant": {
+          "since": "2026-11-12T08:41:16.000Z",
+          "name": "Single Thruster",
+          "libraryExerciseId": "thruster"
+        }
       },
       {
         "id": "chimera-swing",
         "name": "Double Swing",
         "damageCoefficient": 10,
         "damageType": "flat",
-        "targetReps": 5
+        "targetReps": 5,
+        "singleBellVariant": {
+          "since": "2026-11-12T08:41:16.000Z",
+          "name": "Swing",
+          "libraryExerciseId": "swing"
+        }
       },
       {
         "id": "chimera-snatch-thruster",
@@ -5475,7 +5573,7 @@
   "judge-verdict": {
     "id": "judge-verdict",
     "name": "The Judge's Verdict",
-    "description": "Five rounds follow the same six-movement double-bell chain, with the handover lunge counted for each leg.",
+    "description": "Five rounds follow the same six-movement double-bell complex: finish each movement’s reps before the next, with the handover lunge counted for each leg.",
     "difficulty": 5,
     "estimatedMinutesRange": [
       16,
@@ -5492,7 +5590,6 @@
       "Unilateral Leg Strength",
       "Continuous Movement"
     ],
-    "sequenceType": "chain",
     "exercises": [
       {
         "id": "judge-double-snatch",

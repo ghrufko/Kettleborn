@@ -91,6 +91,9 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     letterSpacing: 1,
     marginTop: spacing.xxs,
+    // Two-word ranks ("Novice Hunter") wrap on phones; centre both lines
+    // under the level number instead of leaving them flush left.
+    textAlign: 'center',
   },
   hint: {
     fontFamily: fontFamily.bodyRegular,

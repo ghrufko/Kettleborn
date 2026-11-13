@@ -3,7 +3,11 @@
   <head>
     <meta charset="utf-8" />
     <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <!-- viewport-fit=cover: without it, iOS reports a zero bottom safe-area
+         inset to the installed (standalone) app, so the tab bar's labels sat
+         under the home indicator. With it, env(safe-area-inset-*) is real and
+         the app's SafeAreaViews pad around the indicator. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="Kettleborn" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black" />
@@ -17,6 +21,7 @@
       html,
       body {
         height: 100%;
+        background-color: #0a0908;
       }
       /* These styles disable body scrolling if you are using <ScrollView> */
       body {

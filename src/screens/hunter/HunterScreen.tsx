@@ -8,7 +8,8 @@ import { useAppStore } from '../../store';
 import { contentEngine } from '../../../engines/content';
 import { getHunterTitle } from '../../utils/hunterTitle';
 import { getLevelProgress } from '../../../engines/progress/progressionEngine';
-import { formatWeight, formatWeightPair } from '../../utils/weight';
+import { formatVolume, formatWeight, formatWeightPair } from '../../utils/weight';
+import { formatCount } from '../../utils/countFormat';
 import { isCampaignComplete, getCampaignState } from '../../utils/campaignState';
 import { getNextObjective } from '../../utils/nextObjective';
 import { MILESTONE_DISPLAY_ORDER } from '../../utils/milestones';
@@ -115,11 +116,11 @@ export function HunterScreen() {
           <Text style={styles.sectionLabel}>Streak</Text>
           <View style={styles.statRow}>
             <Text style={styles.statLabel}>Current Streak</Text>
-            <Text style={styles.statValue}>{chronicle?.currentStreakDays ?? 0} days</Text>
+            <Text style={styles.statValue}>{formatCount(chronicle?.currentStreakDays ?? 0, 'day')}</Text>
           </View>
           <View style={styles.statRow}>
             <Text style={styles.statLabel}>Longest Streak</Text>
-            <Text style={styles.statValue}>{chronicle?.longestStreakDays ?? 0} days</Text>
+            <Text style={styles.statValue}>{formatCount(chronicle?.longestStreakDays ?? 0, 'day')}</Text>
           </View>
         </GlassCard>
 
@@ -151,7 +152,7 @@ export function HunterScreen() {
           </View>
           <View style={styles.statRow}>
             <Text style={styles.statLabel}>Total Volume</Text>
-            <Text style={styles.statValue}>{Math.round(chronicle?.totalVolumeKg ?? 0)} kg</Text>
+            <Text style={styles.statValue}>{formatVolume(chronicle?.totalVolumeKg ?? 0, unitPreference)}</Text>
           </View>
           <View style={styles.statRow}>
             <Text style={styles.statLabel}>Weight PR</Text>
@@ -195,7 +196,11 @@ export function HunterScreen() {
           </View>
         </GlassCard>
 
-        <Pressable onPress={() => navigation.navigate('Achievements')} accessibilityRole="button">
+        <Pressable
+          onPress={() => navigation.navigate('Achievements')}
+          accessibilityRole="button"
+          style={styles.cardLink}
+        >
           <GlassCard style={styles.card}>
             <View style={styles.achievementsLinkRow}>
               <View>
@@ -333,17 +338,25 @@ const styles = StyleSheet.create({
   statRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'baseline',
+    gap: spacing.sm,
     marginTop: spacing.xs,
   },
   statLabel: {
+    flexShrink: 0,
     fontFamily: fontFamily.bodyRegular,
     fontSize: fontSize.base,
     color: colors.text.secondary,
   },
   statValue: {
+    flexShrink: 1,
+    textAlign: 'right',
     fontFamily: fontFamily.monoBold,
     fontSize: fontSize.base,
     color: colors.text.primary,
+  },
+  cardLink: {
+    alignSelf: 'stretch',
   },
   achievementsLinkRow: {
     flexDirection: 'row',

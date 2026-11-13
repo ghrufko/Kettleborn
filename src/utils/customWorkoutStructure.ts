@@ -1,4 +1,5 @@
 import type { BattleConfig, Exercise, Workout } from '../models';
+import { buildWorkoutFromModel, isModelConfig } from './customHuntModel';
 
 /**
  * Task 2 (Custom Training — structural parameters). This module answers
@@ -197,6 +198,10 @@ export function getStructuralControlConfig(workout: Workout): StructuralControlC
 
 /** Independent, deliberately duplicated estimate — see file header. Never imported by/into damageResolver.ts, and never used during live gameplay; purely a calibration-time aggregate. */
 function estimatePerExerciseDamage(exercise: Exercise): number {
+  return estimateSingleCycleDamage(exercise) * (exercise.cycles ?? 1);
+}
+
+function estimateSingleCycleDamage(exercise: Exercise): number {
   switch (exercise.damageType) {
     case 'flat':
       return exercise.damageCoefficient;
@@ -305,6 +310,13 @@ export function buildCustomWorkout(
   value: number,
   repsOverrides?: Record<string, number>
 ): Workout {
+  // Correction Sprint 2: a configuration made with the phase/step Custom
+  // Hunt model (marked with CONFIG_VERSION_KEY) is built by that model.
+  // Anything saved before it — every existing Custom Hunt result and
+  // preset — has no marker and keeps the original rules below, unchanged.
+  if (isModelConfig(repsOverrides)) {
+    return buildWorkoutFromModel(canonicalWorkout, value > 0 ? value : null, repsOverrides!);
+  }
   const config = getStructuralControlConfig(canonicalWorkout);
   const hasRepsOverrides = !!repsOverrides && Object.keys(repsOverrides).length > 0;
   if (!config) {

@@ -7,7 +7,7 @@ import { Header, GlassCard, Button } from '../../components/core';
 import { useAppStore } from '../../store';
 import { Equipment } from '../../models';
 import { convertKgToDisplay, convertDisplayToKg } from '../../utils/weight';
-import { colors, fontFamily, fontSize, radii, spacing } from '../../theme';
+import { colors, controls, fontFamily, fontSize, radii, spacing } from '../../theme';
 
 type Props = NativeStackScreenProps<ForgeStackParamList, 'Forge'>;
 
@@ -243,15 +243,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing.xs,
   },
-  stepButton: {
-    width: 28,
-    height: 28,
-    borderRadius: radii.sm,
-    borderWidth: 1,
-    borderColor: colors.border.hairlineStrong,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+  stepButton: { ...controls.stepButton, ...controls.stepButtonCompact },
   weightValue: {
     fontFamily: fontFamily.monoBold,
     fontSize: fontSize.base,

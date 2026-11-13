@@ -5,6 +5,8 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import { HuntStackParamList } from '../../navigation/types';
 import { Header, Button, GlassCard, AppBackground } from '../../components/core';
+import { EquipmentIcon } from '../../components/monster/EquipmentIcon';
+import { getMonsterEquipmentRule } from '../../utils/equipmentRules';
 import { MonsterPortraitImage } from '../../components/monster/MonsterPortraitImage';
 import { contentEngine } from '../../../engines/content';
 import { getMonsterPortrait } from '../../constants/monsterPortraits';
@@ -354,6 +356,7 @@ function BossHeroPage({
 }) {
   const { monster, isLocked, isDefeated, isFinalBoss, huntsCompleted, huntsTotal } = entry;
   const portraitSource = isLocked ? undefined : getMonsterPortrait(monster.portraitAsset);
+  const equipmentRule = getMonsterEquipmentRule(monster, (id) => contentEngine.getWorkout(id));
 
   return (
     <Pressable
@@ -404,22 +407,33 @@ function BossHeroPage({
         </View>
 
         <View style={[styles.heroPageDetails, { borderTopColor: `${accentColor}66` }]}>
-          {isLocked || monster.title !== monster.name ? (
-            <Text style={styles.heroPageTitle} numberOfLines={2}>
-              {isLocked ? 'Unknown Creature' : monster.title}
-            </Text>
-          ) : null}
-          {!isLocked ? (
-            <Text style={styles.heroPageFocus}>{getCombatPersonality(monster.personality).label}</Text>
-          ) : null}
-          {!isLocked ? (
-            <Text style={styles.heroPageFlavor} numberOfLines={2}>
-              {flavorTextFor(monster.id)}
-            </Text>
-          ) : null}
-          <Text style={styles.heroPageProgress}>
-            {huntsCompleted} / {huntsTotal} Hunts Complete
-          </Text>
+          <View style={styles.heroPageDetailsRow}>
+            <View style={styles.heroPageDetailsText}>
+              {isLocked || monster.title !== monster.name ? (
+                <Text style={styles.heroPageTitle} numberOfLines={2}>
+                  {isLocked ? 'Unknown Creature' : monster.title}
+                </Text>
+              ) : null}
+              {!isLocked ? (
+                <Text style={styles.heroPageFocus}>{getCombatPersonality(monster.personality).label}</Text>
+              ) : null}
+              {!isLocked ? (
+                <Text style={styles.heroPageFlavor} numberOfLines={2}>
+                  {flavorTextFor(monster.id)}
+                </Text>
+              ) : null}
+              <Text style={styles.heroPageProgress}>
+                {huntsCompleted} / {huntsTotal} Hunts Complete
+              </Text>
+            </View>
+            {/* Equipment this hunt needs — one bell, a pair, or "1 or 2" for
+                Behemoth / The Duelist — from the same rule Custom Hunt uses. */}
+            {!isLocked && equipmentRule ? (
+              <View style={styles.heroPageEquipment}>
+                <EquipmentIcon rule={equipmentRule} />
+              </View>
+            ) : null}
+          </View>
         </View>
       </View>
     </Pressable>
@@ -696,6 +710,17 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.md,
     backgroundColor: 'rgba(10, 9, 8, 0.92)',
     borderTopWidth: 1,
+  },
+  heroPageDetailsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  heroPageDetailsText: {
+    flex: 1,
+    minWidth: 0,
+  },
+  heroPageEquipment: {
+    marginLeft: spacing.sm,
   },
   heroPageName: {
     fontFamily: fontFamily.displayBold,

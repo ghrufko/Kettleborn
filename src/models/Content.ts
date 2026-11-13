@@ -66,6 +66,28 @@ export interface Exercise {
     libraryExerciseId?: string;
     displayName?: string;
     usesGearCount?: 0 | 1 | 2;
+    cycles?: number;
+  };
+  /**
+   * A Complex step repeated as a block: how many times the whole Complex
+   * is performed (e.g. The Sovereign's "Complex ×5" — five cycles of each
+   * movement ×3). Work, damage and statistics count targetReps × cycles.
+   * Absent = 1, the behaviour of every step before this field existed.
+   * Chain passes are authored explicitly ("(Chain 2/5)") and never use it.
+   */
+  cycles?: number;
+  /**
+   * For a workout that may be done with one or two kettlebells
+   * (Workout.flexibleGearCount): the one-kettlebell movement this
+   * double-kettlebell step becomes when the player picks one bell. Results
+   * recorded before `since` keep the step as authored (see
+   * src/utils/resultWorkout.ts).
+   */
+  singleBellVariant?: {
+    since: string;
+    name: string;
+    libraryExerciseId: string;
+    displayName?: string;
   };
 }
 
@@ -88,6 +110,13 @@ export interface Workout {
   estimatedMinutesRange: [number, number];
   gearWeightKg: number;
   gearCount: 1 | 2;
+  /**
+   * true = the workout can be done with one or two kettlebells (Behemoth,
+   * The Duelist); its double-bell steps carry a singleBellVariant. Absent
+   * = the equipment is fixed at `gearCount` — Custom Hunt can't change it.
+   * See src/utils/equipmentRules.ts.
+   */
+  flexibleGearCount?: boolean;
   rounds: number;
   restSeconds: number;
   roundBonusDamage: number;
@@ -113,7 +142,12 @@ export interface Workout {
    * for that round. Every workout before Sprint 22 omits this and keeps
    * behaving exactly as before.
    */
-  sections?: { label: string; exercises: Exercise[] }[];
+  sections?: {
+    label: string;
+    exercises: Exercise[];
+    /** A flexible-equipment workout's label for this section when done with one bell (e.g. Behemoth's "Phase III — One Kettlebell"). */
+    singleBellLabel?: string;
+  }[];
   /** Authored movement order is a continuous chain rather than a set of independent exercises. */
   sequenceType?: 'chain';
   /**

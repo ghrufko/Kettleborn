@@ -22,4 +22,5 @@ export { fontFamily, fontSize, lineHeight, letterSpacing } from './typography';
 export { spacing } from './spacing';
 export { radii } from './radii';
 export { glow } from './glow';
+export { controls } from './controls';
 export type { DifficultyTier, RarityTier } from './colors';

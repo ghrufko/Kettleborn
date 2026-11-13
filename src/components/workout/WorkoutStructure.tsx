@@ -107,6 +107,8 @@ export function WorkoutStructure({ groups, compact = false, hud = false, onExerc
             {group.kind === 'chain' && /^Chain \d+$/i.test(group.label) ? `${group.label.split(' ')[1]} passes · ` : ''}
             {group.exercises.length} {group.exercises.length === 1 ? 'exercise' : 'exercises'}
             {group.repsEach !== null ? ` · ${group.repsEach} rep${group.repsEach === 1 ? '' : 's'} each` : ''}
+            {/* A Complex performed as a block of N cycles (Exercise.cycles). */}
+            {(group.exercises[0]?.cycles ?? 1) > 1 ? ` · ${group.exercises[0].cycles} cycles` : ''}
           </Text>
           {isAlternatingHandChain(group.exercises) ? (
             <>
