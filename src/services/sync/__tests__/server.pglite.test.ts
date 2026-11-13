@@ -10,7 +10,7 @@ import { fileURLToPath } from 'node:url';
  * Calls run as the `authenticated` / `anon` roles with JWT claims, the way
  * PostgREST runs them. Not a hosted Supabase project (that is P11).
  */
-const { startTestServer } = await import(new URL('../../../testing/pgliteServer.ts', import.meta.url).href);
+const { startTestServer, requiresServerWorkspace, listTestMigrations } = await import(new URL('../../../testing/pgliteServer.ts', import.meta.url).href);
 const { generateSyncMigrationSql, SYNC_MIGRATION_FILE, serverTable } = await import(new URL('../serverSchema.ts', import.meta.url).href);
 const { SEED_ORDER } = await import(new URL('../recordTypes.ts', import.meta.url).href);
 
@@ -49,11 +49,26 @@ function equipmentPayload(over: Record<string, unknown> = {}) {
 
 // ---------------------------------------------------------------- generator and archive
 
-test('the committed migration is exactly the generator output', () => {
+test('the test server applies the committed generator\'s sync schema, in migration order', () => {
+  // Every test below that exercises committed code runs against this
+  // schema, so it is reproducible from a clean checkout (src/testing/pgliteServer.ts).
+  const sync = `${SYNC_MIGRATION_FILE.split('/').pop()} (generated)`;
+  assert.deepEqual(server.migrations, listTestMigrations());
+  assert.ok(server.migrations.includes(sync), 'the sync schema is applied from the generator');
+  assert.deepEqual([...server.migrations].sort(), server.migrations, 'filename order');
+});
+
+// The three tests below check server-side files that are not committed yet
+// (frozen Cloud Sync server work). On a checkout without them they are
+// skipped and say which file they need; with them, they run in full.
+
+test('the committed migration is exactly the generator output', { skip: requiresServerWorkspace(SYNC_MIGRATION_FILE) }, () => {
   assert.equal(readFileSync(`${ROOT}${SYNC_MIGRATION_FILE}`, 'utf8'), generateSyncMigrationSql());
 });
 
-test('D13: the client_result_id migration is archived unchanged and is not in the applied folder', () => {
+test('D13: the client_result_id migration is archived unchanged and is not in the applied folder', {
+  skip: requiresServerWorkspace('supabase/migrations_archive/20261010120000_workout_results_client_id_uniqueness.sql'),
+}, () => {
   const name = '20261010120000_workout_results_client_id_uniqueness.sql';
   assert.equal(existsSync(`${ROOT}supabase/migrations/${name}`), false);
   const archived = readFileSync(`${ROOT}supabase/migrations_archive/${name}`, 'utf8');
@@ -105,7 +120,9 @@ test('clients cannot write tables directly, nor call the internal apply function
   await assert.rejects(server.as(a, `select public.sync_apply_achievement($1, 'insert', 'x', null, null, '{}'::jsonb)`, [a]), /permission denied/);
 });
 
-test('profiles are readable by their owner only (D11)', async () => {
+test('profiles are readable by their owner only (D11)', {
+  skip: requiresServerWorkspace('supabase/migrations/20261111120100_profiles_owner_only.sql'),
+}, async () => {
   const a = await server.createUser();
   const b = await server.createUser();
   assert.equal((await server.as(a, 'select id from public.profiles')).length, 1);

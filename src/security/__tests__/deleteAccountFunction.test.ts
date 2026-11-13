@@ -1,15 +1,25 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { randomBytes } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 
 /** delete-account Edge Function — current API keys only (no legacy fallback), fail-closed config, caller-only deletion. Synthetic values only. */
-const { readApiKeys } = await import(new URL('../../../supabase/functions/delete-account/keys.ts', import.meta.url).href);
-const { handleDeleteAccount, handleUnavailable } = await import(
-  new URL('../../../supabase/functions/delete-account/handler.ts', import.meta.url).href
-);
 const FUNCTION_DIR = new URL('../../../supabase/functions/delete-account/', import.meta.url).href;
+
+// The function is Cloud Sync server work that is not committed yet. On a
+// checkout without it every test here is skipped and says why (it cannot
+// test code that is not there); with it, they all run in full.
+const PRESENT = existsSync(fileURLToPath(new URL('handler.ts', FUNCTION_DIR).href));
+const SKIP = PRESENT ? false : 'needs supabase/functions/delete-account/ — uncommitted Cloud Sync server work, not in this checkout';
+const fn: any = PRESENT
+  ? {
+      ...(await import(new URL('keys.ts', FUNCTION_DIR).href)),
+      ...(await import(new URL('handler.ts', FUNCTION_DIR).href)),
+    }
+  : {};
+const { readApiKeys, handleDeleteAccount, handleUnavailable } = fn;
+const serverTest = (name: string, body: () => void | Promise<void>) => test(name, { skip: SKIP }, body);
 const readText = (relative: string) => readFileSync(fileURLToPath(new URL(relative, FUNCTION_DIR).href), 'utf8');
 
 const pub = `sb_publishable_${randomBytes(20).toString('base64url')}`;
@@ -21,7 +31,7 @@ const good = { SUPABASE_PUBLISHABLE_KEYS: JSON.stringify({ default: pub }), SUPA
 
 // ---------------------------------------------------------------- keys
 
-test('keys: reads the `default` publishable and secret keys', () => {
+serverTest('keys: reads the `default` publishable and secret keys', () => {
   assert.deepEqual(readApiKeys(env(good)), { ok: true, publishableKey: pub, secretKey: sec });
   const withOthers = {
     SUPABASE_PUBLISHABLE_KEYS: JSON.stringify({ web: 'sb_publishable_other', default: pub }),
@@ -30,7 +40,7 @@ test('keys: reads the `default` publishable and secret keys', () => {
   assert.deepEqual(readApiKeys(env(withOthers)), { ok: true, publishableKey: pub, secretKey: sec });
 });
 
-test('keys: fails closed on every bad shape, naming only the variable and the problem', () => {
+serverTest('keys: fails closed on every bad shape, naming only the variable and the problem', () => {
   const cases: [Record<string, string | undefined>, string, string][] = [
     [{ ...good, SUPABASE_PUBLISHABLE_KEYS: undefined }, 'SUPABASE_PUBLISHABLE_KEYS', 'missing'],
     [{ ...good, SUPABASE_SECRET_KEYS: undefined }, 'SUPABASE_SECRET_KEYS', 'missing'],
@@ -55,7 +65,7 @@ test('keys: fails closed on every bad shape, naming only the variable and the pr
   }
 });
 
-test('keys: the legacy variables are never a fallback', () => {
+serverTest('keys: the legacy variables are never a fallback', () => {
   const legacyOnly = { SUPABASE_ANON_KEY: legacyJwt('anon'), SUPABASE_SERVICE_ROLE_KEY: legacyJwt('service_role') };
   assert.deepEqual(readApiKeys(env(legacyOnly)), { ok: false, variable: 'SUPABASE_PUBLISHABLE_KEYS', problem: 'missing' });
   assert.deepEqual(readApiKeys(env({ ...legacyOnly, SUPABASE_PUBLISHABLE_KEYS: good.SUPABASE_PUBLISHABLE_KEYS })), {
@@ -65,7 +75,7 @@ test('keys: the legacy variables are never a fallback', () => {
   });
 });
 
-test('the function source reads only the current key variables and keeps platform JWT verification on', () => {
+serverTest('the function source reads only the current key variables and keeps platform JWT verification on', () => {
   for (const file of ['index.ts', 'handler.ts', 'keys.ts']) {
     const code = readText(file)
       .split('\n')
@@ -82,7 +92,7 @@ test('the function source reads only the current key variables and keeps platfor
 
 // ---------------------------------------------------------------- unavailable (fail closed)
 
-test('unavailable: every request is refused with no detail; CORS preflight still answers', async () => {
+serverTest('unavailable: every request is refused with no detail; CORS preflight still answers', async () => {
   for (const init of [
     { method: 'POST', headers: { Authorization: 'Bearer good-token' } },
     { method: 'POST' },
@@ -116,7 +126,7 @@ function deps(validToken: string, userId: string, deleteError: string | null = n
 const post = (headers: Record<string, string> = {}, body?: unknown) =>
   new Request('https://x/functions/v1/delete-account', { method: 'POST', headers, body: body === undefined ? undefined : JSON.stringify(body) });
 
-test('handler: unauthorized requests (no header, not Bearer, empty token) never reach token verification or deletion', async () => {
+serverTest('handler: unauthorized requests (no header, not Bearer, empty token) never reach token verification or deletion', async () => {
   const d = deps('good-token', 'user-1');
   const cases: Record<string, string>[] = [{}, { Authorization: 'good-token' }, { Authorization: 'Basic Zm9vOmJhcg==' }, { Authorization: 'Bearer ' }, { apikey: pub }];
   for (const headers of cases) {
@@ -128,7 +138,7 @@ test('handler: unauthorized requests (no header, not Bearer, empty token) never 
   assert.deepEqual(d.deleted, []);
 });
 
-test('handler: invalid, expired or forged tokens are refused and delete nothing — including a key sent as the bearer', async () => {
+serverTest('handler: invalid, expired or forged tokens are refused and delete nothing — including a key sent as the bearer', async () => {
   const d = deps('good-token', 'user-1');
   for (const token of ['forged', legacyJwt('authenticated'), legacyJwt('service_role'), pub, sec]) {
     const res = await handleDeleteAccount(post({ Authorization: `Bearer ${token}` }), d);
@@ -138,7 +148,7 @@ test('handler: invalid, expired or forged tokens are refused and delete nothing 
   assert.deepEqual(d.deleted, []);
 });
 
-test('handler: a valid token deletes exactly its own account, whatever the body says', async () => {
+serverTest('handler: a valid token deletes exactly its own account, whatever the body says', async () => {
   const d = deps('good-token', 'user-1');
   const res = await handleDeleteAccount(post({ Authorization: 'Bearer good-token' }, { userId: 'user-2', user_id: 'user-3' }), d);
   assert.equal(res.status, 200);
@@ -146,10 +156,48 @@ test('handler: a valid token deletes exactly its own account, whatever the body 
   assert.deepEqual(d.deleted, ['user-1']);
 });
 
-test('handler: a failed deletion reports only a generic error', async () => {
+serverTest('handler: a failed deletion reports only a generic error', async () => {
   const d = deps('good-token', 'user-1', `internal detail ${sec}`);
   const res = await handleDeleteAccount(post({ Authorization: 'Bearer good-token' }), d);
   assert.equal(res.status, 500);
   const text = await res.text();
   assert.equal(text, JSON.stringify({ error: 'delete_failed' }));
+});
+
+// ---------------------------------------------------------------- request basics (moved from bundleSecretScan.test.ts)
+
+function simpleDeps(validToken: string, userId: string) {
+  const deleted: string[] = [];
+  return {
+    deleted,
+    getUserIdFromToken: async (token: string) => (token === validToken ? userId : null),
+    deleteUser: async (id: string) => {
+      deleted.push(id);
+      return { error: null };
+    },
+  };
+}
+
+serverTest('delete-account: deletes only the caller\'s own account, identified by their verified token', async () => {
+  const d = simpleDeps('good-token', 'user-1');
+  const res = await handleDeleteAccount(
+    new Request('https://x/functions/v1/delete-account', {
+      method: 'POST',
+      headers: { Authorization: 'Bearer good-token' },
+      body: JSON.stringify({ userId: 'someone-else' }), // ignored: the id never comes from the body
+    }),
+    d
+  );
+  assert.equal(res.status, 200);
+  assert.deepEqual(d.deleted, ['user-1']);
+});
+
+serverTest('delete-account: refuses missing or invalid tokens and other methods; answers CORS preflight', async () => {
+  const d = simpleDeps('good-token', 'user-1');
+  const call = (init: RequestInit) => handleDeleteAccount(new Request('https://x/f', init), d);
+  assert.equal((await call({ method: 'POST' })).status, 401);
+  assert.equal((await call({ method: 'POST', headers: { Authorization: 'Bearer forged' } })).status, 401);
+  assert.equal((await call({ method: 'GET', headers: { Authorization: 'Bearer good-token' } })).status, 405);
+  assert.equal((await call({ method: 'OPTIONS' })).status, 204);
+  assert.deepEqual(d.deleted, []);
 });
